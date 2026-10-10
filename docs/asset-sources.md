@@ -69,6 +69,23 @@
 
 `Transform` 和 `Upgrade` 图标来自同包原生文本 atlas，原始64×72保存在 `icons-source`，显示版128×144采用与其他关键词一致的机械高清处理。`GameData.db` 的旧 Tooltip 内容记录将这些条目的 `Icon` 记为 `Invalid`，但最终渲染的 `TooltipTypography.IconName` 明确配置了两个图标；这里采用最终字体渲染配置作为视觉依据。
 
+### 示例物品原始插画
+
+以下四张 PNG 位于 `public/assets/examples/`，均从本机安装的游戏 Texture2D 直接解码，保留原生 **1024×1024 RGB** 像素，显示文件的 alpha 统一设为255；没有截图裁切、缩放、锐化、卡框或数值叠加，没有生成或重绘内容。
+
+| 输出文件 | 游戏英文物品名 | 原始 Texture2D | 来源包 |
+|---|---|---|---|
+| `blank-slate-art.png` | Blank Slate（空白石碑） | `CF_M_MAK_BlankSlateDeactivate_D` | `card_mak_assets_all.bundle` |
+| `cannon-art.png` | Cannon（火炮） | `CF_M_VAN_Cannon_D` | `card_vanessa_assets_all.bundle` |
+| `beach-ball-art.png` | Beach Ball（沙滩充气球） | `CF_M_VAN_BeachBall_D` | `card_vanessa_assets_all.bundle` |
+| `colossus-eye-art.png` | Eye of the Colossus（巨像之眼） | `CF_L_ADV_EyeOfTheColossus_D` | `card_common_assets_all.bundle` |
+
+英文名称已核对本机 `StreamingAssets/GameData.db.zip` 内 `GameData.db` 的 `cards.Data.InternalName` 原始字段，四者均为 `TCardItem`。空白石碑采用未激活的石质插画，符合 `参考素材/任务/石碑.jpg` 中灰色石碑的形态；同包另有 `CF_M_MAK_BlankSlateActive_D` 激活变体，本次没有混入或替换为该变体。
+
+**材质通道处理说明：** 这四张 `*_D` 不是可直接用于网页的透明 Sprite。其主体的完整颜色储存在 RGB，alpha 为游戏材质的辅助通道，会在普通 Canvas alpha 合成中错误挖空主体。已核对四张所属 Material 都引用 `shaders_cards_assets_all.bundle` 的 `The Bazaar/PremiumCard`（path ID `-355044802973547267`）；其 SubShader 标签明确为 `RenderType=Opaque`、`QUEUE=Geometry`，混合状态为 `srcBlend=1`、`destBlend=0`，且 `alphaToMask=0`。因此静态网页插画使用完整原生 RGB、不将该 alpha 当作透明度。
+
+用于输出的机械转换为 `Texture2D.image.convert("RGB").convert("RGBA")`，最后一阶段仅补不透明 alpha。已经逐张验证输出 RGB 与原贴图逐字节一致、输出 alpha 恒为255，并以实际 alpha 合成检查完整石碑、火炮、沙滩球和巨像主体。对比图为 `docs/example-art-alpha-fix-preview.png`；未经修正的原 RGBA 解码副本位于本地 `.local/native-art-rgba/`，不用于网页显示。
+
 ## 字体
 
 - `NotoSansSC-Bold.woff2`：游戏正文的 **Noto Sans SC / Bold，700**，来源 `fonts_cn_assets_all.bundle`，保留完整字符映射；原始 TTF 同目录保存。

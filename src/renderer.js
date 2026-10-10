@@ -51,6 +51,7 @@ export class Renderer {
           `/assets/frames/Card_PreviewFrame_${cap(q.id)}_${cap(s)}_TUI.png`,
         ]);
       for (const suffix of [
+        "Frame_Main",
         "Title",
         "Frame_Active",
         "Passive",
@@ -157,7 +158,7 @@ export class Renderer {
     ctx.textAlign = align;
     ctx.textBaseline = "alphabetic";
     ctx.lineJoin = "round";
-    ctx.lineWidth = Math.max(1.6, size * 0.09);
+    ctx.lineWidth = Math.max(1.4, size * (font === TITLE_FONT ? 0.055 : 0.09));
     ctx.strokeStyle = "#110b08";
     ctx.strokeText(text, x, y);
     ctx.fillStyle = color;
@@ -198,6 +199,12 @@ export class Renderer {
           rest = rest.slice(type.length);
           continue;
         }
+        const phrase = ["此物品", "物品", "相邻", "敌人", "一件"].find((t) => rest.startsWith(t));
+        if (phrase) {
+          runs.push({ kind: "word", text: phrase, color: CREAM });
+          rest = rest.slice(phrase.length);
+          continue;
+        }
         const ch = [...rest][0];
         runs.push({ kind: "text", text: ch, color: CREAM });
         rest = rest.slice(ch.length);
@@ -231,6 +238,23 @@ export class Renderer {
         next.icon = null;
         prev.icon = null;
       }
+      if (next?.text === "次" || next?.text === "秒") r.color = CREAM;
+    }
+    // Duration icons sit beside the seconds, after the target phrase.
+    // Counts in quest conditions keep their icon beside the keyword.
+    for (let i = 0; i < runs.length; i++) {
+      const word = runs[i];
+      if (!word.icon || !["charge", "haste", "slow", "freeze", "regen", "heal"].includes(word.id)) continue;
+      for (let j = i + 1; j < runs.length; j++) {
+        const run = runs[j];
+        if (["。", "；", "\n", "，"].includes(run.text) || run.id) break;
+        if (run.kind === "number" && (runs[j + 1]?.text === "秒" ||
+          (["regen", "heal"].includes(word.id) && runs[j + 1]?.text !== "次"))) {
+          run.icon = word.icon;
+          word.icon = null;
+          break;
+        }
+      }
     }
     return runs;
   }
@@ -254,7 +278,7 @@ export class Renderer {
             text: v.value,
             icon: i === 0 ? r.icon : null,
             color: v.color,
-            width: measure(v.value) + (i === 0 && r.icon ? size * 1.13 : 0),
+            width: measure(v.value) + (i === 0 && r.icon ? size * 1.35 : 0),
             number: true,
           });
         });
@@ -267,7 +291,7 @@ export class Renderer {
             text,
             icon: index === 0 ? r.icon : null,
             color: r.color,
-            width: measure(text) + (index === 0 && r.icon ? size * 1.13 : 0),
+            width: measure(text) + (index === 0 && r.icon ? size * 1.35 : 0),
             newline: text === "\n",
           });
       }
@@ -278,13 +302,17 @@ export class Renderer {
     const units = this.units(ctx, runs, size),
       lines = [[]];
     let used = 0;
-    for (const unit of units) {
+    for (let i = 0; i < units.length; i++) {
+      const unit = units[i];
       if (unit.newline) {
         lines.push([]);
         used = 0;
         continue;
       }
-      if (used + unit.width > width && lines.at(-1).length) {
+      const next = units[i + 1];
+      const keepSuffix = next && /^(?:秒|次|%|。|，|；|：|）)$/.test(next.text);
+      const required = unit.width + (keepSuffix ? next.width : 0);
+      if (used + required > width && lines.at(-1).length) {
         lines.push([]);
         used = 0;
       }
@@ -328,12 +356,12 @@ export class Renderer {
       let cursor = x;
       for (const unit of line) {
         if (unit.icon)
-          this.icon(ctx, unit.icon, cursor, y - size * 0.91, size * 1.04);
+          this.icon(ctx, unit.icon, cursor, y - size * 1.07, size * 1.32);
         if (unit.text)
           this.outlineText(
             ctx,
             unit.text,
-            cursor + (unit.icon ? size * 1.13 : 0),
+            cursor + (unit.icon ? size * 1.35 : 0),
             y,
             unit.color,
             size,
@@ -408,48 +436,20 @@ export class Renderer {
       cutRect(ctx, x + 2, y + 2, w - 4, h - 4, 12);
       ctx.stroke();
     }
-    this.panelBorder(ctx, quality, kind, x, y, w, h);
   }
-  panelBorder(ctx, quality, kind, x, y, w, h) {
-    const colors = {
-      bronze: ["#9e763e", "#d6ae74"],
-      silver: ["#8c98b8", "#dce4ff"],
-      gold: ["#b68a40", "#f8d280"],
-      diamond: ["#8ba5bb", "#d5ecfa"],
-      legendary: ["#b75a27", "#ffc66f"],
+  mainFrame(ctx, quality, d, l, y) {
+    const borders = {
+      bronze: [80, 46, 80, 47], silver: [80, 83, 80, 86],
+      gold: [80, 112, 80, 113], diamond: [80, 113, 80, 48],
+      legendary: [80, 97, 80, 110],
     }[quality];
-    ctx.save();
-    const trace = (inset) => {
-      const top = kind === "title" ? 17 : kind === "passive" ? 0 : 5;
-      const bottom = kind === "passive" ? 22 : kind === "title" ? 0 : 5;
-      const left = x + inset,
-        right = x + w - inset,
-        upper = y + inset,
-        lower = y + h - inset;
-      ctx.beginPath();
-      ctx.moveTo(left + top, upper);
-      ctx.lineTo(right - top, upper);
-      ctx.lineTo(right, upper + top);
-      ctx.lineTo(right, lower - bottom);
-      ctx.lineTo(right - bottom, lower);
-      ctx.lineTo(left + bottom, lower);
-      ctx.lineTo(left, lower - bottom);
-      ctx.lineTo(left, upper + top);
-      ctx.closePath();
-    };
-    ctx.lineJoin = "round";
-    trace(3);
-    ctx.strokeStyle = "#090d12";
-    ctx.lineWidth = 4.8;
-    ctx.stroke();
-    ctx.strokeStyle = colors[0];
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    trace(7);
-    ctx.strokeStyle = colors[1];
-    ctx.lineWidth = 1.3;
-    ctx.stroke();
-    ctx.restore();
+    // The active box covers the main frame's lower decorations when there is
+    // no passive section, while the upper ornaments remain beside the name.
+    const height = l.titleH + l.activeH + l.passiveH -
+      2 * (Number(l.tier.active) + Number(!!l.passiveH));
+    const vertical = Math.min(0.43, height / (borders[1] + borders[3]));
+    this.nine(ctx, `${quality}-Frame_Main`, d.x, y, d.w, height, borders,
+      [34, borders[1] * vertical, 34, borders[3] * vertical]);
   }
   layout(ctx, project, current, mode, stacked = false) {
     const tier = resolveTier(
@@ -463,7 +463,7 @@ export class Renderer {
       if (tier.cd === "") tier.cd = values.find((t) => t.cd !== "")?.cd || "";
     }
     const quality = mode === "all" ? project.initial : current;
-    const size = 22,
+    const size = 24,
       lineHeight = 32,
       descW = 440;
     const ammoValues = (
@@ -488,7 +488,7 @@ export class Renderer {
           ),
         )
       : 43;
-    const effectWidth = descW - 120 - (tier.ammoEnabled ? ammoW / 2 + 8 : 0);
+    const effectWidth = descW - 120 - (tier.ammoEnabled ? Math.max(0, ammoW / 2 - 24) : 0);
     const effectLines = tier.active
       ? tier.effects.map((_, i) =>
           this.wrap(
@@ -503,11 +503,11 @@ export class Renderer {
       ? Math.max(
           88,
           effectLines.reduce((sum, l) => sum + l.length * lineHeight + 15, 0) +
-            25,
+            21,
         ) + (tier.critEnabled ? 55 : 0)
       : 0;
-    const passiveParts = displayText(project, current, (t) => t.passive, mode),
-      passiveLines = tier.passive
+    const passiveParts = displayText(project, current, (t) => t.passiveEnabled ? t.passive : "", mode),
+      passiveLines = tier.passiveEnabled && tier.passive
         ? this.wrap(ctx, this.rich(passiveParts), descW - 44, size)
         : [];
     const quests = tier.quests.map((q, i) => {
@@ -548,7 +548,7 @@ export class Renderer {
           ),
         ),
         textW,
-        22,
+        24,
       );
       const reward = this.wrap(
         ctx,
@@ -556,9 +556,9 @@ export class Renderer {
           displayText(project, current, (t) => t.quests[i]?.reward || "", mode),
         ),
         textW,
-        16,
+        17,
       );
-      const h = Math.max(99, condition.length * 32 + reward.length * 24 + 42);
+      const h = Math.max(106, condition.length * 32 + reward.length * 24 + 42);
       const kw = KEYWORDS.find(
         (k) => k.icon && k.aliases.some((a) => q.reward.includes(a)),
       );
@@ -604,16 +604,16 @@ export class Renderer {
         ? passiveLines.length * lineHeight + 44
         : 0;
     const title = project.name || "未命名物品";
-    let titleSize = 30;
+    let titleSize = 35;
     ctx.font = `600 ${titleSize}px "${TITLE_FONT}",serif`;
-    if (ctx.measureText(title).width > descW - 112) titleSize = 24;
+    if (ctx.measureText(title).width > descW - 112) titleSize = 28;
     const titleLines = this.wrap(
       ctx,
       [{ kind: "text", text: title, color: CREAM }],
       descW - 110,
       titleSize,
     );
-    const titleH = Math.max(70, titleLines.length * (titleSize + 8) + 26);
+    const titleH = Math.max(80, titleLines.length * (titleSize + 8) + 26);
     let tagH = 30,
       tagW = 0;
     ctx.font = `700 17px "${BODY_FONT}"`;
@@ -625,18 +625,19 @@ export class Renderer {
       }
       tagW += w;
     }
+    const tooltipScale = 1.3;
     const artScale = stacked
       ? Math.min(360 / SIZES[project.size].width, 240 / 520)
-      : 1;
+      : 320 / 520;
     const cardW = SIZES[project.size].width * artScale,
       cardH = 520 * artScale,
-      descH = tagH + titleH + activeH + passiveH;
+      descH = (tagH + titleH + activeH + passiveH) * tooltipScale;
     const margin = 32;
-    const extraRight = tier.ammoEnabled ? Math.max(0, ammoW / 2 - margin) : 0;
+    const extraRight = tier.ammoEnabled ? Math.max(0, ammoW * tooltipScale / 2 - margin) : 0;
     const width =
       (stacked
-        ? Math.max(cardW, descW) + margin * 2
-        : cardW + descW + margin * 2 + 52) + extraRight;
+        ? Math.max(cardW, descW * tooltipScale) + margin * 2 + 48
+        : cardW + descW * tooltipScale + margin * 2 + 72) + extraRight;
     const height = stacked
       ? cardH + descH + margin * 2 + 60
       : Math.max(cardH + 30, descH) + margin * 2;
@@ -648,9 +649,9 @@ export class Renderer {
       scale: artScale,
     };
     const desc = {
-      x: stacked ? (width - descW) / 2 : art.x + cardW + 52,
+      x: stacked ? (width - descW * tooltipScale) / 2 + 24 : art.x + cardW + 72,
       y: stacked ? art.y + cardH + 40 : (height - descH) / 2,
-      w: descW,
+      w: descW * tooltipScale,
       h: descH,
     };
     return {
@@ -677,6 +678,7 @@ export class Renderer {
       ammoValues,
       ammoVariable,
       ammoW,
+      tooltipScale,
     };
   }
   render(
@@ -707,7 +709,8 @@ export class Renderer {
       ctx.fillStyle = "#141b1e";
       ctx.fillRect(0, 0, l.width, l.height);
     }
-    const { art: a, desc: d, tier, quality } = l;
+    const { art: a, tier, quality } = l;
+    const d = { x: 0, y: 0, w: l.desc.w / l.tooltipScale, h: l.desc.h / l.tooltipScale };
     ctx.save();
     const inset = a.scale;
     cutRect(
@@ -765,6 +768,9 @@ export class Renderer {
         "center",
       );
     });
+    ctx.save();
+    ctx.translate(l.desc.x, l.desc.y);
+    ctx.scale(l.tooltipScale, l.tooltipScale);
     let tx = d.x,
       ty = d.y;
     ctx.font = `700 17px "${BODY_FONT}",sans-serif`;
@@ -782,13 +788,15 @@ export class Renderer {
       tx += w + 5;
     }
     let y = d.y + l.tagH;
+    const frameY = y;
     this.panel(ctx, quality, "title", d.x, y, d.w, l.titleH);
+    this.mainFrame(ctx, quality, d, l, frameY);
     l.titleLines.forEach((line, i) =>
       this.outlineText(
         ctx,
         line.map((u) => u.text).join(""),
         d.x + 24,
-        y + 25 + l.titleSize + i * (l.titleSize + 8),
+        y + (l.titleH - l.titleLines.length * (l.titleSize + 8)) / 2 + l.titleSize + i * (l.titleSize + 8),
         CREAM,
         l.titleSize,
         "left",
@@ -797,7 +805,7 @@ export class Renderer {
     );
     const hero = this.images.get(`hero-${project.hero}`);
     if (hero) {
-      const side = 51,
+      const side = 55,
         ratio = Math.min(side / hero.width, side / hero.height);
       ctx.drawImage(
         hero,
@@ -835,7 +843,7 @@ export class Renderer {
         const cy = y + l.activeH - 40;
         this.image(ctx, "critDivider", d.x + 40, cy - 12, d.w - 65, 2);
         const runs = [
-            { kind: "text", text: "暴击率：", color: CREAM },
+            { kind: "text", text: "暴击率：", color: "#f34137" },
             ...this.rich([
               ...displayText(
                 project,
@@ -849,8 +857,9 @@ export class Renderer {
               icon: i === 0 ? "crit" : r.icon,
             })),
           ],
-          lines = this.wrap(ctx, runs, d.w - 80, 22);
-        this.paintLines(ctx, lines, d.x + 95, cy + 17, 22, 31);
+          lines = this.wrap(ctx, runs, d.w - 80, 24);
+        const width = Math.max(0, ...lines.map((line) => line.reduce((sum, u) => sum + u.width, 0)));
+        this.paintLines(ctx, lines, d.x + (d.w - width) / 2, cy + 17, 24, 32);
       }
       if (tier.cd !== "") {
         const clockW = 118,
@@ -931,11 +940,19 @@ export class Renderer {
     }
     if (l.passiveH) {
       this.panel(ctx, quality, "passive", d.x, y, d.w, l.passiveH);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(d.x, y, d.w, l.passiveH);
+      ctx.clip();
+      this.mainFrame(ctx, quality, d, l, frameY);
+      ctx.restore();
       this.paintLines(
         ctx,
         l.passiveLines,
         d.x + 23,
-        y + 33,
+        y + (l.quests.length
+          ? l.size + 12
+          : (l.passiveH - l.passiveLines.length * l.lineHeight) / 2 + l.size + 4),
         l.size,
         l.lineHeight,
       );
@@ -982,13 +999,13 @@ export class Renderer {
         );
         const textH = row.condition.length * 32 + row.reward.length * 24;
         const textY = qy + 8 + (row.h - 8 - textH) / 2 + 23;
-        this.paintLines(ctx, row.condition, d.x + 23, textY, 22, 32);
+        this.paintLines(ctx, row.condition, d.x + 23, textY, 24, 32);
         this.paintLines(
           ctx,
           row.reward,
           d.x + 23,
           textY + row.condition.length * 32 - 4,
-          16,
+          17,
           24,
         );
         const iconX = d.x + d.w - 43,
@@ -1027,6 +1044,7 @@ export class Renderer {
         qy += row.h;
       }
     }
+    ctx.restore();
     this.lastLayout = l;
     return l;
   }

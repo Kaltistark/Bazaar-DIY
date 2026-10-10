@@ -1,7 +1,6 @@
 import { QUALITIES, SIZES, HEROES, TYPES, KEYWORDS } from "./data.js";
 import {
   createProject,
-  defaultTier,
   available,
   resolveTier,
   editTier,
@@ -18,14 +17,14 @@ import {
   setTextValue,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
-import { fieldCompletion, COMPLETION_EXAMPLES } from "./completion.js";
+import { EXAMPLES, exampleProject } from "./examples.js";
+import { fieldCompletion } from "./completion.js";
 const $ = (id) => document.getElementById(id),
   renderer = new Renderer();
 let project = createProject(),
   current = "bronze",
   saveTimer,
   paintPending = false,
-  lastEditable = null,
   focusSnapshot = null,
   pendingStructure = null,
   toastTimer;
@@ -143,15 +142,6 @@ document.addEventListener("pointerdown", (e) => {
 window.addEventListener("resize", () => {
   if (heroOpen) closeHeroPicker();
 });
-for (const [input, result] of COMPLETION_EXAMPLES) {
-  const row = document.createElement("div"),
-    code = document.createElement("code"),
-    text = document.createElement("span");
-  code.textContent = input;
-  text.textContent = result;
-  row.append(code, text);
-  $("completion-examples").append(row);
-}
 function attachCompletion(ta, wrap) {
   const ghost = document.createElement("div");
   ghost.className = "ghost-suggestion";
@@ -172,9 +162,6 @@ function attachCompletion(ta, wrap) {
     ghost.hidden = !result;
     if (result) {
       ghost.replaceChildren(document.createTextNode(result.preview));
-      const hint = document.createElement("small");
-      hint.textContent = "Tab 接受";
-      ghost.append(hint);
     }
   }
   ta.addEventListener("focus", update);
@@ -203,7 +190,6 @@ function attachCompletion(ta, wrap) {
     const caret = oldEnd + ta.value.length - oldLength;
     ta.setSelectionRange(caret, caret);
     ta.dispatchEvent(new Event("input", { bubbles: true }));
-    toast("已接受效果补全");
   });
 }
 for (const type of TYPES) {
@@ -219,35 +205,6 @@ for (const type of TYPES) {
     changed();
   });
   $("tag-grid").append(b);
-}
-for (const kw of KEYWORDS) {
-  const b = document.createElement("button");
-  b.className = "keyword-chip";
-  b.style.setProperty("--keyword-color", kw.color);
-  b.title = `插入${kw.name}`;
-  if (kw.icon) {
-    const img = new Image();
-    img.src = `./assets/icons/${kw.icon}.png`;
-    img.alt = "";
-    img.onerror = () => img.remove();
-    b.append(img);
-  }
-  b.append(document.createTextNode(kw.name));
-  b.addEventListener("pointerdown", (e) => e.preventDefault());
-  b.addEventListener("click", () => {
-    const target = lastEditable?.isConnected
-      ? lastEditable
-      : document.querySelector(".effect-text") || $("passive");
-    target.focus();
-    target.setRangeText(
-      kw.name,
-      target.selectionStart,
-      target.selectionEnd,
-      "end",
-    );
-    target.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-  $("keyword-chips").append(b);
 }
 function syncTags() {
   const chosen = [SIZES[project.size].name, ...project.types];
@@ -275,7 +232,10 @@ function syncForms() {
   $("active-enabled").checked = t.active;
   $("active-editor").hidden = !t.active;
   $("cooldown").value = t.cd;
+  syncCooldownSlider(t.cd);
   $("passive").value = t.passive;
+  $("passive-enabled").checked = t.passiveEnabled;
+  $("passive-wrap").hidden = !t.passiveEnabled;
   $("ammo-enabled").checked = t.ammoEnabled;
   $("ammo").value = t.ammo;
   $("ammo").disabled = !t.ammoEnabled;
@@ -312,7 +272,6 @@ function buildEffectFields(t) {
       i === 0 ? "例如：奶60 / 充左 / 加速右2 / 火=伤" : "输入另一条效果…";
     ta.setAttribute("aria-label", `主动效果 ${i + 1}`);
     ta.addEventListener("focus", () => {
-      lastEditable = ta;
       focusSnapshot = clone(project);
     });
     ta.addEventListener("input", () => {
@@ -395,8 +354,7 @@ function buildQuestFields(t) {
       ta.placeholder = placeholder;
       ta.setAttribute("aria-label", `任务 ${i + 1} ${label}`);
       ta.addEventListener("focus", () => {
-        lastEditable = ta;
-        focusSnapshot = clone(project);
+          focusSnapshot = clone(project);
       });
       ta.addEventListener("input", () => {
         editText(`quest-${key}`, i, ta.value);
@@ -649,6 +607,22 @@ $("active-enabled").addEventListener("change", () => {
     structure: true,
   });
 });
+function syncCooldownSlider(value) {
+  const slider = $("cooldown-slider");
+  slider.max = String(Math.max(30, Math.ceil(Number(value) || 0)));
+  slider.value = value === "" ? "0" : value;
+}
+$("cooldown-slider").addEventListener("input", () => {
+  const value = Number($("cooldown-slider").value).toFixed(1);
+  $("cooldown").value = value;
+  mutate((t) => (t.cd = value));
+});
+$("passive-enabled").addEventListener("change", () => {
+  const enabled = $("passive-enabled").checked;
+  mutate((t) => (t.passiveEnabled = enabled), {
+    warn: true, refresh: true, structure: true,
+  });
+});
 $("cooldown").addEventListener("input", () => {
   let value = $("cooldown").value.replace(/[^\d.]/g, "");
   const parts = value.split(".");
@@ -656,6 +630,7 @@ $("cooldown").addEventListener("input", () => {
     (parts.length > 1 ? parts[0] || "0" : parts[0]).slice(0, 3) +
     (parts.length > 1 ? "." + parts[1].slice(0, 1) : "");
   $("cooldown").value = value;
+  syncCooldownSlider(value);
   mutate((t) => (t.cd = value));
 });
 $("cooldown").addEventListener("blur", () => {
@@ -686,7 +661,6 @@ $("add-quest").addEventListener("click", () => {
 });
 $("passive").maxLength = 12000;
 $("passive").addEventListener("focus", () => {
-  lastEditable = $("passive");
   focusSnapshot = clone(project);
 });
 $("passive").addEventListener("input", () => {
@@ -886,31 +860,17 @@ function cropKeys(e) {
 }
 canvas.addEventListener("keydown", cropKeys);
 artInteraction.addEventListener("keydown", cropKeys);
-async function loadExample() {
+async function loadExample(kind) {
   try {
-    const blob = await (await fetch("./assets/demo-art.jpg")).blob();
-    await upload(new File([blob], "示例.jpg", { type: "image/jpeg" }));
-    project = createProject();
-    project.art = await readDataURL(blob);
-    project.name = "海底热泉";
-    project.hero = "vanessa";
-    project.types = ["水系"];
-    project.tiers.bronze = {
-      ...defaultTier(),
-      edited: true,
-      cd: "7.0",
-      effects: ["造成3灼烧。", "多重触发：3。"],
-    };
-    [6, 9, 12].forEach((n, i) => {
-      project.tiers[QUALITIES[i + 1].id] = {
-        ...defaultTier(),
-        edited: true,
-        cd: "7.0",
-        effects: [`造成${n}灼烧。`, "多重触发：3。"],
-      };
-    });
-    current = "bronze";
-    await renderer.setArt(project.art);
+    const spec = EXAMPLES[kind];
+    const path = spec.art === "spring" ? "./assets/demo-art.jpg" : `./assets/examples/${spec.art}-art.png`;
+    const response = await fetch(path);
+    if (!response.ok) throw new Error("无法读取示例素材");
+    const art = await readDataURL(await response.blob());
+    project = exampleProject(kind);
+    project.art = art;
+    current = project.initial;
+    await renderer.setArt(art);
     syncForms();
     changed();
     toast("已载入示例，可直接编辑");
@@ -918,12 +878,19 @@ async function loadExample() {
     toast("示例未能加载：" + e.message);
   }
 }
-$("load-example").addEventListener("click", () => {
+let pendingExample = "spring";
+function confirmExample(kind) {
   if (project.name || project.art) {
-    if (!window.confirm("载入示例会替换当前作品。可以先保存作品文件备份。"))
-      return;
+    pendingExample = kind;
+    $("example-dialog").showModal();
+    return;
   }
-  loadExample();
+  loadExample(kind);
+}
+$("load-example").addEventListener("click", () => confirmExample($("example-choice").value));
+$("example-confirm").addEventListener("click", () => {
+  $("example-dialog").close();
+  loadExample(pendingExample);
 });
 function showExport() {
   syncCompatibility();

@@ -19,7 +19,7 @@ export const HEROES = [
   ["stelle", "斯黛拉"],
   ["jules", "朱尔斯"],
   ["karnok", "卡诺克"],
-  ["dragons", "巨龙"],
+  ["dragons", "双龙"],
 ];
 export const TYPES = [
   "武器",

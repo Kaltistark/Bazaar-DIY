@@ -37,6 +37,7 @@ export function defaultTier() {
     cd: "4.0",
     effects: [""],
     passive: "",
+    passiveEnabled: false,
     quests: [],
     ammoEnabled: false,
     ammo: 1,
@@ -66,7 +67,7 @@ export function available(project) {
 }
 export function resolveTier(project, id) {
   const own = project.tiers[id];
-  if (own?.edited) return { ...clone(own), quests: clone(own.quests || []) };
+  if (own?.edited) return normalizeTier(clone(own));
   const candidates = available(project).filter(
       (q) => project.tiers[q.id]?.edited,
     ),
@@ -76,8 +77,13 @@ export function resolveTier(project, id) {
     .reverse();
   const source = lower[0] || candidates[0];
   const resolved = clone(source ? project.tiers[source.id] : project.seed);
-  resolved.quests ??= [];
-  return resolved;
+  return normalizeTier(resolved);
+}
+function normalizeTier(tier) {
+  tier.quests ??= [];
+  // Older saved works used nonempty text to enable the passive section.
+  tier.passiveEnabled ??= !!tier.passive;
+  return tier;
 }
 export function editTier(project, id, change) {
   const value = resolveTier(project, id);
@@ -135,7 +141,8 @@ export function structuralSignature(tier) {
   return JSON.stringify([
     tier.active,
     tier.active ? tier.effects.map(numericSignature) : [],
-    numericSignature(tier.passive),
+    tier.passiveEnabled ?? !!tier.passive,
+    (tier.passiveEnabled ?? !!tier.passive) ? numericSignature(tier.passive) : "",
     (tier.quests || []).map((q) => [
       numericSignature(q.condition),
       numericSignature(q.reward),
@@ -214,10 +221,10 @@ export function extractStats(tier) {
     for (const effect of tier.effects) {
       if (
         !kw.aliases.some((a) => effect.includes(a)) ||
-        !/(?:等同于|等于)此物品/.test(effect)
+        !/(?:等同于|等于|等量于)此物品/.test(effect)
       )
         continue;
-      const right = effect.split(/(?:等同于|等于)此物品(?:的)?/)[1];
+      const right = effect.split(/(?:等同于|等于|等量于)此物品(?:的)?/)[1];
       const source = KEYWORDS.find(
         (k) =>
           BADGE_ORDER.includes(k.id) &&
@@ -275,10 +282,11 @@ export function validateProject(value) {
       t.effects.some((s) => typeof s !== "string" || s.length > 4000) ||
       typeof t.passive !== "string" ||
       t.passive.length > 12000 ||
+      (t.passiveEnabled != null && typeof t.passiveEnabled !== "boolean") ||
       !/^(?:\d{1,3}(?:\.\d)?)?$/.test(String(t.cd))
     )
       throw new Error("效果内容或冷却时间无效");
-    t.quests ??= [];
+    normalizeTier(t);
     if (
       !Array.isArray(t.quests) ||
       t.quests.length > 20 ||

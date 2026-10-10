@@ -13,11 +13,29 @@ test("关键词及图标换行时保持在一起，避免充能被拆成两行",
   const lines = r.wrap(ctx, runs, 290, 22);
   const charge = lines.flat().filter((u) => u.icon === "charge");
   assert.equal(charge.length, 1);
-  assert.equal(charge[0].text, "充能");
+  assert.equal(charge[0].text, "1");
+  assert.ok(lines.flat().some((u) => u.text === "充能"));
   assert.equal(
     lines.flat().some((u) => u.text === "充" || u.text === "能"),
     false,
   );
+});
+test("任务次数为普通文字颜色，时长图标位于目标后方", () => {
+  const r = new Renderer();
+  const quest = r.rich([{ type: "text", text: "触发剧毒" }, { type: "number", text: "30" }, { type: "text", text: "次" }]);
+  assert.equal(quest.find((run) => run.kind === "number").color, "#ffe4b3");
+  const timed = r.rich([{ type: "text", text: "减速" }, { type: "number", text: "1" }, { type: "text", text: "件物品" }, { type: "number", text: "1" }, { type: "text", text: "秒" }]);
+  assert.equal(timed[0].icon, null);
+  assert.equal(timed.at(-2).icon, "slow");
+});
+test("窄行仍将时长图标、数字与秒放在同一行", () => {
+  const r = new Renderer();
+  const ctx = { measureText: (text) => ({ width: [...text].length * 22 }) };
+  const runs = r.rich([{ type: "text", text: "加速右侧物品" }, { type: "number", text: "2" }, { type: "text", text: "秒" }]);
+  const lines = r.wrap(ctx, runs, 170, 22);
+  const timing = lines.find((line) => line.some((u) => u.icon === "haste"));
+  assert.ok(timing.some((u) => u.text === "2"));
+  assert.ok(timing.some((u) => u.text === "秒"));
 });
 test("黄金品质条件使用普通文字，黄金货币使用金币图标", () => {
   const r = new Renderer();

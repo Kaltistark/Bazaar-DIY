@@ -1,0 +1,82 @@
+[
+  {
+    "spriteName": "Tooltip_Diamond_Frame_Main_TUI",
+    "path": "/assets/ui/Tooltip_Diamond_Frame_Main_TUI.png",
+    "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+    "sourcePathID": -7507070214323202150,
+    "width": 818,
+    "height": 511,
+    "sliceBorderLTRB": [
+      80.0,
+      113.0,
+      80.0,
+      48.0
+    ],
+    "alphaHandling": "Native UI Sprite alpha preserved; do not apply opaque illustration conversion",
+    "fileWasAlreadyPresent": false
+  },
+  {
+    "spriteName": "Tooltip_Legendary_Frame_Main_TUI",
+    "path": "/assets/ui/Tooltip_Legendary_Frame_Main_TUI.png",
+    "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+    "sourcePathID": -3670748388795469821,
+    "width": 820,
+    "height": 511,
+    "sliceBorderLTRB": [
+      80.0,
+      97.0,
+      80.0,
+      110.0
+    ],
+    "alphaHandling": "Native UI Sprite alpha preserved; do not apply opaque illustration conversion",
+    "fileWasAlreadyPresent": true
+  },
+  {
+    "spriteName": "Tooltip_Bronze_Frame_Main_TUI",
+    "path": "/assets/ui/Tooltip_Bronze_Frame_Main_TUI.png",
+    "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+    "sourcePathID": -2360310498721547201,
+    "width": 820,
+    "height": 512,
+    "sliceBorderLTRB": [
+      80.0,
+      46.0,
+      80.0,
+      47.0
+    ],
+    "alphaHandling": "Native UI Sprite alpha preserved; do not apply opaque illustration conversion",
+    "fileWasAlreadyPresent": false
+  },
+  {
+    "spriteName": "Tooltip_Gold_Frame_Main_TUI",
+    "path": "/assets/ui/Tooltip_Gold_Frame_Main_TUI.png",
+    "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+    "sourcePathID": 868146610047790335,
+    "width": 818,
+    "height": 511,
+    "sliceBorderLTRB": [
+      80.0,
+      112.0,
+      80.0,
+      113.0
+    ],
+    "alphaHandling": "Native UI Sprite alpha preserved; do not apply opaque illustration conversion",
+    "fileWasAlreadyPresent": false
+  },
+  {
+    "spriteName": "Tooltip_Silver_Frame_Main_TUI",
+    "path": "/assets/ui/Tooltip_Silver_Frame_Main_TUI.png",
+    "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+    "sourcePathID": 948061298965381554,
+    "width": 818,
+    "height": 511,
+    "sliceBorderLTRB": [
+      80.0,
+      83.0,
+      80.0,
+      86.0
+    ],
+    "alphaHandling": "Native UI Sprite alpha preserved; do not apply opaque illustration conversion",
+    "fileWasAlreadyPresent": false
+  }
+]

@@ -265,7 +265,9 @@ label > select {
   gap: 6px;
 }
 .tier-button {
-  padding: 6px 10px;
+  font-weight: 600;
+  padding: 10px 16px;
+  min-height: 40px;
   border: 1px solid var(--line);
   border-radius: 5px;
   background: transparent;
@@ -506,33 +508,6 @@ h2 {
   color: var(--gold);
   background: #2b302d;
 }
-.completion-guide {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  margin: 12px 0 20px;
-  padding: 10px 12px;
-}
-.completion-guide summary {
-  display: flex;
-  font-size: 12px;
-  color: var(--gold);
-}
-#completion-examples > div {
-  display: grid;
-  grid-template-columns: 135px 1fr;
-  gap: 12px;
-  font-size: 11px;
-  padding: 8px 0;
-  border-top: 1px solid var(--line);
-}
-#completion-examples code {
-  color: var(--gold);
-  white-space: normal;
-}
-#completion-examples span {
-  color: #a4b0b4;
-  line-height: 1.65;
-}
 select {
   padding-right: 20px;
 }
@@ -649,10 +624,17 @@ details[open] > summary > .chevron {
   outline: 2px solid var(--gold);
 }
 .cd-row {
-  grid-template-columns: 120px 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
+.cd-controls { display: flex; align-items: center; gap: 14px; width: min(100%, 300px); }
+#cooldown-slider { flex: 1; min-width: 60px; accent-color: var(--gold); }
+.cd-input { position: relative; width: 88px; flex-shrink: 0; }
+.cd-input input { text-align: center; padding-right: 28px; font-variant-numeric: tabular-nums; }
+.cd-input span { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 12px; pointer-events: none; }
 .help {
   font-size: 10px;
   color: var(--muted);
@@ -783,35 +765,6 @@ kbd {
 .suffix-input span {
   padding-right: 12px;
   color: var(--muted);
-}
-.keyword-palette > .section-label {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 20px;
-}
-#keyword-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-.keyword-chip {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: #141e22;
-  padding: 5px 7px;
-  font-size: 10px;
-  color: var(--keyword-color);
-}
-.keyword-chip img {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-}
-.keyword-chip:hover {
-  border-color: var(--keyword-color);
 }
 .notice {
   color: #dba65f;
@@ -982,9 +935,8 @@ dialog::backdrop {
   .editor-scroll > .name-field,
   .editor-scroll > .section-label,
   .editor-scroll > #active-editor,
-  .editor-scroll > #passive,
+  .editor-scroll > #passive-wrap,
   .editor-scroll > .optional-options,
-  .editor-scroll > .keyword-palette,
   .editor-scroll > .notice {
     grid-column: 1/-1;
   }
@@ -1100,10 +1052,6 @@ dialog::backdrop {
     width: 25px;
     height: 29px;
   }
-  #completion-examples > div {
-    grid-template-columns: 105px 1fr;
-    gap: 8px;
-  }
   .tag-picker {
     margin: 18px 0;
   }
@@ -1133,3 +1081,8 @@ dialog::backdrop {
     transition: none !important;
   }
 }
+
+@media (max-width: 640px) { .tier-button { padding: 10px 12px; font-size: 13px; } .panel-top { flex-wrap: wrap; gap: 12px; } .art-controls { flex-wrap: wrap; } }
+
+.art-controls { flex-wrap: wrap; }
+#example-choice { width: 140px; min-width: 100px; padding: 7px 22px 7px 10px; font-size: 12px; }

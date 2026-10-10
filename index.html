@@ -66,7 +66,7 @@
               step="0.01"
               value="1"
             /><output id="zoom-value">100%</output></label
-          ><button id="load-example" class="button text">试用示例</button>
+          ><label class="sr-only" for="example-choice">素材示例</label><select id="example-choice" aria-label="素材示例"><option value="stone">空白石碑</option><option value="spring">海底热泉</option><option value="cannon">火炮</option><option value="ball">沙滩充气球</option><option value="eye">巨像之眼</option></select><button id="load-example" class="button text">载入示例</button>
         </div>
         <div class="preview-note">
           <span>✦</span> 数值随品质切换。全等级图片使用初始品质外观。
@@ -139,16 +139,6 @@
               placeholder="给它起个名字…"
               autocomplete="off"
           /></label>
-          <div class="structure-mode">
-            <label class="check-label"
-              ><input
-                id="independent-structure"
-                type="checkbox"
-              />独立修改当前品质的效果结构</label
-            ><span class="muted"
-              >默认全品质同步增删与句式，数值仍独立编辑。</span
-            >
-          </div>
           <div class="section-label">
             <span>主动效果</span
             ><label class="switch-label"
@@ -160,36 +150,20 @@
             ></label>
           </div>
           <div id="active-editor">
-            <div class="field-row cd-row">
-              <label
-                >冷却时间 <span class="muted">秒</span
-                ><input
-                  id="cooldown"
-                  type="text"
-                  inputmode="decimal"
-                  value="4.0"
-                  placeholder="例如 4.0"
-                  maxlength="6" /></label
-              ><span class="help">最多一位小数<br />空白时隐藏徽章</span>
+            <div class="cd-row">
+              <label for="cooldown">冷却时间</label>
+              <div class="cd-controls">
+                <input id="cooldown-slider" aria-label="冷却时间滑块" type="range" min="0" max="30" step="0.1" value="4" />
+                <div class="cd-input"><input id="cooldown" aria-label="冷却时间" type="text" inputmode="decimal" value="4.0" maxlength="6" /><span>秒</span></div>
+              </div>
             </div>
             <div id="effect-list"></div>
             <button id="add-effect" class="button add">＋ 添加效果</button>
-            <p class="field-help">
-              输入 <kbd>奶60</kbd>、<kbd>充左</kbd> 或 <kbd>加速右2</kbd>，按
-              <kbd>Tab</kbd> 接受补全。省略时长时默认 1 秒。
-            </p>
-            <details class="completion-guide">
-              <summary>Tab 补全写法 <span class="chevron">⌄</span></summary>
-              <p class="field-help">
-                支持数字前后两种顺序、左/右/邻/自/全/敌、物品类型、触发句式、百分比和等同于。主动、被动及任务奖励均可补全；多行时仅补全光标所在行。
-              </p>
-              <div id="completion-examples"></div>
-            </details>
           </div>
           <div class="section-label">
-            <span>被动效果</span><span class="muted">可选</span>
+            <span>被动效果</span><label class="switch-label"><input id="passive-enabled" aria-label="启用被动效果" type="checkbox" /><span class="switch"></span></label>
           </div>
-          <div id="passive-wrap">
+          <div id="passive-wrap" hidden>
             <textarea
               id="passive"
               rows="3"
@@ -251,13 +225,19 @@
               </div>
             </details>
           </div>
-          <div class="keyword-palette">
-            <span class="section-label">快捷关键词</span>
-            <div id="keyword-chips"></div>
-          </div>
           <p id="compatibility-note" class="notice" hidden>
             各品质效果结构不同，目前只能导出当前品质图片。
           </p>
+          <div class="structure-mode">
+            <label class="check-label"
+              ><input
+                id="independent-structure"
+                type="checkbox"
+              />独立修改当前品质的效果结构</label
+            ><span class="muted"
+              >默认全品质同步增删与句式，数值仍独立编辑。</span
+            >
+          </div>
         </div>
         <div class="editor-footer">
           <span id="editing-tier">正在编辑 · 青铜</span>
@@ -286,6 +266,11 @@
       accept="application/json,.json"
       hidden
     />
+    <dialog id="example-dialog">
+      <div class="dialog-heading"><h2>载入示例</h2><button class="icon-button dialog-close" aria-label="关闭">×</button></div>
+      <p>示例会替换当前作品。请先保存作品文件备份。</p>
+      <div class="footer-actions"><button class="button dialog-close">取消</button><button id="example-confirm" class="button primary">载入示例</button></div>
+    </dialog>
     <dialog id="export-dialog">
       <div class="dialog-heading">
         <h2>保存你的作品</h2>

@@ -17,6 +17,22 @@ import {
   questComplete,
   clone,
 } from "../src/model.js";
+test("被动默认关闭，旧作品保留显示，开关同步且不丢失文字", () => {
+  const p = createProject();
+  assert.equal(resolveTier(p, "bronze").passiveEnabled, false);
+  p.seed.passive = "充能此物品1秒。";
+  delete p.seed.passiveEnabled;
+  validateProject(p);
+  assert.equal(resolveTier(p, "bronze").passiveEnabled, true);
+  synchronizeStructure(p, "bronze", (t) => { t.passiveEnabled = false; });
+  for (const q of available(p)) {
+    assert.equal(resolveTier(p, q.id).passiveEnabled, false);
+    assert.equal(resolveTier(p, q.id).passive, "充能此物品1秒。");
+  }
+  assert.equal(compatible(p), true);
+  editTier(p, "silver", (t) => { t.passiveEnabled = true; });
+  assert.equal(compatible(p), false);
+});
 test("起始品质限制及传说单品质", () => {
   const p = createProject();
   p.initial = "silver";
