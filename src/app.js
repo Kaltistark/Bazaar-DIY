@@ -6,7 +6,6 @@ import {
   resolveTier,
   editTier,
   compatible,
-  suggest,
   clone,
   validateProject,
   numericSignature,
@@ -19,6 +18,7 @@ import {
   setTextValue,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
+import { fieldCompletion, COMPLETION_EXAMPLES } from "./completion.js";
 const $ = (id) => document.getElementById(id),
   renderer = new Renderer();
 let project = createProject(),
@@ -61,6 +61,151 @@ QUALITIES.forEach((q) => {
   $("tier-switch").append(b);
 });
 HEROES.forEach(([id, label]) => $("hero").append(option(id, label)));
+let heroOpen = false;
+function syncHeroPicker() {
+  const [id, name] = HEROES.find(([id]) => id === project.hero) || HEROES[0];
+  $("hero-name").textContent = name;
+  $("hero-portrait").src = `./assets/hero-portraits/${id}.png`;
+  for (const button of $("hero-list").children)
+    button.setAttribute("aria-selected", String(button.dataset.hero === id));
+}
+function closeHeroPicker(focus = false) {
+  heroOpen = false;
+  $("hero-list").hidden = true;
+  $("hero-toggle").setAttribute("aria-expanded", "false");
+  if (focus) $("hero-toggle").focus();
+}
+function openHeroPicker() {
+  heroOpen = true;
+  $("hero-list").hidden = false;
+  const box = $("hero-toggle").getBoundingClientRect();
+  const below = window.innerHeight - box.bottom - 8,
+    above = box.top - 8;
+  const upward = below < 180 && above > below;
+  $("hero-list").style.top = upward ? "auto" : "calc(100% + 5px)";
+  $("hero-list").style.bottom = upward ? "calc(100% + 5px)" : "auto";
+  $("hero-list").style.maxHeight =
+    `${Math.max(100, Math.min(405, (upward ? above : below) - 8))}px`;
+  $("hero-toggle").setAttribute("aria-expanded", "true");
+  $("hero-list").querySelector('[aria-selected="true"]')?.focus();
+}
+for (const [id, name] of HEROES) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "hero-option";
+  b.dataset.hero = id;
+  b.setAttribute("role", "option");
+  b.setAttribute("aria-label", name);
+  const label = document.createElement("span");
+  label.textContent = name;
+  const image = new Image();
+  image.src = `./assets/hero-portraits/${id}.png`;
+  image.alt = "";
+  b.append(label, image);
+  b.addEventListener("click", () => {
+    $("hero").value = id;
+    $("hero").dispatchEvent(new Event("change"));
+    closeHeroPicker(true);
+  });
+  $("hero-list").append(b);
+}
+$("hero-toggle").addEventListener("click", () =>
+  heroOpen ? closeHeroPicker() : openHeroPicker(),
+);
+$("hero-toggle").addEventListener("keydown", (e) => {
+  if (["ArrowDown", "ArrowUp"].includes(e.key)) {
+    e.preventDefault();
+    openHeroPicker();
+  }
+});
+$("hero-list").addEventListener("keydown", (e) => {
+  const options = [...$("hero-list").children],
+    i = options.indexOf(document.activeElement);
+  if (e.key === "Escape") {
+    e.preventDefault();
+    closeHeroPicker(true);
+  } else if (e.key === "Tab") closeHeroPicker();
+  else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) {
+    e.preventDefault();
+    const next =
+      e.key === "Home"
+        ? 0
+        : e.key === "End"
+          ? options.length - 1
+          : (i + (e.key === "ArrowDown" ? 1 : -1) + options.length) %
+            options.length;
+    options[next].focus();
+  }
+});
+document.addEventListener("pointerdown", (e) => {
+  if (heroOpen && !e.target.closest(".hero-picker")) closeHeroPicker();
+});
+window.addEventListener("resize", () => {
+  if (heroOpen) closeHeroPicker();
+});
+for (const [input, result] of COMPLETION_EXAMPLES) {
+  const row = document.createElement("div"),
+    code = document.createElement("code"),
+    text = document.createElement("span");
+  code.textContent = input;
+  text.textContent = result;
+  row.append(code, text);
+  $("completion-examples").append(row);
+}
+function attachCompletion(ta, wrap) {
+  const ghost = document.createElement("div");
+  ghost.className = "ghost-suggestion";
+  ghost.hidden = true;
+  ghost.setAttribute("aria-live", "polite");
+  wrap.append(ghost);
+  let composing = false;
+  const completion = () =>
+    fieldCompletion(
+      ta.value,
+      resolveTier(project, current),
+      ta.selectionStart,
+      ta.selectionEnd,
+    );
+  function update() {
+    const result =
+      !composing && document.activeElement === ta ? completion() : null;
+    ghost.hidden = !result;
+    if (result) {
+      ghost.replaceChildren(document.createTextNode(result.preview));
+      const hint = document.createElement("small");
+      hint.textContent = "Tab 接受";
+      ghost.append(hint);
+    }
+  }
+  ta.addEventListener("focus", update);
+  ta.addEventListener("input", update);
+  ta.addEventListener("click", update);
+  ta.addEventListener("keyup", update);
+  ta.addEventListener("blur", () => {
+    ghost.hidden = true;
+  });
+  ta.addEventListener("compositionstart", () => {
+    composing = true;
+    update();
+  });
+  ta.addEventListener("compositionend", () => {
+    composing = false;
+    update();
+  });
+  ta.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || e.shiftKey || e.isComposing || composing) return;
+    const result = completion();
+    if (!result) return;
+    e.preventDefault();
+    const oldEnd = ta.selectionEnd,
+      oldLength = ta.value.length;
+    ta.value = result.text;
+    const caret = oldEnd + ta.value.length - oldLength;
+    ta.setSelectionRange(caret, caret);
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+    toast("已接受效果补全");
+  });
+}
 for (const type of TYPES) {
   const b = document.createElement("button");
   b.className = "tag";
@@ -124,6 +269,7 @@ function syncForms() {
   $("initial-tier").value = project.initial;
   $("item-size").value = project.size;
   $("hero").value = project.hero;
+  syncHeroPicker();
   $("item-name").value = project.name;
   $("independent-structure").checked = !!project.independentStructure;
   $("active-enabled").checked = t.active;
@@ -162,48 +308,21 @@ function buildEffectFields(t) {
     ta.rows = 2;
     ta.maxLength = 4000;
     ta.value = value;
-    ta.placeholder = i === 0 ? "例如：60伤 / 60火 / 火=伤" : "输入另一条效果…";
+    ta.placeholder =
+      i === 0 ? "例如：奶60 / 充左 / 加速右2 / 火=伤" : "输入另一条效果…";
     ta.setAttribute("aria-label", `主动效果 ${i + 1}`);
-    const ghost = document.createElement("div");
-    ghost.className = "ghost-suggestion";
-    ghost.hidden = true;
     ta.addEventListener("focus", () => {
       lastEditable = ta;
       focusSnapshot = clone(project);
-      updateGhost();
     });
     ta.addEventListener("input", () => {
       editText("effects", i, ta.value);
-      updateGhost();
       changed();
     });
     ta.addEventListener("blur", () => {
-      ghost.hidden = true;
       checkStructure(focusSnapshot);
       focusSnapshot = null;
     });
-    ta.addEventListener("keydown", (e) => {
-      if (e.key === "Tab" && !e.shiftKey) {
-        const completion = suggest(ta.value, resolveTier(project, current));
-        if (completion) {
-          e.preventDefault();
-          ta.value = completion;
-          ta.dispatchEvent(new Event("input", { bubbles: true }));
-          ta.setSelectionRange(ta.value.length, ta.value.length);
-          toast("已接受效果补全");
-        }
-      }
-    });
-    function updateGhost() {
-      const completion = suggest(ta.value, resolveTier(project, current));
-      ghost.hidden = !completion;
-      if (completion) {
-        ghost.replaceChildren(document.createTextNode(completion));
-        const hint = document.createElement("small");
-        hint.textContent = "Tab 接受";
-        ghost.append(hint);
-      }
-    }
     const remove = document.createElement("button");
     remove.className = "icon-button effect-remove";
     remove.textContent = "×";
@@ -217,7 +336,8 @@ function buildEffectFields(t) {
         { warn: true, refresh: true, structure: true },
       ),
     );
-    wrap.append(ta, ghost);
+    wrap.append(ta);
+    attachCompletion(ta, wrap);
     row.append(n, wrap, remove);
     $("effect-list").append(row);
   });
@@ -287,7 +407,8 @@ function buildQuestFields(t) {
         checkStructure(focusSnapshot);
         focusSnapshot = null;
       });
-      labelFor(label, ta);
+      const textLabel = labelFor(label, ta);
+      if (key === "reward") attachCompletion(ta, textLabel);
     }
     const row = document.createElement("div");
     row.className = "field-row two";
@@ -509,6 +630,7 @@ $("item-size").addEventListener("change", () => {
 });
 $("hero").addEventListener("change", () => {
   project.hero = $("hero").value;
+  syncHeroPicker();
   changed();
 });
 $("item-name").addEventListener("input", () => {
@@ -575,6 +697,7 @@ $("passive").addEventListener("blur", () => {
   checkStructure(focusSnapshot);
   focusSnapshot = null;
 });
+attachCompletion($("passive"), $("passive-wrap"));
 for (const [toggle, field, key] of [
   ["ammo-enabled", "ammo", "ammo"],
   ["crit-enabled", "crit", "crit"],

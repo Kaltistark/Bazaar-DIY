@@ -10,6 +10,7 @@
 
 - `public/assets/icons/`：关键词彩色图标，来源 `fonts_assets_all.bundle` 的真实 `Text_Icon_Atlas_w_Shadows` Sprite。原始尺寸为 64×72，包含游戏黑描边和偏右下的阴影。显示版为 128×144，使用 2 倍 Lanczos 重采样，RGB 温和锐化，透明度边缘不锐化。它改善缩放观感，不产生原图没有的细节。`icons-source/` 保留原始像素供对照。
 - `public/assets/heroes/`：Vanessa、Pygmalien、Dooley、Mak、Stelle、Jules、Karnok、The Dragons、中立的游戏内轮廓。来源为 `*flatrough*.bundle` 及 `tooltips_assets_all.bundle`（Karnok）。原生尺寸约 256×256，未放大。输出统一金棕色 `#94641c`；原始白色透明轮廓位于 `heroes-source/`。
+- `public/assets/hero-portraits/`：职业选单使用的真实游戏彩色透明肖像。Vanessa、Pygmalien、Dooley、Mak、Stelle、Jules 来自游戏图鉴 Atlas 的 `Atlas_HeroPortrait_*_TUI`；Karnok 和双龙来自各自的原生职业图标包。保留完整半身肖像、透明度和原始像素，未经 AI 生成或绘制。中立未找到独立彩色头像，明确使用原生中立轮廓回退；manifest 将 `neutral` 的 `fallback` 标为 `true`，其余八职业为 `false`。
 - `public/assets/frames/`：来自 `cardframes_assets_all.bundle` 的 `Card_PreviewFrame_{品质}_{尺寸}_TUI`，完整 5 品质×3尺寸。均保留原始透明像素与尺寸。
 - `public/assets/gems/`：相同包里的 `Card_PreviewGem_{Damage|Heal|Shield|Burn|Poison|Regen}_TUI`，原生 126×64。额外 Lifesteal 底板随原包提供。
 - `public/assets/ui/`：来自 `ui_sprite_atlas_assets_all.bundle` 的标题、主动框、被动框、钟表、弹药、分隔线、箭头和深棕底纹。它们均保留原生像素。
@@ -34,6 +35,39 @@
 横、竖任务分隔线的原始 Sprite 是白色轮廓，游戏中以金棕色着色后显示；应在渲染时按参考截图着色。原始锁定奖励文字配置为 `#ffcd92`、不透明度 `0.490196`，箭头为白色、不透明度 `0.490196`，合成在深棕底板上形成截图中的灰褐色。检查图 `docs/quest-assets-preview.png` 保留未经着色的原始 Sprite，方便查看轮廓。
 
 透明区有时保留原纹理的 RGB 数值（传说主框中心的红色等），alpha 为 0。应使用 PNG alpha 合成，不应扁平化原 RGBA 图片。
+
+### 职业选单彩色肖像
+
+输出文件均位于 `public/assets/hero-portraits/`，尺寸与原始 Sprite 一致。
+
+| 文件 | 原始 Sprite | 尺寸 |
+|---|---|---|
+| `vanessa.png` | `Atlas_HeroPortrait_VAN_TUI` | 330×451 |
+| `pygmalien.png` | `Atlas_HeroPortrait_PYG_TUI` | 313×422 |
+| `dooley.png` | `Atlas_HeroPortrait_DOO_TUI` | 327×407 |
+| `mak.png` | `Atlas_HeroPortrait_MAK_TUI` | 312×439 |
+| `stelle.png` | `Atlas_HeroPortrait_STE_TUI` | 316×438 |
+| `jules.png` | `Atlas_HeroPortrait_JUL_TUI` | 331×448 |
+| `karnok.png` | `Karnok` | 512×512 |
+| `dragons.png` | `TheDragons` | 477×504 |
+| `neutral.png`（轮廓回退） | `Icon_FlatRough_Monster_TUI` | 245×256 |
+
+前六项来自 `ui_sprite_atlas_assets_all.bundle`。Karnok 来自 `defaultlocalgroup_assets_karnok_icon.bundle`，双龙来自 `defaultlocalgroup_assets_thedragons_icon.bundle`。中立来自 `defaultlocalgroup_assets_icon_flatrough_monster_tui.bundle`，以既有的金棕色着色。预览检查位于 `docs/hero-portraits-preview.png`。渲染选单头像时可对这些透明半身肖像使用独立的显示容器，以原有内容裁切显示头部，而不修改原始素材。
+
+### 高温、霜冻、转化与升级文字样式
+
+以下内容直接读取本机游戏 `fonts_assets_all.bundle` 中 `TooltipTypography` MonoBehaviour（path ID `2548818832376771393`）的 `_configurations`，不是从截图估算。原始配置及 RGBA 浮点数保存在 `public/assets/keyword-styles.json`，来源亦记录于 manifest。
+
+| 关键词 | 游戏配置键 | 实际文字色 | 独立文本图标 |
+|---|---|---|---|
+| 高温 / Heated | `{keyword.heated}` | `#FFA550`（不透明） | 无，原始 `IconName` 为空 |
+| 霜冻 / Chilled | `{keyword.chilled}` | `#8FF5FC`（不透明） | 无，原始 `IconName` 为空 |
+| 转化 / Transform、Transforms | `{keyword.transform}`、`{keyword.transforms}` | `#5AE6E9`（不透明） | `Transform`，输出 `icons/transform.png` |
+| 升级 / Upgrade | `{keyword.upgrade}` | `#B3E4E5`（不透明） | `Upgrade`，输出 `icons/upgrade.png` |
+
+中文本地化补充匹配中，高温明确列出 `高温时:` 和 `高温时：`；霜冻明确列出 `霜冻时:` 和 `霜冻时：`。每项只有一个纯色值，没有单独的文字渐变、字体变化、描边或阴影参数；渲染时沿用普通效果正文的描边与阴影。高温不应自动插入灼烧图标，霜冻不应自动插入冻结图标。
+
+`Transform` 和 `Upgrade` 图标来自同包原生文本 atlas，原始64×72保存在 `icons-source`，显示版128×144采用与其他关键词一致的机械高清处理。`GameData.db` 的旧 Tooltip 内容记录将这些条目的 `Icon` 记为 `Invalid`，但最终渲染的 `TooltipTypography.IconName` 明确配置了两个图标；这里采用最终字体渲染配置作为视觉依据。
 
 ## 字体
 

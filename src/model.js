@@ -214,70 +214,27 @@ export function extractStats(tier) {
     for (const effect of tier.effects) {
       if (
         !kw.aliases.some((a) => effect.includes(a)) ||
-        !effect.includes("等同于此物品")
+        !/(?:等同于|等于)此物品/.test(effect)
       )
         continue;
-      const right = effect.split("等同于此物品")[1];
+      const right = effect.split(/(?:等同于|等于)此物品(?:的)?/)[1];
       const source = KEYWORDS.find(
         (k) =>
           BADGE_ORDER.includes(k.id) &&
           k.aliases.some((a) => right.startsWith(a)),
       );
-      if (source && result[source.id] !== undefined)
-        result[id] = result[source.id];
+      if (source && result[source.id] !== undefined) {
+        const ratio = right.match(/(\d+(?:\.\d+)?)\s*(%|倍)/);
+        const factor = ratio
+          ? Number(ratio[1]) / (ratio[2] === "%" ? 100 : 1)
+          : 1;
+        result[id] = Math.round(result[source.id] * factor * 1e6) / 1e6;
+      }
     }
   }
   return result;
 }
-const shortKinds = {
-  伤: "伤害",
-  伤害: "伤害",
-  火: "灼烧",
-  烧: "灼烧",
-  灼烧: "灼烧",
-  毒: "剧毒",
-  剧毒: "剧毒",
-  盾: "护盾",
-  护盾: "护盾",
-  奶: "治疗",
-  疗: "治疗",
-  治疗: "治疗",
-  再生: "生命再生",
-  生命再生: "生命再生",
-  加速: "加速",
-  冻结: "冻结",
-  减速: "减速",
-  充能: "充能",
-  多重: "多重释放",
-  多重释放: "多重释放",
-};
-export function suggest(input, tier) {
-  const raw = input.trim();
-  if (!raw) return "";
-  const equation = raw.match(/^(.+?)\s*=\s*(.+)$/);
-  if (equation) {
-    const left = shortKinds[equation[1]],
-      right = shortKinds[equation[2]];
-    if (
-      left &&
-      right &&
-      tier.effects.some((v) => v !== input && v.includes(right))
-    ) {
-      return `${["治疗", "生命再生", "护盾"].includes(left) ? "获得" : "造成"}${left}，等同于此物品${right}。`;
-    }
-  }
-  const m = raw.match(/^(\d+(?:\.\d+)?)\s*([^\d\s]+)$/);
-  if (!m) return "";
-  const kind = shortKinds[m[2]];
-  if (!kind) return "";
-  if (kind === "治疗") return `治疗${m[1]}生命值。`;
-  if (kind === "护盾") return `获得${m[1]}护盾。`;
-  if (kind === "生命再生") return `生命再生量提高${m[1]}。`;
-  if (["加速", "冻结", "减速", "充能"].includes(kind))
-    return `${kind}一件物品${m[1]}秒。`;
-  if (kind === "多重释放") return `多重释放：${m[1]}。`;
-  return `造成${m[1]}${kind}。`;
-}
+export { suggest } from "./completion.js";
 export function validateProject(value) {
   if (
     !value ||

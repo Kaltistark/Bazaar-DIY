@@ -89,7 +89,40 @@
                 <option value="medium" selected>中型</option>
                 <option value="large">大型</option>
               </select></label
-            ><label>所属职业<select id="hero"></select></label>
+            >
+            <div class="hero-field">
+              <span id="hero-label">所属职业</span>
+              <div class="hero-picker">
+                <select
+                  id="hero"
+                  hidden
+                  aria-hidden="true"
+                  tabindex="-1"
+                ></select
+                ><button
+                  id="hero-toggle"
+                  type="button"
+                  role="combobox"
+                  aria-labelledby="hero-label hero-name"
+                  aria-haspopup="listbox"
+                  aria-controls="hero-list"
+                  aria-expanded="false"
+                >
+                  <span id="hero-name">中立</span
+                  ><img id="hero-portrait" alt="" /><span
+                    class="hero-chevron"
+                    aria-hidden="true"
+                    >⌄</span
+                  >
+                </button>
+                <div
+                  id="hero-list"
+                  role="listbox"
+                  aria-labelledby="hero-label"
+                  hidden
+                ></div>
+              </div>
+            </div>
           </div>
           <details class="tag-picker" id="tag-picker">
             <summary>
@@ -142,18 +175,27 @@
             <div id="effect-list"></div>
             <button id="add-effect" class="button add">＋ 添加效果</button>
             <p class="field-help">
-              输入 <kbd>60火</kbd> 或 <kbd>火=伤</kbd>，按
-              <kbd>Tab</kbd> 接受补全。
+              输入 <kbd>奶60</kbd>、<kbd>充左</kbd> 或 <kbd>加速右2</kbd>，按
+              <kbd>Tab</kbd> 接受补全。省略时长时默认 1 秒。
             </p>
+            <details class="completion-guide">
+              <summary>Tab 补全写法 <span class="chevron">⌄</span></summary>
+              <p class="field-help">
+                支持数字前后两种顺序、左/右/邻/自/全/敌、物品类型、触发句式、百分比和等同于。主动、被动及任务奖励均可补全；多行时仅补全光标所在行。
+              </p>
+              <div id="completion-examples"></div>
+            </details>
           </div>
           <div class="section-label">
             <span>被动效果</span><span class="muted">可选</span>
           </div>
-          <textarea
-            id="passive"
-            rows="3"
-            placeholder="例如：当你使用相邻物品时，充能此物品1秒。"
-          ></textarea>
+          <div id="passive-wrap">
+            <textarea
+              id="passive"
+              rows="3"
+              placeholder="例如：当你使用相邻物品时，充能此物品1秒。"
+            ></textarea>
+          </div>
           <div class="optional-options">
             <details id="quest-editor">
               <summary>

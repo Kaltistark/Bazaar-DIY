@@ -88,6 +88,14 @@
       "height": 72,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1"
     },
+    "upgrade": {
+      "path": "/assets/icons-source/upgrade.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Upgrade",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
     "income": {
       "path": "/assets/icons-source/income.png",
       "sourceBundle": "fonts_assets_all.bundle",
@@ -140,6 +148,14 @@
       "path": "/assets/icons-source/burn.png",
       "sourceBundle": "fonts_assets_all.bundle",
       "spriteName": "Burn",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "transform": {
+      "path": "/assets/icons-source/transform.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Transform",
       "width": 64,
       "height": 72,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1"
@@ -356,6 +372,19 @@
       ],
       "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
     },
+    "upgrade": {
+      "path": "/assets/icons/upgrade.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Upgrade",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
     "income": {
       "path": "/assets/icons/income.png",
       "sourceBundle": "fonts_assets_all.bundle",
@@ -438,6 +467,19 @@
       "path": "/assets/icons/burn.png",
       "sourceBundle": "fonts_assets_all.bundle",
       "spriteName": "Burn",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "transform": {
+      "path": "/assets/icons/transform.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Transform",
       "width": 128,
       "height": 144,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
@@ -1541,6 +1583,98 @@
       "derivation": "Top 210px crop of original main frame; transparent center, no independent bottom border"
     }
   },
+  "hero-portraits": {
+    "stelle": {
+      "path": "/assets/hero-portraits/stelle.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Atlas_HeroPortrait_STE_TUI",
+      "width": 316,
+      "height": 438,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "dooley": {
+      "path": "/assets/hero-portraits/dooley.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Atlas_HeroPortrait_DOO_TUI",
+      "width": 327,
+      "height": 407,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "jules": {
+      "path": "/assets/hero-portraits/jules.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Atlas_HeroPortrait_JUL_TUI",
+      "width": 331,
+      "height": 448,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "pygmalien": {
+      "path": "/assets/hero-portraits/pygmalien.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Atlas_HeroPortrait_PYG_TUI",
+      "width": 313,
+      "height": 422,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "vanessa": {
+      "path": "/assets/hero-portraits/vanessa.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Atlas_HeroPortrait_VAN_TUI",
+      "width": 330,
+      "height": 451,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "mak": {
+      "path": "/assets/hero-portraits/mak.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Atlas_HeroPortrait_MAK_TUI",
+      "width": 312,
+      "height": 439,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "karnok": {
+      "path": "/assets/hero-portraits/karnok.png",
+      "sourceBundle": "defaultlocalgroup_assets_karnok_icon.bundle",
+      "spriteName": "Karnok",
+      "width": 512,
+      "height": 512,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "dragons": {
+      "path": "/assets/hero-portraits/dragons.png",
+      "sourceBundle": "defaultlocalgroup_assets_thedragons_icon.bundle",
+      "spriteName": "TheDragons",
+      "width": 477,
+      "height": 504,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": false,
+      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+    },
+    "neutral": {
+      "path": "/assets/hero-portraits/neutral.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_monster_tui.bundle",
+      "spriteName": "Icon_FlatRough_Monster_TUI",
+      "width": 245,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "fallback": true,
+      "processing": "Native neutral insignia fallback, tinted #94641c; no separate neutral color portrait found"
+    }
+  },
   "heroes-source": {
     "karnok": {
       "path": "/assets/heroes-source/karnok.png",
@@ -1725,5 +1859,11 @@
       "sourceBundle": "fonts_assets_all.bundle",
       "method": "Original SDF contour reconstruction; original source TTF absent"
     }
+  },
+  "keywordStyles": {
+    "path": "/assets/keyword-styles.json",
+    "sourceBundle": "fonts_assets_all.bundle",
+    "objectName": "TooltipTypography",
+    "objectPathID": 2548818832376771393
   }
 }

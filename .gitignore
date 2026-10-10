@@ -9,3 +9,7 @@ __pycache__/
 .sites-runtime/
 .sites-checkout/
 .sites-checkout-*/
+output/imagegen/
+tmp/imagegen/
+docs/portrait-candidates/
+docs/portrait-candidates.png

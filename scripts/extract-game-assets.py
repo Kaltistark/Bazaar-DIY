@@ -29,6 +29,7 @@ ICON_MAP = {
     "Lifesteal": "lifesteal", "Toughness": "rage", "Income": "income",
     "Joy": "tempo", "Multicast": "multicast", "Destroy": "destroy",
     "Flying": "flying", "Fusion": "fusion", "TempoSpend": "tempo-spend",
+    "Transform": "transform", "Upgrade": "upgrade",
 }
 HERO_MAP = {
     "Icon_FlatRough_DOO_TUI": "dooley", "Icon_FlatRough_JUL_TUI": "jules",
@@ -36,6 +37,12 @@ HERO_MAP = {
     "Icon_FlatRough_PYG_TUI": "pygmalien", "Icon_FlatRough_STE_TUI": "stelle",
     "Icon_FlatRough_VAN_TUI": "vanessa", "Icon_FlatRough_DRA_TUI": "dragons",
     "Icon_FlatRough_KAR_TUI": "karnok",
+}
+PORTRAIT_MAP = {
+    "Atlas_HeroPortrait_VAN_TUI": "vanessa", "Atlas_HeroPortrait_PYG_TUI": "pygmalien",
+    "Atlas_HeroPortrait_DOO_TUI": "dooley", "Atlas_HeroPortrait_MAK_TUI": "mak",
+    "Atlas_HeroPortrait_STE_TUI": "stelle", "Atlas_HeroPortrait_JUL_TUI": "jules",
+    "Karnok": "karnok", "TheDragons": "dragons",
 }
 
 
@@ -138,9 +145,11 @@ def main() -> None:
                 "unavailable": {"icons": {"quest": "No standalone keyword pictogram", "enrage": "Text coloring only"}}}
     aliases = {"heal": ["health"], "income": ["gold", "value"], "flying": ["flight"]}
     numbers_atlas, numbers_meta = None, None
+    keyword_style_evidence = None
     bundles = ["fonts_assets_all.bundle", "cardframes_assets_all.bundle", "ui_sprite_atlas_assets_all.bundle", "tooltips_assets_all.bundle"]
     bundles += ["defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_frame_tui.png.bundle",
-                "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_lock.png.bundle"]
+                "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_lock.png.bundle",
+                "defaultlocalgroup_assets_karnok_icon.bundle", "defaultlocalgroup_assets_thedragons_icon.bundle"]
     bundles += [p.name for p in args.game_dir.glob("*flatrough*")]
     for filename in bundles:
         env = UnityPy.load(str(args.game_dir / filename))
@@ -155,6 +164,21 @@ def main() -> None:
                 if data.get("m_Name") == "BazaarNumbers_Regular_SDF":
                     numbers_meta = data
                     (ROOT / "docs" / "fontasset-BazaarNumbers_Regular_SDF.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
+                elif data.get("m_Name") == "TooltipTypography":
+                    wanted = {"{keyword.heated}", "{keyword.chilled}", "{keyword.transform}", "{keyword.transforms}", "{keyword.upgrade}"}
+                    selected = [c for c in data["_configurations"] if c["<KeywordKey>k__BackingField"] in wanted]
+                    keyword_style_evidence = {
+                        "sourceBundle": filename, "objectName": "TooltipTypography", "objectPathID": obj.path_id,
+                        "iconScalePercentageSize": data["_iconScalePercentageSize"], "iconScaleVOffset": data["_iconScaleVOffset"],
+                        "configurations": [],
+                    }
+                    for config in selected:
+                        color = config["<Color>k__BackingField"]
+                        keyword_style_evidence["configurations"].append({
+                            "key": config["<KeywordKey>k__BackingField"],
+                            "hex": "#"+"".join(f"{round(color[c]*255):02X}" for c in ["r","g","b"]),
+                            "rgba": color, "iconName": config["<IconName>k__BackingField"], "nativeConfiguration": config,
+                        })
             elif obj.type.name == "Sprite":
                 data = obj.read()
                 name = data.m_Name
@@ -166,6 +190,10 @@ def main() -> None:
                         save(hd_icon(source_im), "icons", output_key, filename, name, manifest)
                         manifest["icons"][output_key]["sourceSize"] = list(source_im.size)
                         manifest["icons"][output_key]["enhancement"] = "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+                elif name in PORTRAIT_MAP:
+                    save(data.image.convert("RGBA"), "hero-portraits", PORTRAIT_MAP[name], filename, name, manifest)
+                    manifest["hero-portraits"][PORTRAIT_MAP[name]]["fallback"] = False
+                    manifest["hero-portraits"][PORTRAIT_MAP[name]]["processing"] = "Unmodified native transparent color portrait; no generated content or upscaling"
                 elif name in HERO_MAP:
                     im = data.image.convert("RGBA")
                     save(im, "heroes-source", HERO_MAP[name], filename, name, manifest)
@@ -173,6 +201,10 @@ def main() -> None:
                     tinted.putalpha(im.getchannel("A"))
                     save(tinted, "heroes", HERO_MAP[name], filename, name, manifest)
                     manifest["heroes"][HERO_MAP[name]]["tint"] = "#94641c"
+                    if HERO_MAP[name] == "neutral":
+                        save(tinted, "hero-portraits", "neutral", filename, name, manifest)
+                        manifest["hero-portraits"]["neutral"]["fallback"] = True
+                        manifest["hero-portraits"]["neutral"]["processing"] = "Native neutral insignia fallback, tinted #94641c; no separate neutral color portrait found"
                 elif "Card_PreviewFrame_" in name and "Skill" not in name:
                     save(data.image, "frames", name, filename, name, manifest, data.m_Border)
                 elif "Card_PreviewGem_" in name:
@@ -217,6 +249,9 @@ def main() -> None:
     if numbers_atlas is not None and numbers_meta is not None:
         numbers_font(numbers_atlas, numbers_meta)
         manifest.setdefault("fonts", {})["BazaarNumbersWeb-Regular"] = {"path": "/assets/fonts/BazaarNumbersWeb-Regular.woff2", "family": "Bazaar Numbers Web", "style": "Regular", "weight": 400, "sourceBundle": "fonts_assets_all.bundle", "method": "Original SDF contour reconstruction; original source TTF absent"}
+    if keyword_style_evidence is not None:
+        (ASSETS / "keyword-styles.json").write_text(json.dumps(keyword_style_evidence, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+        manifest["keywordStyles"] = {"path": "/assets/keyword-styles.json", "sourceBundle": "fonts_assets_all.bundle", "objectName": "TooltipTypography", "objectPathID": keyword_style_evidence["objectPathID"]}
     (ASSETS / "assets-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
     entries = [(kind,key) for kind in ["icons","heroes"] for key in manifest[kind]]
     sheet = Image.new("RGB", (900, ((len(entries)+6)//7)*135), "#281c10")
@@ -228,6 +263,16 @@ def main() -> None:
         sheet.paste(im, (x+(128-im.width)//2,y+27), im)
         draw.text((x+4,y+5),key,fill="white")
     sheet.save(ROOT / "docs" / "native-assets-preview.png")
+    portrait_sheet = Image.new("RGB", (960, 660), "#25282d")
+    portrait_draw = ImageDraw.Draw(portrait_sheet)
+    for i, key in enumerate(["neutral", "vanessa", "pygmalien", "dooley", "mak", "stelle", "jules", "karnok", "dragons"]):
+        x, y = (i % 5)*192, (i//5)*330
+        im = Image.open(ASSETS / "hero-portraits" / f"{key}.png")
+        im.thumbnail((168,260), Image.Resampling.LANCZOS)
+        portrait_sheet.paste(im, (x+(192-im.width)//2,y+30), im)
+        label = key + (" (fallback)" if manifest["hero-portraits"][key]["fallback"] else "")
+        portrait_draw.text((x+5,y+6),label,fill="white")
+    portrait_sheet.save(ROOT / "docs" / "hero-portraits-preview.png")
     print({kind: len(entries) for kind,entries in manifest.items() if isinstance(entries,dict)})
 
 

@@ -46,6 +46,34 @@ export const TYPES = [
 ];
 export const KEYWORDS = [
   {
+    id: "heated",
+    name: "高温",
+    aliases: ["高温时：", "高温时:", "高温"],
+    color: "#ffa550",
+    icon: null,
+  },
+  {
+    id: "chilled",
+    name: "霜冻",
+    aliases: ["霜冻时：", "霜冻时:", "霜冻"],
+    color: "#8ff5fc",
+    icon: null,
+  },
+  {
+    id: "transform",
+    name: "转化",
+    aliases: ["转化"],
+    color: "#5ae6e9",
+    icon: "transform",
+  },
+  {
+    id: "upgrade",
+    name: "升级",
+    aliases: ["升级"],
+    color: "#b3e4e5",
+    icon: "upgrade",
+  },
+  {
     id: "experience",
     name: "经验值",
     aliases: ["经验值", "经验"],

@@ -1,0 +1,388 @@
+{
+  "sourceBundle": "fonts_assets_all.bundle",
+  "objectName": "TooltipTypography",
+  "objectPathID": 2548818832376771393,
+  "iconScalePercentageSize": 145,
+  "iconScaleVOffset": -4,
+  "configurations": [
+    {
+      "key": "{keyword.transform}",
+      "hex": "#5AE6E9",
+      "rgba": {
+        "r": 0.3529411852359772,
+        "g": 0.9019607901573181,
+        "b": 0.9137254953384399,
+        "a": 1.0
+      },
+      "iconName": "Transform",
+      "nativeConfiguration": {
+        "_editorName": "{keyword.transform}",
+        "<KeywordKey>k__BackingField": "{keyword.transform}",
+        "<Color>k__BackingField": {
+          "r": 0.3529411852359772,
+          "g": 0.9019607901573181,
+          "b": 0.9137254953384399,
+          "a": 1.0
+        },
+        "<Text>k__BackingField": {
+          "<Text>k__BackingField": "Transform"
+        },
+        "<AdditionalLocaleLookup>k__BackingField": {
+          "Entries": [
+            {
+              "Id": 1,
+              "Texts": [
+                "verwandle",
+                "verwandelst",
+                "verwandelt",
+                "Verwandelt",
+                "Verwandeln",
+                "Verwandlung",
+                "Verwandlungen"
+              ]
+            },
+            {
+              "Id": 2,
+              "Texts": [
+                "Transformar",
+                "Transforma",
+                "Transforme"
+              ]
+            },
+            {
+              "Id": 8,
+              "Texts": [
+                "Transforme",
+                "Transforment",
+                "Transformez",
+                "Transformé"
+              ]
+            },
+            {
+              "Id": 9,
+              "Texts": [
+                "แปรสภาพ"
+              ]
+            }
+          ]
+        },
+        "AttributeKeys": [],
+        "<IconName>k__BackingField": "Transform",
+        "<MakeAllUppercase>k__BackingField": 0,
+        "<AllowedTerminators>k__BackingField": -1
+      }
+    },
+    {
+      "key": "{keyword.transforms}",
+      "hex": "#5AE6E9",
+      "rgba": {
+        "r": 0.3529411852359772,
+        "g": 0.9019607901573181,
+        "b": 0.9137254953384399,
+        "a": 1.0
+      },
+      "iconName": "Transform",
+      "nativeConfiguration": {
+        "_editorName": "{keyword.transforms}",
+        "<KeywordKey>k__BackingField": "{keyword.transforms}",
+        "<Color>k__BackingField": {
+          "r": 0.3529411852359772,
+          "g": 0.9019607901573181,
+          "b": 0.9137254953384399,
+          "a": 1.0
+        },
+        "<Text>k__BackingField": {
+          "<Text>k__BackingField": "Transforms"
+        },
+        "<AdditionalLocaleLookup>k__BackingField": {
+          "Entries": [
+            {
+              "Id": 1,
+              "Texts": [
+                "Verwandlungen",
+                "Verwandelt"
+              ]
+            }
+          ]
+        },
+        "AttributeKeys": [],
+        "<IconName>k__BackingField": "Transform",
+        "<MakeAllUppercase>k__BackingField": 0,
+        "<AllowedTerminators>k__BackingField": -1
+      }
+    },
+    {
+      "key": "{keyword.upgrade}",
+      "hex": "#B3E4E5",
+      "rgba": {
+        "r": 0.7019608020782471,
+        "g": 0.8941176533699036,
+        "b": 0.8980392217636108,
+        "a": 1.0
+      },
+      "iconName": "Upgrade",
+      "nativeConfiguration": {
+        "_editorName": "{keyword.upgrade}",
+        "<KeywordKey>k__BackingField": "{keyword.upgrade}",
+        "<Color>k__BackingField": {
+          "r": 0.7019608020782471,
+          "g": 0.8941176533699036,
+          "b": 0.8980392217636108,
+          "a": 1.0
+        },
+        "<Text>k__BackingField": {
+          "<Text>k__BackingField": "Upgrade"
+        },
+        "<AdditionalLocaleLookup>k__BackingField": {
+          "Entries": [
+            {
+              "Id": 1,
+              "Texts": [
+                "aufwerte",
+                "aufwertest",
+                "aufwertet",
+                "aufwerten",
+                "Aufwertung",
+                "Aufwertungen",
+                "rüste",
+                "rüstet",
+                "rüsten",
+                "Rüstet"
+              ]
+            },
+            {
+              "Id": 2,
+              "Texts": [
+                "Melhora",
+                "Melhorar"
+              ]
+            },
+            {
+              "Id": 8,
+              "Texts": [
+                "Améliore",
+                "Améliorent",
+                "Améliorez",
+                "Amélioré"
+              ]
+            }
+          ]
+        },
+        "AttributeKeys": [],
+        "<IconName>k__BackingField": "Upgrade",
+        "<MakeAllUppercase>k__BackingField": 0,
+        "<AllowedTerminators>k__BackingField": -1
+      }
+    },
+    {
+      "key": "{keyword.heated}",
+      "hex": "#FFA550",
+      "rgba": {
+        "r": 1.0,
+        "g": 0.6470588445663452,
+        "b": 0.3137255311012268,
+        "a": 1.0
+      },
+      "iconName": "",
+      "nativeConfiguration": {
+        "_editorName": "{keyword.heated}",
+        "<KeywordKey>k__BackingField": "{keyword.heated}",
+        "<Color>k__BackingField": {
+          "r": 1.0,
+          "g": 0.6470588445663452,
+          "b": 0.3137255311012268,
+          "a": 1.0
+        },
+        "<Text>k__BackingField": {
+          "<Text>k__BackingField": "Heated"
+        },
+        "<AdditionalLocaleLookup>k__BackingField": {
+          "Entries": [
+            {
+              "Id": 1,
+              "Texts": [
+                "Erhitzt:",
+                "Aufgewärmt:"
+              ]
+            },
+            {
+              "Id": 2,
+              "Texts": [
+                "Aqueça",
+                "Aquecido",
+                "Aquecida",
+                "Aquecidos",
+                "Aquecidas"
+              ]
+            },
+            {
+              "Id": 3,
+              "Texts": [
+                "高温时:",
+                "高温时："
+              ]
+            },
+            {
+              "Id": 4,
+              "Texts": [
+                "가열됨:"
+              ]
+            },
+            {
+              "Id": 0,
+              "Texts": [
+                "Heated:"
+              ]
+            },
+            {
+              "Id": 5,
+              "Texts": [
+                "Riscaldato",
+                "Riscaldati"
+              ]
+            },
+            {
+              "Id": 6,
+              "Texts": [
+                "Isıtılmış"
+              ]
+            },
+            {
+              "Id": 7,
+              "Texts": [
+                "Calentado",
+                "Calentada",
+                "Calentados",
+                "Calentadas"
+              ]
+            },
+            {
+              "Id": 8,
+              "Texts": [
+                "Chauffé",
+                "Chauffés"
+              ]
+            },
+            {
+              "Id": 9,
+              "Texts": [
+                "อุ่นร้อน",
+                "ไอเทมอุ่นร้อน"
+              ]
+            }
+          ]
+        },
+        "AttributeKeys": [
+          90
+        ],
+        "<IconName>k__BackingField": "",
+        "<MakeAllUppercase>k__BackingField": 0,
+        "<AllowedTerminators>k__BackingField": -1
+      }
+    },
+    {
+      "key": "{keyword.chilled}",
+      "hex": "#8FF5FC",
+      "rgba": {
+        "r": 0.5596297979354858,
+        "g": 0.9604400992393494,
+        "b": 0.9886792302131653,
+        "a": 1.0
+      },
+      "iconName": "",
+      "nativeConfiguration": {
+        "_editorName": "{keyword.chilled}",
+        "<KeywordKey>k__BackingField": "{keyword.chilled}",
+        "<Color>k__BackingField": {
+          "r": 0.5596297979354858,
+          "g": 0.9604400992393494,
+          "b": 0.9886792302131653,
+          "a": 1.0
+        },
+        "<Text>k__BackingField": {
+          "<Text>k__BackingField": "Chilled"
+        },
+        "<AdditionalLocaleLookup>k__BackingField": {
+          "Entries": [
+            {
+              "Id": 4,
+              "Texts": [
+                "냉각됨:"
+              ]
+            },
+            {
+              "Id": 3,
+              "Texts": [
+                "霜冻时:",
+                "霜冻时："
+              ]
+            },
+            {
+              "Id": 2,
+              "Texts": [
+                "Resfriado",
+                "Resfriada",
+                "Resfriados",
+                "Resfriadas"
+              ]
+            },
+            {
+              "Id": 1,
+              "Texts": [
+                "Gekühlt:"
+              ]
+            },
+            {
+              "Id": 0,
+              "Texts": [
+                "Chilled:"
+              ]
+            },
+            {
+              "Id": 5,
+              "Texts": [
+                "Raffreddato",
+                "Raffreddati"
+              ]
+            },
+            {
+              "Id": 6,
+              "Texts": [
+                "Soğutulmuş"
+              ]
+            },
+            {
+              "Id": 7,
+              "Texts": [
+                "Enfriado",
+                "Enfriada",
+                "Enfriadas",
+                "Enfriados"
+              ]
+            },
+            {
+              "Id": 8,
+              "Texts": [
+                "Refroidi",
+                "Refroidis"
+              ]
+            },
+            {
+              "Id": 9,
+              "Texts": [
+                "แช่เย็น",
+                "ไอเทมแช่เย็น"
+              ]
+            }
+          ]
+        },
+        "AttributeKeys": [
+          91
+        ],
+        "<IconName>k__BackingField": "",
+        "<MakeAllUppercase>k__BackingField": 0,
+        "<AllowedTerminators>k__BackingField": -1
+      }
+    }
+  ]
+}

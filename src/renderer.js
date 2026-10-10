@@ -408,6 +408,48 @@ export class Renderer {
       cutRect(ctx, x + 2, y + 2, w - 4, h - 4, 12);
       ctx.stroke();
     }
+    this.panelBorder(ctx, quality, kind, x, y, w, h);
+  }
+  panelBorder(ctx, quality, kind, x, y, w, h) {
+    const colors = {
+      bronze: ["#9e763e", "#d6ae74"],
+      silver: ["#8c98b8", "#dce4ff"],
+      gold: ["#b68a40", "#f8d280"],
+      diamond: ["#8ba5bb", "#d5ecfa"],
+      legendary: ["#b75a27", "#ffc66f"],
+    }[quality];
+    ctx.save();
+    const trace = (inset) => {
+      const top = kind === "title" ? 17 : kind === "passive" ? 0 : 5;
+      const bottom = kind === "passive" ? 22 : kind === "title" ? 0 : 5;
+      const left = x + inset,
+        right = x + w - inset,
+        upper = y + inset,
+        lower = y + h - inset;
+      ctx.beginPath();
+      ctx.moveTo(left + top, upper);
+      ctx.lineTo(right - top, upper);
+      ctx.lineTo(right, upper + top);
+      ctx.lineTo(right, lower - bottom);
+      ctx.lineTo(right - bottom, lower);
+      ctx.lineTo(left + bottom, lower);
+      ctx.lineTo(left, lower - bottom);
+      ctx.lineTo(left, upper + top);
+      ctx.closePath();
+    };
+    ctx.lineJoin = "round";
+    trace(3);
+    ctx.strokeStyle = "#090d12";
+    ctx.lineWidth = 4.8;
+    ctx.stroke();
+    ctx.strokeStyle = colors[0];
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    trace(7);
+    ctx.strokeStyle = colors[1];
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+    ctx.restore();
   }
   layout(ctx, project, current, mode, stacked = false) {
     const tier = resolveTier(
@@ -621,6 +663,7 @@ export class Renderer {
       size,
       lineHeight,
       effectLines,
+      effectWidth,
       activeH,
       passiveLines,
       passiveH,
@@ -767,10 +810,25 @@ export class Renderer {
     y += l.titleH - 2;
     if (tier.active) {
       this.panel(ctx, quality, "active", d.x, y, d.w, l.activeH);
-      let ey = y + 34;
+      const contentH =
+        l.effectLines.reduce(
+          (sum, lines) => sum + lines.length * l.lineHeight,
+          0,
+        ) +
+        Math.max(0, l.effectLines.length - 1) * 15;
+      const bodyH = l.activeH - (tier.critEnabled ? 55 : 0);
+      const textWidth = Math.max(
+        0,
+        ...l.effectLines
+          .flat()
+          .map((line) => line.reduce((sum, u) => sum + u.width, 0)),
+      );
+      const textX =
+        d.x + 96 + Math.min(28, Math.max(0, (l.effectWidth - textWidth) / 2));
+      let ey = y + (bodyH - contentH) / 2 + l.size + 4;
       l.effectLines.forEach((lines) => {
-        this.image(ctx, "arrow", d.x + 69, ey - 17, 16, 14);
-        this.paintLines(ctx, lines, d.x + 96, ey, l.size, l.lineHeight);
+        this.image(ctx, "arrow", textX - 27, ey - 17, 16, 14);
+        this.paintLines(ctx, lines, textX, ey, l.size, l.lineHeight);
         ey += lines.length * l.lineHeight + 15;
       });
       if (tier.critEnabled) {
