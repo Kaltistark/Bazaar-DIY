@@ -1,0 +1,1729 @@
+{
+  "version": 2,
+  "method": "Read-only extraction of original installed-game sprites",
+  "unavailable": {
+    "icons": {
+      "quest": "No standalone keyword pictogram",
+      "enrage": "Text coloring only"
+    }
+  },
+  "icons-source": {
+    "shield": {
+      "path": "/assets/icons-source/shield.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Shield",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "haste": {
+      "path": "/assets/icons-source/haste.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Haste",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "cooldown": {
+      "path": "/assets/icons-source/cooldown.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Cooldown",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "flying": {
+      "path": "/assets/icons-source/flying.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Flying",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "flight": {
+      "path": "/assets/icons-source/flight.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Flying",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "tempo": {
+      "path": "/assets/icons-source/tempo.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Joy",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "regen": {
+      "path": "/assets/icons-source/regen.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Regen",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "poison": {
+      "path": "/assets/icons-source/poison.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Poison",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "heal": {
+      "path": "/assets/icons-source/heal.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Health",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "health": {
+      "path": "/assets/icons-source/health.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Health",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "income": {
+      "path": "/assets/icons-source/income.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Income",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "gold": {
+      "path": "/assets/icons-source/gold.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Income",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "value": {
+      "path": "/assets/icons-source/value.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Income",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "freeze": {
+      "path": "/assets/icons-source/freeze.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Freeze",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "rage": {
+      "path": "/assets/icons-source/rage.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Toughness",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "multicast": {
+      "path": "/assets/icons-source/multicast.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Multicast",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "burn": {
+      "path": "/assets/icons-source/burn.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Burn",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "crit": {
+      "path": "/assets/icons-source/crit.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "CritChance",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "destroy": {
+      "path": "/assets/icons-source/destroy.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Destroy",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "fusion": {
+      "path": "/assets/icons-source/fusion.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Fusion",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "tempo-spend": {
+      "path": "/assets/icons-source/tempo-spend.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "TempoSpend",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "charge": {
+      "path": "/assets/icons-source/charge.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Charge",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "slow": {
+      "path": "/assets/icons-source/slow.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Slowness",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "lifesteal": {
+      "path": "/assets/icons-source/lifesteal.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Lifesteal",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "ammo": {
+      "path": "/assets/icons-source/ammo.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Ammo",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "damage": {
+      "path": "/assets/icons-source/damage.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Damage",
+      "width": 64,
+      "height": 72,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "quest-lock": {
+      "path": "/assets/icons-source/quest-lock.png",
+      "sourceBundle": "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_lock.png.bundle",
+      "spriteName": "Tooltip_Quest_Lock",
+      "width": 106,
+      "height": 128,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    }
+  },
+  "icons": {
+    "shield": {
+      "path": "/assets/icons/shield.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Shield",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "haste": {
+      "path": "/assets/icons/haste.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Haste",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "cooldown": {
+      "path": "/assets/icons/cooldown.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Cooldown",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "flying": {
+      "path": "/assets/icons/flying.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Flying",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "flight": {
+      "path": "/assets/icons/flight.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Flying",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "tempo": {
+      "path": "/assets/icons/tempo.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Joy",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "regen": {
+      "path": "/assets/icons/regen.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Regen",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "poison": {
+      "path": "/assets/icons/poison.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Poison",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "heal": {
+      "path": "/assets/icons/heal.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Health",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "health": {
+      "path": "/assets/icons/health.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Health",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "income": {
+      "path": "/assets/icons/income.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Income",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "gold": {
+      "path": "/assets/icons/gold.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Income",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "value": {
+      "path": "/assets/icons/value.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Income",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "freeze": {
+      "path": "/assets/icons/freeze.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Freeze",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "rage": {
+      "path": "/assets/icons/rage.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Toughness",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "multicast": {
+      "path": "/assets/icons/multicast.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Multicast",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "burn": {
+      "path": "/assets/icons/burn.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Burn",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "crit": {
+      "path": "/assets/icons/crit.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "CritChance",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "destroy": {
+      "path": "/assets/icons/destroy.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Destroy",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "fusion": {
+      "path": "/assets/icons/fusion.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Fusion",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "tempo-spend": {
+      "path": "/assets/icons/tempo-spend.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "TempoSpend",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "charge": {
+      "path": "/assets/icons/charge.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Charge",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "slow": {
+      "path": "/assets/icons/slow.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Slowness",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "lifesteal": {
+      "path": "/assets/icons/lifesteal.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Lifesteal",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "ammo": {
+      "path": "/assets/icons/ammo.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Ammo",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "damage": {
+      "path": "/assets/icons/damage.png",
+      "sourceBundle": "fonts_assets_all.bundle",
+      "spriteName": "Damage",
+      "width": 128,
+      "height": 144,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sourceSize": [
+        64,
+        72
+      ],
+      "enhancement": "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
+    },
+    "quest-lock": {
+      "path": "/assets/icons/quest-lock.png",
+      "sourceBundle": "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_lock.png.bundle",
+      "spriteName": "Tooltip_Quest_Lock",
+      "width": 106,
+      "height": 128,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "enhancement": "Native 106×128 sprite, preserved without upscaling"
+    }
+  },
+  "frames": {
+    "Card_PreviewFrame_Diamond_Medium_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Diamond_Medium_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Diamond_Medium_TUI",
+      "width": 486,
+      "height": 507,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Gold_Small_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Gold_Small_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Gold_Small_TUI",
+      "width": 246,
+      "height": 508,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Legendary_Medium_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Legendary_Medium_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Legendary_Medium_TUI",
+      "width": 486,
+      "height": 512,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Gold_Medium_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Gold_Medium_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Gold_Medium_TUI",
+      "width": 486,
+      "height": 508,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Diamond_Large_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Diamond_Large_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Diamond_Large_TUI",
+      "width": 728,
+      "height": 507,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Silver_Small_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Silver_Small_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Silver_Small_TUI",
+      "width": 246,
+      "height": 498,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Silver_Large_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Silver_Large_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Silver_Large_TUI",
+      "width": 730,
+      "height": 502,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Legendary_Small_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Legendary_Small_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Legendary_Small_TUI",
+      "width": 246,
+      "height": 512,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Gold_Large_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Gold_Large_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Gold_Large_TUI",
+      "width": 729,
+      "height": 510,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Bronze_Large_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Bronze_Large_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Bronze_Large_TUI",
+      "width": 730,
+      "height": 492,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Diamond_Small_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Diamond_Small_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Diamond_Small_TUI",
+      "width": 246,
+      "height": 506,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Silver_Medium_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Silver_Medium_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Silver_Medium_TUI",
+      "width": 486,
+      "height": 500,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Bronze_Medium_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Bronze_Medium_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Bronze_Medium_TUI",
+      "width": 486,
+      "height": 489,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Bronze_Small_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Bronze_Small_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Bronze_Small_TUI",
+      "width": 247,
+      "height": 490,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewFrame_Legendary_Large_TUI": {
+      "path": "/assets/frames/Card_PreviewFrame_Legendary_Large_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewFrame_Legendary_Large_TUI",
+      "width": 729,
+      "height": 512,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "gems": {
+    "Card_PreviewGem_Regen_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Regen_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Regen_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewGem_Shield_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Shield_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Shield_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewGem_Lifesteal_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Lifesteal_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Lifesteal_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewGem_Heal_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Heal_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Heal_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewGem_Damage_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Damage_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Damage_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewGem_Burn_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Burn_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Burn_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Card_PreviewGem_Poison_TUI": {
+      "path": "/assets/gems/Card_PreviewGem_Poison_TUI.png",
+      "sourceBundle": "cardframes_assets_all.bundle",
+      "spriteName": "Card_PreviewGem_Poison_TUI",
+      "width": 126,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "ui": {
+    "Tooltip_Silver_Ammo_TUI": {
+      "path": "/assets/ui/Tooltip_Silver_Ammo_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Silver_Ammo_TUI",
+      "width": 78,
+      "height": 117,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Silver_Clock_TUI": {
+      "path": "/assets/ui/Tooltip_Silver_Clock_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Silver_Clock_TUI",
+      "width": 224,
+      "height": 204,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Gold_Clock_TUI": {
+      "path": "/assets/ui/Tooltip_Gold_Clock_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Gold_Clock_TUI",
+      "width": 224,
+      "height": 204,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Passive_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Passive_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Passive_TUI",
+      "width": 820,
+      "height": 454,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        85.0,
+        0.0,
+        85.0,
+        170.0
+      ]
+    },
+    "Tooltip_Bronze_Frame_Active_TUI": {
+      "path": "/assets/ui/Tooltip_Bronze_Frame_Active_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Bronze_Frame_Active_TUI",
+      "width": 1732,
+      "height": 664,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        120.0,
+        120.0,
+        120.0,
+        120.0
+      ]
+    },
+    "Tooltip_Silver_Frame_Active_TUI": {
+      "path": "/assets/ui/Tooltip_Silver_Frame_Active_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Silver_Frame_Active_TUI",
+      "width": 1732,
+      "height": 664,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        120.0,
+        120.0,
+        120.0,
+        120.0
+      ]
+    },
+    "Tooltip_LegendBG_Center_TUI": {
+      "path": "/assets/ui/Tooltip_LegendBG_Center_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_LegendBG_Center_TUI",
+      "width": 565,
+      "height": 69,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        20.0,
+        0.0,
+        20.0,
+        0.0
+      ]
+    },
+    "Tooltip_Diamond_Passive_TUI": {
+      "path": "/assets/ui/Tooltip_Diamond_Passive_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Diamond_Passive_TUI",
+      "width": 820,
+      "height": 454,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        85.0,
+        0.0,
+        85.0,
+        170.0
+      ]
+    },
+    "Tooltip_LegendBG_Top_TUI": {
+      "path": "/assets/ui/Tooltip_LegendBG_Top_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_LegendBG_Top_TUI",
+      "width": 565,
+      "height": 25,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        20.0,
+        0.0,
+        20.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Frame_Main_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Frame_Main_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Frame_Main_TUI",
+      "width": 820,
+      "height": 511,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        80.0,
+        97.0,
+        80.0,
+        110.0
+      ]
+    },
+    "Tooltip_Diamond_Divider_TUI": {
+      "path": "/assets/ui/Tooltip_Diamond_Divider_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Diamond_Divider_TUI",
+      "width": 816,
+      "height": 24,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_BG_TUI": {
+      "path": "/assets/ui/Tooltip_BG_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_BG_TUI",
+      "width": 400,
+      "height": 400,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Gradient_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Gradient_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Gradient_TUI",
+      "width": 820,
+      "height": 196,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        80.0,
+        0.0,
+        80.0,
+        0.0
+      ]
+    },
+    "Tooltip_Diamond_Clock_TUI": {
+      "path": "/assets/ui/Tooltip_Diamond_Clock_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Diamond_Clock_TUI",
+      "width": 224,
+      "height": 204,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Gold_Passive_TUI": {
+      "path": "/assets/ui/Tooltip_Gold_Passive_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Gold_Passive_TUI",
+      "width": 820,
+      "height": 454,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        85.0,
+        0.0,
+        85.0,
+        170.0
+      ]
+    },
+    "Tooltip_Legend_TUI": {
+      "path": "/assets/ui/Tooltip_Legend_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legend_TUI",
+      "width": 32,
+      "height": 32,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        14.0,
+        14.0,
+        14.0,
+        14.0
+      ]
+    },
+    "Tooltip_Gold_Ammo_TUI": {
+      "path": "/assets/ui/Tooltip_Gold_Ammo_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Gold_Ammo_TUI",
+      "width": 78,
+      "height": 117,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_LegendBG_Bottom_TUI": {
+      "path": "/assets/ui/Tooltip_LegendBG_Bottom_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_LegendBG_Bottom_TUI",
+      "width": 563,
+      "height": 26,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        20.0,
+        0.0,
+        20.0,
+        0.0
+      ]
+    },
+    "Tooltip_Diamond_Ammo_TUI": {
+      "path": "/assets/ui/Tooltip_Diamond_Ammo_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Diamond_Ammo_TUI",
+      "width": 78,
+      "height": 117,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Silver_Passive_TUI": {
+      "path": "/assets/ui/Tooltip_Silver_Passive_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Silver_Passive_TUI",
+      "width": 820,
+      "height": 454,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        85.0,
+        0.0,
+        85.0,
+        170.0
+      ]
+    },
+    "Tooltip_Diamond_Frame_Active_TUI": {
+      "path": "/assets/ui/Tooltip_Diamond_Frame_Active_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Diamond_Frame_Active_TUI",
+      "width": 1732,
+      "height": 664,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        120.0,
+        120.0,
+        120.0,
+        120.0
+      ]
+    },
+    "Tooltip_Legendary_Ammo_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Ammo_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Ammo_TUI",
+      "width": 78,
+      "height": 117,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Diamond_Title_TUI": {
+      "path": "/assets/ui/Tooltip_Diamond_Title_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Diamond_Title_TUI",
+      "width": 820,
+      "height": 210,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Bronze_Ammo_TUI": {
+      "path": "/assets/ui/Tooltip_Bronze_Ammo_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Bronze_Ammo_TUI",
+      "width": 78,
+      "height": 117,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        19.0,
+        23.0,
+        19.0,
+        23.0
+      ]
+    },
+    "Tooltip_Arrow_TUI": {
+      "path": "/assets/ui/Tooltip_Arrow_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Arrow_TUI",
+      "width": 87,
+      "height": 63,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Bronze_Passive_TUI": {
+      "path": "/assets/ui/Tooltip_Bronze_Passive_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Bronze_Passive_TUI",
+      "width": 820,
+      "height": 454,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        85.0,
+        0.0,
+        85.0,
+        170.0
+      ]
+    },
+    "Tooltip_Gold_Frame_Active_TUI": {
+      "path": "/assets/ui/Tooltip_Gold_Frame_Active_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Gold_Frame_Active_TUI",
+      "width": 1732,
+      "height": 664,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        120.0,
+        120.0,
+        120.0,
+        120.0
+      ]
+    },
+    "Tooltip_Legendary_Frame_Active_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Frame_Active_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Frame_Active_TUI",
+      "width": 1732,
+      "height": 664,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        120.0,
+        120.0,
+        120.0,
+        120.0
+      ]
+    },
+    "Tooltip_Legendary_Clock_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Clock_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Clock_TUI",
+      "width": 221,
+      "height": 204,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Silver_Title_TUI": {
+      "path": "/assets/ui/Tooltip_Silver_Title_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Silver_Title_TUI",
+      "width": 820,
+      "height": 210,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Gold_Title_TUI": {
+      "path": "/assets/ui/Tooltip_Gold_Title_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Gold_Title_TUI",
+      "width": 820,
+      "height": 210,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Nested_Carrot_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Nested_Carrot_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Nested_Carrot_TUI",
+      "width": 57,
+      "height": 36,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        25.0,
+        0.0,
+        25.0,
+        0.0
+      ]
+    },
+    "Tooltip_Bronze_Title_TUI": {
+      "path": "/assets/ui/Tooltip_Bronze_Title_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Bronze_Title_TUI",
+      "width": 820,
+      "height": 210,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        80.0,
+        80.0,
+        80.0,
+        0.0
+      ]
+    },
+    "Tooltip_Crit_Divider_TUI": {
+      "path": "/assets/ui/Tooltip_Crit_Divider_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Crit_Divider_TUI",
+      "width": 564,
+      "height": 3,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Silver_Divider_TUI": {
+      "path": "/assets/ui/Tooltip_Silver_Divider_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Silver_Divider_TUI",
+      "width": 816,
+      "height": 24,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Nested_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Nested_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Nested_TUI",
+      "width": 268,
+      "height": 86,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        10.0,
+        11.0,
+        10.0,
+        11.0
+      ]
+    },
+    "Tooltip_Bronze_Clock_TUI": {
+      "path": "/assets/ui/Tooltip_Bronze_Clock_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Bronze_Clock_TUI",
+      "width": 224,
+      "height": 204,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Gold_Divider_TUI": {
+      "path": "/assets/ui/Tooltip_Gold_Divider_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Gold_Divider_TUI",
+      "width": 816,
+      "height": 24,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Bronze_Divider_TUI": {
+      "path": "/assets/ui/Tooltip_Bronze_Divider_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Bronze_Divider_TUI",
+      "width": 816,
+      "height": 24,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Tag_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Tag_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Tag_TUI",
+      "width": 266,
+      "height": 110,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        25.0,
+        22.0,
+        25.0,
+        22.0
+      ]
+    },
+    "Tooltip_Quest_Divider_TUI": {
+      "path": "/assets/ui/Tooltip_Quest_Divider_TUI.png",
+      "sourceBundle": "tooltips_assets_all.bundle",
+      "spriteName": "Tooltip_Quest_Divider_TUI",
+      "width": 96,
+      "height": 24,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        31.0,
+        0.0,
+        34.0,
+        0.0
+      ]
+    },
+    "Tooltip_Quest_DividerVertical_TUI": {
+      "path": "/assets/ui/Tooltip_Quest_DividerVertical_TUI.png",
+      "sourceBundle": "tooltips_assets_all.bundle",
+      "spriteName": "Tooltip_Quest_DividerVertical_TUI",
+      "width": 16,
+      "height": 64,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Quest_DividerOperator_TUI": {
+      "path": "/assets/ui/Tooltip_Quest_DividerOperator_TUI.png",
+      "sourceBundle": "tooltips_assets_all.bundle",
+      "spriteName": "Tooltip_Quest_DividerOperator_TUI",
+      "width": 256,
+      "height": 16,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Quest_ProgressBar_TUI": {
+      "path": "/assets/ui/Tooltip_Quest_ProgressBar_TUI.png",
+      "sourceBundle": "tooltips_assets_all.bundle",
+      "spriteName": "Tooltip_Quest_ProgressBar_TUI",
+      "width": 256,
+      "height": 48,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        17.0,
+        0.0,
+        24.0,
+        0.0
+      ]
+    },
+    "Tooltip_Quest_Frame_TUI": {
+      "path": "/assets/ui/Tooltip_Quest_Frame_TUI.png",
+      "sourceBundle": "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_frame_tui.png.bundle",
+      "spriteName": "Tooltip_Quest_Frame_TUI",
+      "width": 512,
+      "height": 128,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        22.0,
+        24.0,
+        3.0,
+        24.0
+      ]
+    },
+    "Tooltip_Quest_Lock": {
+      "path": "/assets/ui/Tooltip_Quest_Lock.png",
+      "sourceBundle": "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_lock.png.bundle",
+      "spriteName": "Tooltip_Quest_Lock",
+      "width": 106,
+      "height": 128,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "sliceBorderLTRB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Tooltip_Legendary_Title_TUI": {
+      "path": "/assets/ui/Tooltip_Legendary_Title_TUI.png",
+      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
+      "spriteName": "Tooltip_Legendary_Frame_Main_TUI",
+      "width": 820,
+      "height": 210,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "derivation": "Top 210px crop of original main frame; transparent center, no independent bottom border"
+    }
+  },
+  "heroes-source": {
+    "karnok": {
+      "path": "/assets/heroes-source/karnok.png",
+      "sourceBundle": "tooltips_assets_all.bundle",
+      "spriteName": "Icon_FlatRough_KAR_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "dragons": {
+      "path": "/assets/heroes-source/dragons.png",
+      "sourceBundle": "defaultlocalgroup_assets_assets_thebazaar_art_ui_icons_heros_rough_icon_flatrough_dra_tui.png.bundle",
+      "spriteName": "Icon_FlatRough_DRA_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "dooley": {
+      "path": "/assets/heroes-source/dooley.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_doo_tui.bundle",
+      "spriteName": "Icon_FlatRough_DOO_TUI",
+      "width": 253,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "jules": {
+      "path": "/assets/heroes-source/jules.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_jul_tui.bundle",
+      "spriteName": "Icon_FlatRough_JUL_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "mak": {
+      "path": "/assets/heroes-source/mak.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_mak_tui.bundle",
+      "spriteName": "Icon_FlatRough_MAK_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "neutral": {
+      "path": "/assets/heroes-source/neutral.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_monster_tui.bundle",
+      "spriteName": "Icon_FlatRough_Monster_TUI",
+      "width": 245,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "pygmalien": {
+      "path": "/assets/heroes-source/pygmalien.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_pyg_tui.bundle",
+      "spriteName": "Icon_FlatRough_PYG_TUI",
+      "width": 255,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "stelle": {
+      "path": "/assets/heroes-source/stelle.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_ste_tui.bundle",
+      "spriteName": "Icon_FlatRough_STE_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    },
+    "vanessa": {
+      "path": "/assets/heroes-source/vanessa.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_van_tui.bundle",
+      "spriteName": "Icon_FlatRough_VAN_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1"
+    }
+  },
+  "heroes": {
+    "karnok": {
+      "path": "/assets/heroes/karnok.png",
+      "sourceBundle": "tooltips_assets_all.bundle",
+      "spriteName": "Icon_FlatRough_KAR_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "dragons": {
+      "path": "/assets/heroes/dragons.png",
+      "sourceBundle": "defaultlocalgroup_assets_assets_thebazaar_art_ui_icons_heros_rough_icon_flatrough_dra_tui.png.bundle",
+      "spriteName": "Icon_FlatRough_DRA_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "dooley": {
+      "path": "/assets/heroes/dooley.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_doo_tui.bundle",
+      "spriteName": "Icon_FlatRough_DOO_TUI",
+      "width": 253,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "jules": {
+      "path": "/assets/heroes/jules.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_jul_tui.bundle",
+      "spriteName": "Icon_FlatRough_JUL_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "mak": {
+      "path": "/assets/heroes/mak.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_mak_tui.bundle",
+      "spriteName": "Icon_FlatRough_MAK_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "neutral": {
+      "path": "/assets/heroes/neutral.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_monster_tui.bundle",
+      "spriteName": "Icon_FlatRough_Monster_TUI",
+      "width": 245,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "pygmalien": {
+      "path": "/assets/heroes/pygmalien.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_pyg_tui.bundle",
+      "spriteName": "Icon_FlatRough_PYG_TUI",
+      "width": 255,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "stelle": {
+      "path": "/assets/heroes/stelle.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_ste_tui.bundle",
+      "spriteName": "Icon_FlatRough_STE_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    },
+    "vanessa": {
+      "path": "/assets/heroes/vanessa.png",
+      "sourceBundle": "defaultlocalgroup_assets_icon_flatrough_van_tui.bundle",
+      "spriteName": "Icon_FlatRough_VAN_TUI",
+      "width": 256,
+      "height": 256,
+      "source": "Installed The Bazaar game, Unity 6000.3.11f1",
+      "tint": "#94641c"
+    }
+  },
+  "fonts": {
+    "NotoSansSC-Bold": {
+      "path": "/assets/fonts/NotoSansSC-Bold.woff2",
+      "family": "Noto Sans SC",
+      "style": "Bold",
+      "weight": 700,
+      "sourceBundle": "fonts_cn_assets_all.bundle",
+      "subset": false,
+      "glyphCount": 30890
+    },
+    "NotoSerifSC-SemiBold": {
+      "path": "/assets/fonts/NotoSerifSC-SemiBold.woff2",
+      "family": "Noto Serif SC SemiBold",
+      "style": "Regular",
+      "weight": 600,
+      "sourceBundle": "fonts_cn_assets_all.bundle",
+      "subset": false,
+      "glyphCount": 30928
+    },
+    "BazaarNumbersWeb-Regular": {
+      "path": "/assets/fonts/BazaarNumbersWeb-Regular.woff2",
+      "family": "Bazaar Numbers Web",
+      "style": "Regular",
+      "weight": 400,
+      "sourceBundle": "fonts_assets_all.bundle",
+      "method": "Original SDF contour reconstruction; original source TTF absent"
+    }
+  }
+}

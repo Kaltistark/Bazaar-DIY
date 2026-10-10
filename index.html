@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#11181b" />
+    <title>大巴扎 · 物品工坊</title>
+    <meta
+      name="description"
+      content="制作你的大巴扎 DIY 物品，实时预览、编辑各品质效果并导出图片。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="brand" href="./"
+        ><span class="brand-mark">◇</span
+        ><span>大巴扎<span class="brand-sub">物品工坊</span></span></a
+      >
+      <div class="header-actions">
+        <span id="save-status" role="status">本地工坊</span
+        ><button id="new-project" class="button subtle">新建</button
+        ><button id="open-project" class="button subtle">打开作品</button
+        ><button id="save-project" class="button subtle">保存作品</button
+        ><button id="export-open" class="button primary">
+          导出图片 <span>↗</span>
+        </button>
+      </div>
+    </header>
+    <main class="workspace">
+      <section class="preview-panel" aria-label="卡牌实时预览">
+        <div class="panel-top">
+          <span class="eyebrow"
+            >LIVE PREVIEW <span class="live-dot"></span
+          ></span>
+          <div class="tier-switch" id="tier-switch" aria-label="预览品质"></div>
+        </div>
+        <div class="preview-stage" id="preview-stage">
+          <canvas id="preview" aria-label="物品展示预览" tabindex="0"></canvas>
+          <div
+            id="art-interaction"
+            aria-label="拖动或缩放物品插画"
+            tabindex="0"
+            hidden
+          ></div>
+          <div id="empty-upload" class="upload-overlay">
+            <span class="upload-icon">＋</span><strong>放入你的物品插画</strong
+            ><span>点击上传，或将图片拖入卡框</span
+            ><button id="upload-inline" class="button small">选择图片</button>
+          </div>
+        </div>
+        <div class="preview-tools">
+          <span id="preview-label">青铜 · 中型</span
+          ><span>拖动卡图调整位置 · 滚轮缩放</span
+          ><button id="reset-crop" class="button text">重置位置</button>
+        </div>
+        <div class="art-controls">
+          <button id="upload-button" class="button">↥ 上传卡图</button
+          ><label class="zoom-control"
+            >缩放
+            <input
+              id="art-zoom"
+              type="range"
+              min="0.3"
+              max="4"
+              step="0.01"
+              value="1"
+            /><output id="zoom-value">100%</output></label
+          ><button id="load-example" class="button text">试用示例</button>
+        </div>
+        <div class="preview-note">
+          <span>✦</span> 数值随品质切换。全等级图片使用初始品质外观。
+        </div>
+      </section>
+      <section class="editor-panel" aria-label="物品编辑">
+        <div class="editor-heading">
+          <div>
+            <span class="eyebrow">CREATE AN ITEM</span>
+            <h1>编辑你的物品</h1>
+          </div>
+          <span class="step-chip">DIY</span>
+        </div>
+        <div class="editor-scroll">
+          <div class="field-row three">
+            <label>初始品质<select id="initial-tier"></select></label
+            ><label
+              >物品大小<select id="item-size">
+                <option value="small">小型</option>
+                <option value="medium" selected>中型</option>
+                <option value="large">大型</option>
+              </select></label
+            ><label>所属职业<select id="hero"></select></label>
+          </div>
+          <details class="tag-picker" id="tag-picker">
+            <summary>
+              <span>物品类型 <span id="selected-types"></span></span
+              ><span class="chevron">⌄</span>
+            </summary>
+            <div class="tag-grid" id="tag-grid"></div>
+          </details>
+          <label class="name-field"
+            >物品名称<input
+              id="item-name"
+              type="text"
+              maxlength="60"
+              placeholder="给它起个名字…"
+              autocomplete="off"
+          /></label>
+          <div class="structure-mode">
+            <label class="check-label"
+              ><input
+                id="independent-structure"
+                type="checkbox"
+              />独立修改当前品质的效果结构</label
+            ><span class="muted"
+              >默认全品质同步增删与句式，数值仍独立编辑。</span
+            >
+          </div>
+          <div class="section-label">
+            <span>主动效果</span
+            ><label class="switch-label"
+              ><input
+                id="active-enabled"
+                aria-label="启用主动效果"
+                type="checkbox"
+                checked /><span class="switch"></span
+            ></label>
+          </div>
+          <div id="active-editor">
+            <div class="field-row cd-row">
+              <label
+                >冷却时间 <span class="muted">秒</span
+                ><input
+                  id="cooldown"
+                  type="text"
+                  inputmode="decimal"
+                  value="4.0"
+                  placeholder="例如 4.0"
+                  maxlength="6" /></label
+              ><span class="help">最多一位小数<br />空白时隐藏徽章</span>
+            </div>
+            <div id="effect-list"></div>
+            <button id="add-effect" class="button add">＋ 添加效果</button>
+            <p class="field-help">
+              输入 <kbd>60火</kbd> 或 <kbd>火=伤</kbd>，按
+              <kbd>Tab</kbd> 接受补全。
+            </p>
+          </div>
+          <div class="section-label">
+            <span>被动效果</span><span class="muted">可选</span>
+          </div>
+          <textarea
+            id="passive"
+            rows="3"
+            placeholder="例如：当你使用相邻物品时，充能此物品1秒。"
+          ></textarea>
+          <div class="optional-options">
+            <details id="quest-editor">
+              <summary>
+                任务效果 <span id="quest-count" class="muted">可选</span
+                ><span class="chevron">⌄</span>
+              </summary>
+              <p class="field-help">
+                条件在上，奖励在下；右侧显示进度。进度与数值按品质编辑。
+              </p>
+              <div id="quest-list"></div>
+              <button id="add-quest" class="button add">＋ 添加任务</button>
+            </details>
+            <details id="extras">
+              <summary>
+                附加属性 <span class="muted">弹药 · 暴击率</span
+                ><span class="chevron">⌄</span>
+              </summary>
+              <div class="extra-grid">
+                <div>
+                  <label class="check-label"
+                    ><input id="ammo-enabled" type="checkbox" />启用弹药</label
+                  ><label class="sr-only" for="ammo">弹药数量</label
+                  ><input
+                    id="ammo"
+                    type="number"
+                    min="0"
+                    max="999"
+                    step="1"
+                    value="1"
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label class="check-label"
+                    ><input
+                      id="crit-enabled"
+                      type="checkbox"
+                    />初始暴击率</label
+                  >
+                  <div class="suffix-input">
+                    <label class="sr-only" for="crit">暴击率</label
+                    ><input
+                      id="crit"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value="0"
+                      disabled
+                    /><span>%</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+          <div class="keyword-palette">
+            <span class="section-label">快捷关键词</span>
+            <div id="keyword-chips"></div>
+          </div>
+          <p id="compatibility-note" class="notice" hidden>
+            各品质效果结构不同，目前只能导出当前品质图片。
+          </p>
+        </div>
+        <div class="editor-footer">
+          <span id="editing-tier">正在编辑 · 青铜</span>
+          <div class="footer-actions">
+            <button id="save-project-bottom" class="button subtle">
+              保存作品</button
+            ><button id="export-bottom" class="button primary">
+              保存图片 ↗
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>大巴扎 · 物品 DIY</span
+      ><span>图片与作品保存在你的浏览器本地。</span>
+    </footer>
+    <input
+      id="art-file"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      hidden
+    /><input
+      id="project-file"
+      type="file"
+      accept="application/json,.json"
+      hidden
+    />
+    <dialog id="export-dialog">
+      <div class="dialog-heading">
+        <h2>保存你的作品</h2>
+        <button class="icon-button dialog-close" aria-label="关闭">×</button>
+      </div>
+      <p class="muted">导出完整的物品卡图与效果描述。</p>
+      <label class="export-choice"
+        ><input type="radio" name="export-mode" value="all" checked /><span
+          ><strong>保存全等级图片</strong
+          ><small>初始品质外观 · 合并所有可用等级数值</small></span
+        ><span class="recommended">默认</span></label
+      ><label class="export-choice"
+        ><input type="radio" name="export-mode" value="current" /><span
+          ><strong>保存当前等级图片</strong
+          ><small id="current-export-label">当前正在编辑的品质</small></span
+        ></label
+      >
+      <p id="export-incompatible" class="notice" hidden>
+        效果结构不同，无法合并全等级。
+      </p>
+      <div class="field-row two export-settings">
+        <label
+          >图片背景<select id="export-background">
+            <option value="dark">深色底图</option>
+            <option value="transparent">透明背景</option>
+          </select></label
+        ><label
+          >清晰度<select id="export-scale">
+            <option value="2" selected>高清 · 2倍</option>
+            <option value="1">标准 · 1倍</option>
+            <option value="3">超清 · 3倍</option>
+          </select></label
+        >
+      </div>
+      <div class="dialog-actions">
+        <button id="export-download" class="button primary">
+          下载 PNG 图片
+        </button>
+      </div>
+    </dialog>
+    <dialog id="structure-dialog">
+      <div class="dialog-heading"><h2>各品质的效果将不一致</h2></div>
+      <p>
+        不建议在不同品质间增删效果或改变句式。这次修改会禁用“保存全等级图片”，仍可保存当前等级图片。
+      </p>
+      <div class="dialog-actions">
+        <button id="structure-cancel" class="button">撤销修改</button
+        ><button id="structure-confirm" class="button primary">仍然修改</button>
+      </div>
+    </dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+dist/
+node_modules/
+参考素材/
+具体要求.txt
+.local/
+*.log
+.asset-tools/
+__pycache__/
+.sites-runtime/
+.sites-checkout/
+.sites-checkout-*/
