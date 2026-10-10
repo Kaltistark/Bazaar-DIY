@@ -2,6 +2,13 @@
 
 这是在浏览器本地处理作品的纯静态应用，无需服务器、数据库、API 密钥或 ChatGPT 登录。Sites 预览站的登录与“编辑网站”由原托管平台添加，Cloudflare 直接部署 `dist/` 时不含这些界面。
 
+## 当前已上线的项目
+
+正式地址：`https://bazaardiy.kalhark.com/`，备用地址：`https://bazaar-diy.pages.dev/`。
+当前 Cloudflare Pages 项目名为 `bazaar-diy`，采用 Direct Upload；阿里云已添加 `bazaardiy` 的 CNAME，指向 `bazaar-diy.pages.dev`。HTTPS 已激活。
+
+后续更新：在本地运行 `npm run build` 和 `python scripts/package-pages.py`，进入 Cloudflare **Workers & Pages → bazaar-diy → Create deployment**，选择 **Production**，上传新的 `output/bazaar-diy-cloudflare.zip` 并部署。域名记录无需重新配置。GitHub 推送目前不会自动更新这个 Direct Upload 项目；如需 Git 自动部署，应另外创建 Git 集成项目并迁移域名。
+
 ## 推荐：GitHub 自动部署
 
 1. 登录 Cloudflare 控制台，进入 **Workers & Pages → Create application → Pages → Import an existing Git repository**。授权自己的 GitHub 账户，选择 `Kaltistark/Bazaar-DIY`。

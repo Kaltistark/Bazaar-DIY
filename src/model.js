@@ -1,4 +1,4 @@
-import { QUALITIES, KEYWORDS, BADGE_ORDER, TYPES, HEROES } from "./data.js";
+import { QUALITIES, KEYWORDS, BADGE_ORDER, TYPES, HEROES, ENCHANTMENTS } from "./data.js";
 export const NUM_RE = /-?\d+(?:\.\d+)?/g;
 export function defaultQuest() {
   return {
@@ -58,7 +58,13 @@ export function createProject() {
     independentStructure: false,
     tiers: Object.fromEntries(QUALITIES.map((q) => [q.id, null])),
     seed: defaultTier(),
+    enchantments: defaultEnchantments(),
   };
+}
+export function defaultEnchantments() {
+  return { initialized: false, entries: Object.fromEntries(
+    ENCHANTMENTS.map(({ id }) => [id, { enabled: true, text: "", manual: false }]),
+  ) };
 }
 export const clone = (value) => structuredClone(value);
 export function available(project) {
@@ -313,6 +319,18 @@ export function validateProject(value) {
       )
     )
       throw new Error("任务内容或进度无效");
+  }
+  value.enchantments ??= defaultEnchantments();
+  const enchantments = value.enchantments;
+  if (typeof enchantments.initialized !== "boolean" || !enchantments.entries ||
+    typeof enchantments.entries !== "object" || Array.isArray(enchantments.entries) ||
+    Object.keys(enchantments.entries).some(id => !ENCHANTMENTS.some(e => e.id === id)))
+    throw new Error("附魔数据无效");
+  for (const { id } of ENCHANTMENTS) {
+    const entry = enchantments.entries[id] ??= { enabled: true, text: "", manual: false };
+    if (!entry || typeof entry.enabled !== "boolean" || typeof entry.text !== "string" ||
+      entry.text.length > 4000 || typeof entry.manual !== "boolean")
+      throw new Error("附魔效果无效或过长");
   }
   return value;
 }

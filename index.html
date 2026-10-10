@@ -63,7 +63,12 @@
           </div>
           <span class="step-chip">DIY</span>
         </div>
+        <div class="editor-tabs" role="tablist" aria-label="编辑步骤">
+          <button id="base-tab" role="tab" aria-selected="true" aria-controls="base-editor-page">1 · 基础效果</button>
+          <button id="enchantments-tab" role="tab" aria-selected="false" aria-controls="enchantments-editor-page">2 · 附魔效果</button>
+        </div>
         <div class="editor-scroll">
+          <div id="base-editor-page" role="tabpanel" aria-labelledby="base-tab">
           <div class="field-row three">
             <label>初始品质<select id="initial-tier"></select></label
             ><label
@@ -137,7 +142,7 @@
               <span>冷却时间</span>
               <input id="cooldown" type="hidden" value="4.0" />
               <div id="cooldown-picker" class="cd-picker" role="group" aria-label="冷却时间选择器">
-                <div class="cd-wheel" data-part="integer"><input id="cd-integer" class="cd-wheel-input" type="text" inputmode="numeric" maxlength="3" value="04" role="spinbutton" aria-label="冷却时间整数" aria-valuemin="0" aria-valuemax="999" aria-valuenow="4" /></div>
+                <div class="cd-wheel" data-part="integer"><input id="cd-integer" class="cd-wheel-input" type="text" inputmode="numeric" maxlength="3" value="4" role="spinbutton" aria-label="冷却时间整数" aria-valuemin="0" aria-valuemax="999" aria-valuenow="4" /></div>
                 <span class="cd-dot" aria-hidden="true">.</span>
                 <div class="cd-wheel fraction" data-part="fraction"><input id="cd-fraction" class="cd-wheel-input" type="text" inputmode="numeric" maxlength="1" value="0" role="spinbutton" aria-label="冷却时间十分位" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0" /></div>
                 <span class="cd-unit">秒</span>
@@ -224,6 +229,18 @@
               >默认全品质同步增删与句式，数值仍独立编辑。</span
             >
           </div>
+          <button id="edit-enchantments" class="button next-step">完成基础效果 · 编辑附魔 →</button>
+          </div>
+          <div id="enchantments-editor-page" role="tabpanel" aria-labelledby="enchantments-tab" hidden>
+            <div class="enchantment-intro">
+              <strong>为这个物品添加附魔</strong>
+              <p>根据基础效果生成初稿，可自由修改。留空或关闭的附魔不会出现在图片中。</p>
+              <span class="muted">附魔描述各品质共用，引用的属性随品质变化。</span>
+            </div>
+            <button id="regenerate-enchantments" class="button subtle">更新自动生成的效果</button>
+            <div id="enchantment-list"></div>
+            <button id="back-to-base" class="button text">← 返回基础效果</button>
+          </div>
         </div>
         <div class="editor-footer">
           <span id="editing-tier">正在编辑 · 青铜</span>
@@ -279,6 +296,7 @@
       <p id="export-incompatible" class="notice" hidden>
         效果结构不同，无法合并全等级。
       </p>
+      <label class="export-enchantments check-label"><input id="export-enchantments" type="checkbox" />同时保存附魔效果</label>
       <div class="field-row two export-settings">
         <label
           >图片背景<select id="export-background">

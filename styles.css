@@ -590,21 +590,18 @@ details[open] > summary > .chevron {
 }
 .cd-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 16px;
 }
-/* Two independent clock-style drums, with an editable center value. */
-.cd-picker { display: flex; align-items: center; justify-content: center; gap: 8px; }
-.cd-wheel { position: relative; width: 88px; height: 148px; overflow: hidden; perspective: 220px; touch-action: none; user-select: none; background: linear-gradient(#10171b, #1f292d 50%, #10171b); border-radius: 8px; }
-.cd-wheel.fraction { width: 64px; }
-.cd-wheel::before { content: ""; position: absolute; top: calc(50% - 20px); height: 40px; left: 0; right: 0; background: #e7bd730b; border-block: 1px solid #e7bd7355; pointer-events: none; }
-.cd-wheel-input { position: absolute; top: calc(50% - 20px); height: 40px; padding: 0 !important; text-align: center; font-size: 28px !important; font-variant-numeric: tabular-nums; border: 0 !important; border-radius: 0; background: transparent !important; color: #ffe4b3; z-index: 1; }
-.cd-wheel-neighbor { position: absolute; top: calc(50% + var(--offset) * 36px); left: 0; width: 100%; height: 36px; transform: translateY(-50%) rotateX(calc(var(--offset) * -20deg)); border: 0; background: transparent; font-size: 24px; font-variant-numeric: tabular-nums; color: #a3a9a6; opacity: .42; cursor: ns-resize; }
-.cd-wheel-neighbor[data-offset="-2"], .cd-wheel-neighbor[data-offset="2"] { opacity: .15; }
-.cd-dot { font-size: 30px; color: var(--gold); padding-bottom: 4px; }
-.cd-unit { font-size: 14px; color: var(--muted); margin-left: 4px; }
+/* Keep two independently editable digits without neighboring values. */
+.cd-picker { display: flex; align-items: center; justify-content: center; gap: 5px; }
+.cd-wheel { position: relative; width: 64px; height: 40px; overflow: hidden; touch-action: none; user-select: none; border: 1px solid var(--line); background: #10191d; border-radius: 6px; }
+.cd-wheel.fraction { width: 38px; }
+.cd-wheel-input { height: 38px; padding: 0 !important; text-align: center; font-size: 19px !important; font-variant-numeric: tabular-nums; border: 0 !important; border-radius: 0; background: transparent !important; color: #ffe4b3; }
+.cd-dot { font-size: 20px; color: var(--gold); }
+.cd-unit { font-size: 13px; color: var(--muted); margin-left: 3px; }
 .help {
   font-size: 10px;
   color: var(--muted);
@@ -884,6 +881,23 @@ dialog::backdrop {
 [hidden] {
   display: none !important;
 }
+.editor-tabs { display: flex; gap: 8px; padding: 0 24px 16px; border-bottom: 1px solid var(--line); }
+.editor-tabs button { flex: 1; border: 1px solid var(--line); border-radius: 6px; padding: 10px; color: var(--muted); background: #111a1e; cursor: pointer; }
+.editor-tabs button[aria-selected="true"] { color: var(--gold); border-color: #b49257; background: #b4925714; }
+.next-step { margin-top: 22px; width: 100%; border-color: #b4925766; color: var(--gold); background: #b4925710; }
+.enchantment-intro strong { font-size: 16px; }
+.enchantment-intro p { color: var(--muted); font-size: 13px; line-height: 1.8; margin: 10px 0; }
+.enchantment-intro > span { display: block; font-size: 12px; line-height: 1.8; margin-bottom: 16px; }
+#regenerate-enchantments { margin-bottom: 18px; }
+.enchantment-card { border: 1px solid var(--line); border-radius: 8px; padding: 13px; margin-bottom: 12px; background: #111a1e; }
+.enchantment-card .enchantment-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.enchantment-card .check-label { color: var(--enchantment-color); font-size: 15px; font-weight: 700; }
+.enchantment-card textarea { width: 100%; font-size: 14px; line-height: 1.7; }
+.enchantment-card.excluded { opacity: .6; }
+.enchantment-card .button.text { padding: 3px; font-size: 11px; white-space: nowrap; }
+.export-enchantments { margin: 18px 0; color: var(--text); }
+/* Each editor page owns its fields, including at the former two-column breakpoint. */
+.editor-scroll:has(#base-editor-page) { display: block; }
 @media (min-width: 1600px) {
   .preview-stage {
     min-height: 530px;

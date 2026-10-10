@@ -1,4 +1,4 @@
-import { QUALITIES, SIZES, HEROES, TYPES, KEYWORDS } from "./data.js";
+import { QUALITIES, SIZES, HEROES, TYPES, KEYWORDS, ENCHANTMENTS } from "./data.js";
 import {
   createProject,
   available,
@@ -19,6 +19,7 @@ import {
 import { Renderer } from "./renderer.js";
 import { CooldownPicker } from "./cooldown-picker.js";
 import { fieldCompletion } from "./completion.js";
+import { refreshEnchantments, generateEnchantmentDraft } from "./enchantments.js";
 const $ = (id) => document.getElementById(id),
   renderer = new Renderer();
 let project = createProject(),
@@ -28,6 +29,7 @@ let project = createProject(),
   focusSnapshot = null,
   pendingStructure = null,
   toastTimer;
+let editorPage = "base";
 const canvas = $("preview"),
   artInteraction = $("art-interaction"),
   tierButtons = new Map();
@@ -254,6 +256,78 @@ function syncForms() {
   buildEffectFields(t);
   buildQuestFields(t);
   syncCompatibility();
+  buildEnchantmentFields();
+}
+function setEditorPage(page) {
+  if (page === "enchantments") {
+    refreshEnchantments(project);
+    buildEnchantmentFields();
+    changed();
+  }
+  editorPage = page;
+  $("base-editor-page").hidden = page !== "base";
+  $("enchantments-editor-page").hidden = page !== "enchantments";
+  $("base-tab").setAttribute("aria-selected", String(page === "base"));
+  $("enchantments-tab").setAttribute("aria-selected", String(page === "enchantments"));
+  schedulePaint();
+}
+for (const id of ["enchantments-tab", "edit-enchantments"])
+  $(id).addEventListener("click", () => setEditorPage("enchantments"));
+for (const id of ["base-tab", "back-to-base"])
+  $(id).addEventListener("click", () => setEditorPage("base"));
+$("regenerate-enchantments").addEventListener("click", () => {
+  refreshEnchantments(project);
+  buildEnchantmentFields();
+  changed();
+  toast("已更新自动生成的附魔，手动修改内容已保留");
+});
+function buildEnchantmentFields() {
+  $("enchantment-list").replaceChildren();
+  for (const enchantment of ENCHANTMENTS) {
+    const entry = project.enchantments.entries[enchantment.id];
+    const card = document.createElement("div");
+    card.className = "enchantment-card";
+    card.classList.toggle("excluded", !entry.enabled);
+    card.style.setProperty("--enchantment-color", enchantment.color);
+    const heading = document.createElement("div");
+    heading.className = "enchantment-heading";
+    const label = document.createElement("label");
+    label.className = "check-label";
+    const toggle = document.createElement("input");
+    toggle.type = "checkbox";
+    toggle.checked = entry.enabled;
+    toggle.setAttribute("aria-label", `启用${enchantment.name}附魔`);
+    toggle.addEventListener("change", () => {
+      entry.enabled = toggle.checked;
+      card.classList.toggle("excluded", !entry.enabled);
+      changed();
+    });
+    label.append(toggle, document.createTextNode(enchantment.name));
+    const reset = document.createElement("button");
+    reset.className = "button text";
+    reset.textContent = "恢复自动";
+    reset.setAttribute("aria-label", `重新生成${enchantment.name}附魔`);
+    const input = document.createElement("textarea");
+    input.rows = 2;
+    input.maxLength = 4000;
+    input.value = entry.text;
+    input.placeholder = "尚未生成，可手动填写…";
+    input.setAttribute("aria-label", `${enchantment.name}附魔效果`);
+    input.addEventListener("input", () => {
+      entry.text = input.value;
+      entry.manual = true;
+      changed();
+    });
+    reset.addEventListener("click", () => {
+      entry.text = generateEnchantmentDraft(project)[enchantment.id];
+      entry.manual = false;
+      input.value = entry.text;
+      changed();
+    });
+    heading.append(label, reset);
+    card.append(heading, input);
+    $("enchantment-list").append(card);
+  }
 }
 function buildEffectFields(t) {
   $("effect-list").replaceChildren();
@@ -523,6 +597,7 @@ $("structure-dialog").addEventListener("cancel", (e) => {
   cancelStructure();
 });
 function changed() {
+  if (project.enchantments.initialized) refreshEnchantments(project);
   syncCompatibility();
   schedulePaint();
   clearTimeout(saveTimer);
@@ -545,6 +620,7 @@ function schedulePaint() {
     try {
       const stacked = $("preview-stage").clientWidth < 500;
       renderer.render(canvas, project, current, {
+        includeEnchantments: editorPage === "enchantments",
         scale: Math.min(devicePixelRatio || 1, 2),
         stacked,
       });
@@ -831,6 +907,7 @@ function showExport() {
   document.querySelector(
     `input[name="export-mode"][value="${compatible(project) ? "all" : "current"}"]`,
   ).checked = true;
+  $("export-enchantments").checked = editorPage === "enchantments";
   $("export-dialog").showModal();
   updateExportPreview();
 }
@@ -874,8 +951,14 @@ async function updateExportPreview() {
   const mode = document.querySelector('input[name="export-mode"]:checked').value;
   const scale = Number($("export-scale").value);
   const background = $("export-background").value;
+  const includeEnchantments = $("export-enchantments").checked;
+  if (includeEnchantments) {
+    refreshEnchantments(project);
+    buildEnchantmentFields();
+    changed();
+  }
   const snapshot = clone(project), tierId = current, art = renderer.art;
-  const filename = `${safeName()}_${mode === "all" ? "全等级" : QUALITIES.find((q) => q.id === tierId).name}.png`;
+  const filename = `${safeName()}_${mode === "all" ? "全等级" : QUALITIES.find((q) => q.id === tierId).name}${includeEnchantments ? "_附魔" : ""}.png`;
   $("export-download").disabled = true;
   $("export-preview").hidden = true;
   $("export-view-original").hidden = true;
@@ -888,7 +971,7 @@ async function updateExportPreview() {
     if (request !== exportPreviewEpoch || !dialog.open) return;
     exportRenderer.art = art;
     const imageCanvas = document.createElement("canvas");
-    exportRenderer.render(imageCanvas, snapshot, tierId, { mode, scale, background });
+    exportRenderer.render(imageCanvas, snapshot, tierId, { mode, scale, background, includeEnchantments });
     const blob = await new Promise((resolve) => imageCanvas.toBlob(resolve, "image/png"));
     if (request !== exportPreviewEpoch || !dialog.open) return;
     if (!blob) throw new Error("图片生成失败，请选择较低清晰度");
@@ -909,7 +992,7 @@ async function updateExportPreview() {
     $("export-preview-status").classList.add("error");
   }
 }
-for (const control of document.querySelectorAll('input[name="export-mode"], #export-background, #export-scale'))
+for (const control of document.querySelectorAll('input[name="export-mode"], #export-background, #export-scale, #export-enchantments'))
   control.addEventListener("change", updateExportPreview);
 $("export-dialog").addEventListener("close", clearExportPreview);
 $("export-download").addEventListener("click", () => {
@@ -926,6 +1009,7 @@ $("new-project").addEventListener("click", async () => {
     return;
   project = createProject();
   current = "bronze";
+  setEditorPage("base");
   await renderer.setArt(null);
   syncForms();
   changed();
@@ -951,6 +1035,7 @@ $("project-file").addEventListener("change", async (e) => {
     if (parsed.art && !renderer.art) throw new Error("作品中的图片无法读取");
     project = parsed;
     current = project.initial;
+    setEditorPage("base");
     syncForms();
     changed();
     toast("作品已打开");

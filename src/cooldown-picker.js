@@ -16,17 +16,6 @@ export class CooldownPicker {
     this.columns = [...root.querySelectorAll(".cd-wheel")].map((column) => {
       const input = column.querySelector("input"), part = column.dataset.part;
       const max = part === "integer" ? 999 : 9;
-      const neighbors = [-2, -1, 1, 2].map((offset) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "cd-wheel-neighbor";
-        button.tabIndex = -1;
-        button.setAttribute("aria-hidden", "true");
-        button.style.setProperty("--offset", offset);
-        button.dataset.offset = offset;
-        column.append(button);
-        return button;
-      });
       const step = (delta) => this.commit(changeCooldown(this.value, part, delta));
       input.addEventListener("input", () => {
         const digits = input.value.replace(/\D/g, "");
@@ -62,7 +51,7 @@ export class CooldownPicker {
           input.focus({ preventScroll: true });
         }
         drag = { id: event.pointerId, y: event.clientY, startY: event.clientY,
-          offset: Number(event.target.dataset.offset), moved: false, editing };
+          moved: false, editing };
         if (!editing) column.setPointerCapture(event.pointerId);
       });
       column.addEventListener("pointermove", (event) => {
@@ -72,32 +61,25 @@ export class CooldownPicker {
           if (drag.editing) input.blur();
           column.setPointerCapture(event.pointerId);
         }
-        const ticks = Math.trunc((drag.y - event.clientY) / 36);
-        if (ticks) { step(ticks); drag.y -= ticks * 36; }
+        const ticks = Math.trunc((drag.y - event.clientY) / 20);
+        if (ticks) { step(ticks); drag.y -= ticks * 20; }
       });
       column.addEventListener("pointerup", (event) => {
         if (!drag || drag.id !== event.pointerId) return;
-        if (!drag.moved && Number.isFinite(drag.offset)) step(drag.offset);
         drag = null;
       });
       column.addEventListener("pointercancel", () => { drag = null; });
-      return { input, part, max, neighbors };
+      return { input, part };
     });
     this.setValue(this.value);
   }
   setValue(value) {
     this.value = value;
     const parts = cooldownParts(value);
-    for (const { input, part, max, neighbors } of this.columns) {
+    for (const { input, part } of this.columns) {
       const n = parts[part];
-      input.value = String(n).padStart(part === "integer" ? 2 : 1, "0");
+      input.value = String(n);
       input.setAttribute("aria-valuenow", n);
-      for (const button of neighbors) {
-        const next = n + Number(button.dataset.offset);
-        const displayed = part === "fraction" ? ((next % 10) + 10) % 10 : next;
-        button.hidden = displayed < 0 || displayed > max;
-        button.textContent = String(displayed).padStart(part === "integer" ? 2 : 1, "0");
-      }
     }
   }
   commit(value) {

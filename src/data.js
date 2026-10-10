@@ -16,7 +16,7 @@ export const HEROES = [
   ["pygmalien", "皮格马利翁"],
   ["dooley", "杜利"],
   ["mak", "马克"],
-  ["stelle", "斯黛拉"],
+  ["stelle", "斯黛尔"],
   ["jules", "朱尔斯"],
   ["karnok", "卡诺克"],
   ["dragons", "双龙"],
@@ -272,3 +272,20 @@ export const BADGE_COLORS = {
   poison: "#078343",
   regen: "#687c24",
 };
+
+// Labels follow the in-game enchantment selector, including Shiny and Mossy.
+export const ENCHANTMENTS = [
+  { id: "golden", name: "黄金", color: "#ffe128" },
+  { id: "heavy", name: "沉重", color: "#d7a475" },
+  { id: "icy", name: "寒冰", color: "#23c7f5" },
+  { id: "turbo", name: "疾速", color: "#00e4cb" },
+  { id: "shielded", name: "护盾", color: "#ffe128" },
+  { id: "restorative", name: "回复", color: "#83f31d" },
+  { id: "toxic", name: "毒素", color: "#00c854" },
+  { id: "fiery", name: "炽焰", color: "#ff983c" },
+  { id: "shiny", name: "闪亮", color: "#fff3e6" },
+  { id: "deadly", name: "致命", color: "#ff4a3a" },
+  { id: "radiant", name: "辉耀", color: "#b7f080" },
+  { id: "obsidian", name: "黑曜石", color: "#b34484" },
+  { id: "mossy", name: "长青", color: "#a7e72c" },
+];

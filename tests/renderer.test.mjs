@@ -2,6 +2,22 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Renderer } from "../src/renderer.js";
 import { KEYWORDS } from "../src/data.js";
+test("多品质数值作为整体换行，箭头与数字拥有独立间距", () => {
+  const renderer = new Renderer();
+  const ctx = { measureText: text => ({ width: [...text].length * 12 }) };
+  const values = [{ value: "2", color: "gold" }, { value: "3", color: "cyan" }];
+  const runs = renderer.rich([
+    { type: "text", text: "加速物品" },
+    { type: "number", text: "2", values },
+    { type: "text", text: "秒" },
+  ]);
+  const lines = renderer.wrap(ctx, runs, 130, 26);
+  const line = lines.find(line => line.some(unit => unit.values));
+  assert.ok(line.some(unit => unit.text === "秒"));
+  assert.deepEqual(line.find(unit => unit.values).values, values);
+  assert.equal(lines.flat().filter(unit => unit.values).length, 1);
+  assert.ok(line.find(unit => unit.values).width > 2 * 12 + 26);
+});
 test("关键词及图标换行时保持在一起，避免充能被拆成两行", () => {
   const r = new Renderer();
   const ctx = { measureText: (text) => ({ width: [...text].length * 22 }) };

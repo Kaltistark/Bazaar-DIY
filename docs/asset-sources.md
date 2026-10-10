@@ -97,6 +97,8 @@
 
 `docs/native-assets-preview.png` 和 `docs/numbers-font-preview.png` 记录透明轮廓、颜色及数字字体的实际检查结果。
 
+已进一步核对真正物品Text共享材质、中文fallback和Bazaar++运行时字体引用。正文与标题源TTF均与游戏原件一致，调整重点为Canvas字面加厚、字距、标题细棕金描边和阴影。证据见 `docs/game-font-findings.md` 与 `docs/game-font-rendering.json`；参数为浏览器近似，原数字SDF继续用于属性数值。
+
 ## 重现
 
 Python 3 + Pillow、UnityPy、fontTools、Brotli；恢复数字字体还需要 OpenCV / NumPy。依赖只放本地 `.asset-tools`，不属于应用代码或网站部署内容。

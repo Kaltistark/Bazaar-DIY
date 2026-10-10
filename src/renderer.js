@@ -14,10 +14,20 @@ import {
   questTarget,
   questComplete,
 } from "./model.js";
+import { enchantmentRows } from "./enchantments.js";
 const CREAM = "#ffe4b3",
   TITLE_FONT = "BazaarTitle",
   BODY_FONT = "BazaarBody",
   NUMBER_FONT = "BazaarNumbers";
+// Approximate native TMP FaceDilate, Outline and tracking in Canvas.
+// Exact source parameters and font hashes: docs/game-font-rendering.json.
+const TEXT_STYLES = {
+  active: { face: .016, outline: .083, color: "#030114", tracking: -.035, shadow: .04 },
+  passive: { face: .016, outline: .083, color: "#030114", tracking: -.026, shadow: .04 },
+  enchantment: { face: .016, outline: .080, color: "#000000", tracking: -.026, shadow: .035 },
+  title: { face: .008, outline: .019, color: "#cc6e28", tracking: -.026, shadow: .025 },
+  numbers: { face: .012, outline: .049, color: "#000000", tracking: 0, shadow: .04 },
+};
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 const imageFor = (src) =>
   new Promise((resolve) => {
@@ -152,17 +162,33 @@ export class Renderer {
     size = 22,
     align = "left",
     font = BODY_FONT,
+    role = "active",
   ) {
     if (/^-?\d[\d.%]*$/.test(text)) font = NUMBER_FONT;
-    ctx.font = `${font === TITLE_FONT ? 600 : font === NUMBER_FONT ? 400 : 700} ${size}px "${font}", "Microsoft YaHei", sans-serif`;
+    this.textFont(ctx, size, font, role);
+    const style = TEXT_STYLES[font === TITLE_FONT ? "title" : font === NUMBER_FONT ? "numbers" : role];
     ctx.textAlign = align;
     ctx.textBaseline = "alphabetic";
     ctx.lineJoin = "round";
-    ctx.lineWidth = Math.max(1.4, size * (font === TITLE_FONT ? 0.055 : 0.09));
-    ctx.strokeStyle = "#110b08";
+    ctx.lineWidth = size * style.outline;
+    ctx.strokeStyle = style.color;
+    ctx.shadowColor = "#100a12d9";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = Math.min(1.5, size * style.shadow);
+    ctx.shadowOffsetY = Math.min(1.5, size * style.shadow);
+    ctx.strokeText(text, x, y);
+    ctx.shadowColor = "transparent";
+    ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
+    ctx.lineWidth = size * style.face;
+    ctx.strokeStyle = color;
     ctx.strokeText(text, x, y);
     ctx.fillStyle = color;
     ctx.fillText(text, x, y);
+  }
+  textFont(ctx, size, font = BODY_FONT, role = "active") {
+    const style = TEXT_STYLES[font === TITLE_FONT ? "title" : font === NUMBER_FONT ? "numbers" : role];
+    ctx.font = `${font === TITLE_FONT ? 600 : font === NUMBER_FONT ? 400 : 700} ${size}px "${font}", "Microsoft YaHei", sans-serif`;
+    ctx.letterSpacing = `${size * style.tracking}px`;
   }
   rich(parts) {
     const runs = [];
@@ -258,30 +284,21 @@ export class Renderer {
     }
     return runs;
   }
-  units(ctx, runs, size) {
+  units(ctx, runs, size, role = "active", font = BODY_FONT) {
     const units = [];
     const measure = (text) => {
       const numeric = /^-?\d[\d.%]*$/.test(text);
-      ctx.font = `${numeric ? 400 : 700} ${size}px "${numeric ? NUMBER_FONT : BODY_FONT}",sans-serif`;
+      this.textFont(ctx, size, numeric && font !== TITLE_FONT ? NUMBER_FONT : font, role);
       return ctx.measureText(text).width;
     };
     for (const r of runs) {
       if (r.values) {
-        r.values.forEach((v, i) => {
-          if (i)
-            units.push({
-              icon: "fusion",
-              color: "#b7e9ec",
-              width: size * 0.9,
-            });
-          units.push({
-            text: v.value,
-            icon: i === 0 ? r.icon : null,
-            color: v.color,
-            width: measure(v.value) + (i === 0 && r.icon ? size * 1.35 : 0),
-            number: true,
-          });
-        });
+        const numberSize = size * 0.94;
+        this.textFont(ctx, numberSize, NUMBER_FONT);
+        const width = r.values.reduce((sum, v) => sum + ctx.measureText(v.value).width, 0) +
+          (r.values.length - 1) * numberSize * 1.02 + numberSize * 0.24;
+        units.push({ values: r.values, icon: r.icon, numberSize,
+          width: width + (r.icon ? size * 1.35 : 0), color: r.color });
       } else {
         const pieces = ["number", "word"].includes(r.kind)
           ? [r.text]
@@ -298,12 +315,13 @@ export class Renderer {
     }
     return units;
   }
-  wrap(ctx, runs, width, size = 22) {
-    const units = this.units(ctx, runs, size),
+  wrap(ctx, runs, width, size = 22, role = "active", font = BODY_FONT) {
+    const units = this.units(ctx, runs, size, role, font),
       lines = [[]];
     let used = 0;
     for (let i = 0; i < units.length; i++) {
       const unit = units[i];
+      if (unit.values && unit.width > width) unit.width = width;
       if (unit.newline) {
         lines.push([]);
         used = 0;
@@ -351,7 +369,7 @@ export class Renderer {
       "center",
     );
   }
-  paintLines(ctx, lines, x, y, size = 22, lineHeight = 32) {
+  paintLines(ctx, lines, x, y, size = 22, lineHeight = 32, role = "active") {
     for (const line of lines) {
       let cursor = x;
       for (const unit of line) {
@@ -365,7 +383,15 @@ export class Renderer {
             y,
             unit.color,
             size,
+            "left",
+            BODY_FONT,
+            role,
           );
+        if (unit.values) {
+          const lead = unit.icon ? size * 1.35 : 0;
+          this.sequence(ctx, unit.values, cursor + lead + (unit.width - lead) / 2,
+            y, unit.numberSize, unit.width - lead);
+        }
         cursor += unit.width;
       }
       y += lineHeight;
@@ -374,10 +400,10 @@ export class Renderer {
   }
   sequence(ctx, values, centerX, y, size, maxWidth) {
     const measure = (fs) => {
-      ctx.font = `400 ${fs}px "${NUMBER_FONT}"`;
+      this.textFont(ctx, fs, NUMBER_FONT);
       return (
         values.reduce((sum, v) => sum + ctx.measureText(v.value).width, 0) +
-        (values.length - 1) * fs * 0.75
+        (values.length - 1) * fs * 1.02 + fs * 0.24
       );
     };
     let width = measure(size);
@@ -385,13 +411,13 @@ export class Renderer {
       size *= maxWidth / width;
       width = measure(size);
     }
-    let x = centerX - width / 2;
+    let x = centerX - width / 2 + size * 0.12;
     values.forEach((v, i) => {
       if (i) {
-        this.icon(ctx, "fusion", x, y - size * 0.83, size * 0.7);
-        x += size * 0.75;
+        this.icon(ctx, "fusion", x + size * 0.18, y - size * 0.76, size * 0.64);
+        x += size * 1.02;
       }
-      ctx.font = `400 ${size}px "${NUMBER_FONT}"`;
+      this.textFont(ctx, size, NUMBER_FONT);
       const w = ctx.measureText(v.value).width;
       this.outlineText(ctx, v.value, x, y, v.color, size);
       x += w;
@@ -406,7 +432,7 @@ export class Renderer {
     this.image(ctx, "background", x, y, w, h);
     ctx.restore();
     let ok = false;
-    if (kind === "title")
+    if (kind === "title") {
       ok = this.nine(
         ctx,
         `${quality}-Title`,
@@ -417,7 +443,16 @@ export class Renderer {
         [80, 50, 80, 10],
         [25, 19, 25, 4],
       );
-    else if (kind === "active")
+      // Title sprites include a multicolored fill. Keep their outline while
+      // using the same opaque brown texture as the rest of the tooltip.
+      ctx.save();
+      cutRect(ctx, x + 5, y + 6, w - 10, h - 10, 14);
+      ctx.clip();
+      ctx.fillStyle = "#201307";
+      ctx.fillRect(x, y, w, h);
+      this.image(ctx, "background", x, y, w, h);
+      ctx.restore();
+    } else if (kind === "active")
       ok = this.nine(ctx, `${quality}-Frame_Active`, x, y, w, h, 120, 28);
     else
       ok = this.nine(
@@ -445,13 +480,13 @@ export class Renderer {
     }[quality];
     // The active box covers the main frame's lower decorations when there is
     // no passive section, while the upper ornaments remain beside the name.
-    const height = l.titleH + l.activeH + l.passiveH -
-      2 * (Number(l.tier.active) + Number(!!l.passiveH));
+    const height = l.titleH + l.activeH + l.passiveH + l.enchantmentH -
+      2 * (Number(l.tier.active) + Number(!!l.passiveH) + Number(!!l.enchantmentH));
     const vertical = Math.min(0.43, height / (borders[1] + borders[3]));
     this.nine(ctx, `${quality}-Frame_Main`, d.x, y, d.w, height, borders,
       [34, borders[1] * vertical, 34, borders[3] * vertical]);
   }
-  layout(ctx, project, current, mode, stacked = false) {
+  layout(ctx, project, current, mode, stacked = false, includeEnchantments = false) {
     const tier = resolveTier(
       project,
       mode === "all" ? project.initial : current,
@@ -508,7 +543,7 @@ export class Renderer {
       : 0;
     const passiveParts = displayText(project, current, (t) => t.passiveEnabled ? t.passive : "", mode),
       passiveLines = tier.passiveEnabled && tier.passive
-        ? this.wrap(ctx, this.rich(passiveParts), descW - 44, size)
+        ? this.wrap(ctx, this.rich(passiveParts), descW - 44, size, "passive")
         : [];
     const quests = tier.quests.map((q, i) => {
       const qualities =
@@ -603,15 +638,27 @@ export class Renderer {
       : passiveLines.length
         ? passiveLines.length * lineHeight + 44
         : 0;
+    const enchantments = includeEnchantments ? enchantmentRows(project).map(row => {
+      const runs = [
+        { kind: "word", text: `${row.name}：`, color: row.color },
+        ...this.rich(displayText(project, current, () => row.text, "current")),
+      ];
+      const lines = this.wrap(ctx, runs, descW - 46, 18, "enchantment");
+      return { lines, h: lines.length * 25 + 5 };
+    }) : [];
+    const enchantmentH = enchantments.length ?
+      enchantments.reduce((sum, row) => sum + row.h, 0) + 42 : 0;
     const title = project.name || "未命名物品";
     let titleSize = 38;
-    ctx.font = `600 ${titleSize}px "${TITLE_FONT}",serif`;
+    this.textFont(ctx, titleSize, TITLE_FONT);
     if (ctx.measureText(title).width > descW - 112) titleSize = 30;
     const titleLines = this.wrap(
       ctx,
       [{ kind: "text", text: title, color: CREAM }],
       descW - 110,
       titleSize,
+      "title",
+      TITLE_FONT,
     );
     const titleH = Math.max(80, titleLines.length * (titleSize + 8) + 26);
     let tagH = 30,
@@ -631,7 +678,7 @@ export class Renderer {
       : 380 / 520;
     const cardW = SIZES[project.size].width * artScale,
       cardH = 520 * artScale,
-      descH = (tagH + titleH + activeH + passiveH) * tooltipScale;
+      descH = (tagH + titleH + activeH + passiveH + enchantmentH) * tooltipScale;
     const margin = 32;
     const extraRight = tier.ammoEnabled ? Math.max(0, ammoW * tooltipScale / 2 - margin) : 0;
     const width =
@@ -668,6 +715,8 @@ export class Renderer {
       activeH,
       passiveLines,
       passiveH,
+      enchantments,
+      enchantmentH,
       quests,
       lockedRewards,
       title,
@@ -690,10 +739,11 @@ export class Renderer {
       scale = 1,
       background = "transparent",
       stacked = false,
+      includeEnchantments = false,
     } = {},
   ) {
     let ctx = canvas.getContext("2d");
-    const l = this.layout(ctx, project, current, mode, stacked);
+    const l = this.layout(ctx, project, current, mode, stacked, includeEnchantments);
     if (
       l.height * scale > 16384 ||
       l.width * l.height * scale * scale > 65_000_000
@@ -958,6 +1008,7 @@ export class Renderer {
           : (l.passiveH - l.passiveLines.length * l.lineHeight) / 2 + l.size + 4),
         l.size,
         l.lineHeight,
+        "passive",
       );
       let qy =
         y +
@@ -1045,6 +1096,21 @@ export class Renderer {
             NUMBER_FONT,
           );
         qy += row.h;
+      }
+      y += l.passiveH - 2;
+    }
+    if (l.enchantmentH) {
+      this.panel(ctx, quality, "passive", d.x, y, d.w, l.enchantmentH);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(d.x, y, d.w, l.enchantmentH);
+      ctx.clip();
+      this.mainFrame(ctx, quality, d, l, frameY);
+      ctx.restore();
+      let ey = y + 31;
+      for (const row of l.enchantments) {
+        this.paintLines(ctx, row.lines, d.x + 23, ey, 18, 25, "enchantment");
+        ey += row.h;
       }
     }
     ctx.restore();
