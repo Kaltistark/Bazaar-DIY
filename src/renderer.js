@@ -242,8 +242,6 @@ export class Renderer {
       return ctx.measureText(text).width;
     };
     for (const r of runs) {
-      if (r.icon)
-        units.push({ icon: r.icon, width: size * 1.13, color: r.color });
       if (r.values) {
         r.values.forEach((v, i) => {
           if (i)
@@ -254,18 +252,22 @@ export class Renderer {
             });
           units.push({
             text: v.value,
+            icon: i === 0 ? r.icon : null,
             color: v.color,
-            width: measure(v.value),
+            width: measure(v.value) + (i === 0 && r.icon ? size * 1.13 : 0),
             number: true,
           });
         });
       } else {
-        const pieces = r.kind === "number" ? [r.text] : [...r.text];
-        for (const text of pieces)
+        const pieces = ["number", "word"].includes(r.kind)
+          ? [r.text]
+          : [...r.text];
+        for (const [index, text] of pieces.entries())
           units.push({
             text,
+            icon: index === 0 ? r.icon : null,
             color: r.color,
-            width: measure(text),
+            width: measure(text) + (index === 0 && r.icon ? size * 1.13 : 0),
             newline: text === "\n",
           });
       }
@@ -327,7 +329,15 @@ export class Renderer {
       for (const unit of line) {
         if (unit.icon)
           this.icon(ctx, unit.icon, cursor, y - size * 0.91, size * 1.04);
-        else this.outlineText(ctx, unit.text, cursor, y, unit.color, size);
+        if (unit.text)
+          this.outlineText(
+            ctx,
+            unit.text,
+            cursor + (unit.icon ? size * 1.13 : 0),
+            y,
+            unit.color,
+            size,
+          );
         cursor += unit.width;
       }
       y += lineHeight;
