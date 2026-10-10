@@ -13,7 +13,7 @@ await cp("public/assets", "dist/assets", {
   recursive: true,
   filter: (source) =>
     !source.endsWith(".ttf") &&
-    !["icons-source", "heroes-source"].some((part) =>
+    !["icons-source", "heroes-source", "examples"].some((part) =>
       source.split(path.sep).includes(part),
     ),
 });

@@ -39,10 +39,10 @@ HERO_MAP = {
     "Icon_FlatRough_KAR_TUI": "karnok",
 }
 PORTRAIT_MAP = {
-    "Atlas_HeroPortrait_VAN_TUI": "vanessa", "Atlas_HeroPortrait_PYG_TUI": "pygmalien",
-    "Atlas_HeroPortrait_DOO_TUI": "dooley", "Atlas_HeroPortrait_MAK_TUI": "mak",
-    "Atlas_HeroPortrait_STE_TUI": "stelle", "Atlas_HeroPortrait_JUL_TUI": "jules",
-    "Karnok": "karnok", "TheDragons": "dragons",
+    "UI_Profile_Hero_Vanessa": "vanessa", "UI_Profile_Hero_Pygmalien": "pygmalien",
+    "UI_Profile_Hero_Dooley": "dooley", "UI_Profile_Hero_Mak": "mak",
+    "UI_Profile_Hero_Stelle": "stelle", "UI_Profile_Hero_Jules": "jules",
+    "UI_Profile_Hero_Karnok": "karnok", "UI_Profile_Hero_TheDragons": "dragons",
 }
 
 
@@ -149,14 +149,17 @@ def main() -> None:
     bundles = ["fonts_assets_all.bundle", "cardframes_assets_all.bundle", "ui_sprite_atlas_assets_all.bundle", "tooltips_assets_all.bundle"]
     bundles += ["defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_frame_tui.png.bundle",
                 "defaultlocalgroup_assets_assets_thebazaar_art_ui_tooltip_quests_tooltip_quest_lock.png.bundle",
-                "defaultlocalgroup_assets_karnok_icon.bundle", "defaultlocalgroup_assets_thedragons_icon.bundle"]
+                "scenes_heroselect_assets_all.bundle",
+                args.game_dir.parents[2] / "sharedassets0.assets"]
     bundles += [p.name for p in args.game_dir.glob("*flatrough*")]
-    for filename in bundles:
-        env = UnityPy.load(str(args.game_dir / filename))
+    for bundle_ref in bundles:
+        file_path = args.game_dir / bundle_ref
+        filename = file_path.name
+        env = UnityPy.load(str(file_path))
         for obj in env.objects:
             if obj.type.name == "Texture2D":
                 data = obj.read()
-                if data.m_Name == "BazaarNumbers_Regular_SDF Atlas":
+                if data.m_Name == "BazaarNumbers_Regular_SDF Atlas" and data.m_Width and data.m_Height:
                     numbers_atlas = data.image
                     numbers_atlas.save(ROOT / "docs" / "numbers-sdf.png")
             elif obj.type.name == "MonoBehaviour" and filename == "fonts_assets_all.bundle":
@@ -190,10 +193,11 @@ def main() -> None:
                         save(hd_icon(source_im), "icons", output_key, filename, name, manifest)
                         manifest["icons"][output_key]["sourceSize"] = list(source_im.size)
                         manifest["icons"][output_key]["enhancement"] = "2x Lanczos, mild RGB sharpen, unmodified smooth alpha"
-                elif name in PORTRAIT_MAP:
+                elif name in PORTRAIT_MAP and ((filename == "sharedassets0.assets" and name != "UI_Profile_Hero_TheDragons") or (filename == "scenes_heroselect_assets_all.bundle" and name == "UI_Profile_Hero_TheDragons")):
                     save(data.image.convert("RGBA"), "hero-portraits", PORTRAIT_MAP[name], filename, name, manifest)
                     manifest["hero-portraits"][PORTRAIT_MAP[name]]["fallback"] = False
-                    manifest["hero-portraits"][PORTRAIT_MAP[name]]["processing"] = "Unmodified native transparent color portrait; no generated content or upscaling"
+                    manifest["hero-portraits"][PORTRAIT_MAP[name]]["portraitSeries"] = "UI_Profile_Hero"
+                    manifest["hero-portraits"][PORTRAIT_MAP[name]]["processing"] = "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling"
                 elif name in HERO_MAP:
                     im = data.image.convert("RGBA")
                     save(im, "heroes-source", HERO_MAP[name], filename, name, manifest)
@@ -218,6 +222,21 @@ def main() -> None:
                         manifest["icons"]["quest-lock"]["enhancement"] = f"Native {im.width}×{im.height} sprite, preserved without upscaling"
                 elif name in ("Tooltip_Arrow_TUI", "Tooltip_BG_TUI", "Tooltip_Crit_Divider_TUI") or name.startswith("Tooltip_Legend") or any(name == f"Tooltip_{q}_{v}_TUI" for q in ["Bronze", "Silver", "Gold", "Diamond", "Legendary"] for v in ["Title", "Frame_Active", "Passive", "Clock", "Ammo", "Divider"]):
                     save(data.image, "ui", name, filename, name, manifest, data.m_Border)
+    for config_file in ["heroobjects_assets_all.bundle", "defaultlocalgroup_assets_hero_dra.bundle"]:
+        for obj in UnityPy.load(str(args.game_dir / config_file)).objects:
+            if obj.type.name == "MonoBehaviour":
+                config = obj.read_typetree()
+                if "DefaultHeroPortraitThumbnail" not in config:
+                    continue
+                english_name = config.get("_heroName", {}).get("<Text>k__BackingField", "")
+                key = "dragons" if english_name == "The Dragons" else english_name.lower()
+                if key in manifest.get("hero-portraits", {}) and key != "neutral":
+                    ref = config["DefaultHeroPortraitThumbnail"]
+                    portrait = manifest["hero-portraits"][key]
+                    if ref["m_SubObjectName"] != portrait["spriteName"]:
+                        raise ValueError(f"Hero portrait configuration mismatch: {key}")
+                    portrait["heroConfigurationVerified"] = True
+                    portrait["heroConfiguration"] = {"sourceConfigFile": config_file, "heroObjectName": config.get("m_Name"), "DefaultHeroPortraitThumbnail": ref}
     if not args.skip_fonts:
         from fontTools.ttLib import TTFont
         (ASSETS / "fonts").mkdir(exist_ok=True)

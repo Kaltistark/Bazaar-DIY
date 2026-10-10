@@ -1,4 +1,4 @@
-import { createProject, defaultTier, defaultQuest } from "./model.js";
+import { createProject, defaultTier, defaultQuest } from "../../src/model.js";
 
 // Values reproduce the supplied screenshots. Unshown tiers inherit the sample
 // instead of introducing guessed upgrade values.
@@ -57,3 +57,4 @@ export function exampleProject(id) {
   }
   return project;
 }
+

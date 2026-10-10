@@ -17,7 +17,7 @@ import {
   setTextValue,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
-import { EXAMPLES, exampleProject } from "./examples.js";
+import { CooldownPicker } from "./cooldown-picker.js";
 import { fieldCompletion } from "./completion.js";
 const $ = (id) => document.getElementById(id),
   renderer = new Renderer();
@@ -31,6 +31,10 @@ let project = createProject(),
 const canvas = $("preview"),
   artInteraction = $("art-interaction"),
   tierButtons = new Map();
+const cooldownPicker = new CooldownPicker($("cooldown-picker"), (value) => {
+  $("cooldown").value = value;
+  mutate((t) => (t.cd = value));
+});
 function toast(message) {
   $("toast").textContent = message;
   $("toast").classList.add("visible");
@@ -232,7 +236,7 @@ function syncForms() {
   $("active-enabled").checked = t.active;
   $("active-editor").hidden = !t.active;
   $("cooldown").value = t.cd;
-  syncCooldownSlider(t.cd);
+  cooldownPicker.setValue(t.cd);
   $("passive").value = t.passive;
   $("passive-enabled").checked = t.passiveEnabled;
   $("passive-wrap").hidden = !t.passiveEnabled;
@@ -242,8 +246,6 @@ function syncForms() {
   $("crit-enabled").checked = t.critEnabled;
   $("crit").value = t.crit;
   $("crit").disabled = !t.critEnabled;
-  $("art-zoom").value = project.crop.zoom;
-  $("zoom-value").value = `${Math.round(project.crop.zoom * 100)}%`;
   $("preview-label").textContent =
     `${QUALITIES.find((q) => q.id === current).name} · ${SIZES[project.size].name}`;
   $("editing-tier").textContent =
@@ -607,36 +609,11 @@ $("active-enabled").addEventListener("change", () => {
     structure: true,
   });
 });
-function syncCooldownSlider(value) {
-  const slider = $("cooldown-slider");
-  slider.max = String(Math.max(30, Math.ceil(Number(value) || 0)));
-  slider.value = value === "" ? "0" : value;
-}
-$("cooldown-slider").addEventListener("input", () => {
-  const value = Number($("cooldown-slider").value).toFixed(1);
-  $("cooldown").value = value;
-  mutate((t) => (t.cd = value));
-});
 $("passive-enabled").addEventListener("change", () => {
   const enabled = $("passive-enabled").checked;
   mutate((t) => (t.passiveEnabled = enabled), {
     warn: true, refresh: true, structure: true,
   });
-});
-$("cooldown").addEventListener("input", () => {
-  let value = $("cooldown").value.replace(/[^\d.]/g, "");
-  const parts = value.split(".");
-  value =
-    (parts.length > 1 ? parts[0] || "0" : parts[0]).slice(0, 3) +
-    (parts.length > 1 ? "." + parts[1].slice(0, 1) : "");
-  $("cooldown").value = value;
-  syncCooldownSlider(value);
-  mutate((t) => (t.cd = value));
-});
-$("cooldown").addEventListener("blur", () => {
-  const value = $("cooldown").value;
-  if (value !== "" && Number.isFinite(Number(value)))
-    mutate((t) => (t.cd = Number(value).toFixed(1)), { refresh: true });
 });
 $("add-effect").addEventListener("click", () => {
   if (resolveTier(project, current).effects.length >= 20)
@@ -699,15 +676,8 @@ for (const [toggle, field, key] of [
     );
   });
 }
-$("art-zoom").addEventListener("input", () => {
-  project.crop.zoom = Number($("art-zoom").value);
-  $("zoom-value").value = `${Math.round(project.crop.zoom * 100)}%`;
-  changed();
-});
 $("reset-crop").addEventListener("click", () => {
   project.crop = { x: 0, y: 0, zoom: 1 };
-  $("art-zoom").value = 1;
-  $("zoom-value").value = "100%";
   changed();
 });
 for (const id of ["upload-button", "upload-inline"])
@@ -737,8 +707,6 @@ async function upload(file) {
     }
     project.art = stored;
     project.crop = { x: 0, y: 0, zoom: 1 };
-    $("art-zoom").value = 1;
-    $("zoom-value").value = "100%";
     changed();
     toast("插画已放入卡框，可拖动与缩放");
   } catch (e) {
@@ -821,8 +789,6 @@ artInteraction.addEventListener("pointermove", (e) => {
       Math.min(2, drag.crop.y + (p.y - drag.p.y) / a.h),
     );
   }
-  $("art-zoom").value = project.crop.zoom;
-  $("zoom-value").value = `${Math.round(project.crop.zoom * 100)}%`;
   changed();
 });
 for (const event of ["pointerup", "pointercancel", "lostpointercapture"])
@@ -840,8 +806,6 @@ artInteraction.addEventListener(
       0.3,
       Math.min(4, project.crop.zoom * Math.exp(-e.deltaY * 0.001)),
     );
-    $("art-zoom").value = project.crop.zoom;
-    $("zoom-value").value = `${Math.round(project.crop.zoom * 100)}%`;
     changed();
   },
   { passive: false },
@@ -860,38 +824,6 @@ function cropKeys(e) {
 }
 canvas.addEventListener("keydown", cropKeys);
 artInteraction.addEventListener("keydown", cropKeys);
-async function loadExample(kind) {
-  try {
-    const spec = EXAMPLES[kind];
-    const path = spec.art === "spring" ? "./assets/demo-art.jpg" : `./assets/examples/${spec.art}-art.png`;
-    const response = await fetch(path);
-    if (!response.ok) throw new Error("无法读取示例素材");
-    const art = await readDataURL(await response.blob());
-    project = exampleProject(kind);
-    project.art = art;
-    current = project.initial;
-    await renderer.setArt(art);
-    syncForms();
-    changed();
-    toast("已载入示例，可直接编辑");
-  } catch (e) {
-    toast("示例未能加载：" + e.message);
-  }
-}
-let pendingExample = "spring";
-function confirmExample(kind) {
-  if (project.name || project.art) {
-    pendingExample = kind;
-    $("example-dialog").showModal();
-    return;
-  }
-  loadExample(kind);
-}
-$("load-example").addEventListener("click", () => confirmExample($("example-choice").value));
-$("example-confirm").addEventListener("click", () => {
-  $("example-dialog").close();
-  loadExample(pendingExample);
-});
 function showExport() {
   syncCompatibility();
   $("current-export-label").textContent =
@@ -900,6 +832,7 @@ function showExport() {
     `input[name="export-mode"][value="${compatible(project) ? "all" : "current"}"]`,
   ).checked = true;
   $("export-dialog").showModal();
+  updateExportPreview();
 }
 for (const id of ["export-open", "export-bottom"])
   $(id).addEventListener("click", showExport);
@@ -921,41 +854,69 @@ function safeName() {
     .replace(/[<>:"/\\|?*\x00-\x1f]/g, "_")
     .slice(0, 55);
 }
-$("export-download").addEventListener("click", async () => {
-  const b = $("export-download");
-  b.disabled = true;
-  b.textContent = "正在生成图片…";
+const exportRenderer = new Renderer();
+exportRenderer.images = renderer.images;
+let exportPreviewEpoch = 0, exportPreviewState = null;
+function clearExportPreview() {
+  exportPreviewEpoch++;
+  if (exportPreviewState) URL.revokeObjectURL(exportPreviewState.url);
+  exportPreviewState = null;
+  $("export-preview").removeAttribute("src");
+  $("export-preview").hidden = true;
+  $("export-view-original").hidden = true;
+  $("export-view-original").removeAttribute("href");
+  $("export-download").disabled = true;
+}
+async function updateExportPreview() {
+  const dialog = $("export-dialog");
+  if (!dialog.open) return;
+  const request = ++exportPreviewEpoch;
+  const mode = document.querySelector('input[name="export-mode"]:checked').value;
+  const scale = Number($("export-scale").value);
+  const background = $("export-background").value;
+  const snapshot = clone(project), tierId = current, art = renderer.art;
+  const filename = `${safeName()}_${mode === "all" ? "全等级" : QUALITIES.find((q) => q.id === tierId).name}.png`;
+  $("export-download").disabled = true;
+  $("export-preview").hidden = true;
+  $("export-view-original").hidden = true;
+  $("export-preview-status").textContent = "正在生成预览…";
+  $("export-preview-status").classList.remove("error");
   try {
-    const mode = document.querySelector(
-      'input[name="export-mode"]:checked',
-    ).value;
-    if (mode === "all" && !compatible(project))
-      throw new Error("各品质效果结构不同，请导出当前品质");
+    if (mode === "all" && !compatible(snapshot))
+      throw new Error("各品质效果结构不同，请选择当前品质");
     await document.fonts.ready;
-    await renderer.setArt(project.art);
-    const exportCanvas = document.createElement("canvas");
-    renderer.render(exportCanvas, clone(project), current, {
-      mode,
-      scale: Number($("export-scale").value),
-      background: $("export-background").value,
-    });
-    const blob = await new Promise((resolve) =>
-      exportCanvas.toBlob(resolve, "image/png"),
-    );
+    if (request !== exportPreviewEpoch || !dialog.open) return;
+    exportRenderer.art = art;
+    const imageCanvas = document.createElement("canvas");
+    exportRenderer.render(imageCanvas, snapshot, tierId, { mode, scale, background });
+    const blob = await new Promise((resolve) => imageCanvas.toBlob(resolve, "image/png"));
+    if (request !== exportPreviewEpoch || !dialog.open) return;
     if (!blob) throw new Error("图片生成失败，请选择较低清晰度");
-    download(
-      blob,
-      `${safeName()}_${mode === "all" ? "全等级" : QUALITIES.find((q) => q.id === current).name}.png`,
-    );
-    $("export-dialog").close();
-    toast("PNG 图片已生成");
-    schedulePaint();
-  } catch (e) {
-    toast(e.message);
-  } finally {
-    b.disabled = false;
-    b.textContent = "下载 PNG 图片";
+    if (exportPreviewState) URL.revokeObjectURL(exportPreviewState.url);
+    const url = URL.createObjectURL(blob);
+    exportPreviewState = { blob, url, filename };
+    $("export-preview").src = url;
+    await $("export-preview").decode();
+    if (request !== exportPreviewEpoch || !dialog.open) return;
+    $("export-preview").hidden = false;
+    $("export-view-original").href = url;
+    $("export-view-original").hidden = false;
+    $("export-preview-status").textContent = `${imageCanvas.width} × ${imageCanvas.height} 像素`;
+    $("export-download").disabled = false;
+  } catch (error) {
+    if (request !== exportPreviewEpoch || !dialog.open) return;
+    $("export-preview-status").textContent = error.message;
+    $("export-preview-status").classList.add("error");
   }
+}
+for (const control of document.querySelectorAll('input[name="export-mode"], #export-background, #export-scale'))
+  control.addEventListener("change", updateExportPreview);
+$("export-dialog").addEventListener("close", clearExportPreview);
+$("export-download").addEventListener("click", () => {
+  if (!exportPreviewState || $("export-download").disabled) return;
+  download(exportPreviewState.blob, exportPreviewState.filename);
+  $("export-dialog").close();
+  toast("PNG 图片已生成");
 });
 $("new-project").addEventListener("click", async () => {
   if (

@@ -52,24 +52,7 @@
         <div class="preview-tools">
           <span id="preview-label">青铜 · 中型</span
           ><span>拖动卡图调整位置 · 滚轮缩放</span
-          ><button id="reset-crop" class="button text">重置位置</button>
-        </div>
-        <div class="art-controls">
-          <button id="upload-button" class="button">↥ 上传卡图</button
-          ><label class="zoom-control"
-            >缩放
-            <input
-              id="art-zoom"
-              type="range"
-              min="0.3"
-              max="4"
-              step="0.01"
-              value="1"
-            /><output id="zoom-value">100%</output></label
-          ><label class="sr-only" for="example-choice">素材示例</label><select id="example-choice" aria-label="素材示例"><option value="stone">空白石碑</option><option value="spring">海底热泉</option><option value="cannon">火炮</option><option value="ball">沙滩充气球</option><option value="eye">巨像之眼</option></select><button id="load-example" class="button text">载入示例</button>
-        </div>
-        <div class="preview-note">
-          <span>✦</span> 数值随品质切换。全等级图片使用初始品质外观。
+          ><button id="upload-button" class="button text">上传卡图</button><button id="reset-crop" class="button text">重置位置</button>
         </div>
       </section>
       <section class="editor-panel" aria-label="物品编辑">
@@ -151,10 +134,13 @@
           </div>
           <div id="active-editor">
             <div class="cd-row">
-              <label for="cooldown">冷却时间</label>
-              <div class="cd-controls">
-                <input id="cooldown-slider" aria-label="冷却时间滑块" type="range" min="0" max="30" step="0.1" value="4" />
-                <div class="cd-input"><input id="cooldown" aria-label="冷却时间" type="text" inputmode="decimal" value="4.0" maxlength="6" /><span>秒</span></div>
+              <span>冷却时间</span>
+              <input id="cooldown" type="hidden" value="4.0" />
+              <div id="cooldown-picker" class="cd-picker" role="group" aria-label="冷却时间选择器">
+                <div class="cd-wheel" data-part="integer"><input id="cd-integer" class="cd-wheel-input" type="text" inputmode="numeric" maxlength="3" value="04" role="spinbutton" aria-label="冷却时间整数" aria-valuemin="0" aria-valuemax="999" aria-valuenow="4" /></div>
+                <span class="cd-dot" aria-hidden="true">.</span>
+                <div class="cd-wheel fraction" data-part="fraction"><input id="cd-fraction" class="cd-wheel-input" type="text" inputmode="numeric" maxlength="1" value="0" role="spinbutton" aria-label="冷却时间十分位" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0" /></div>
+                <span class="cd-unit">秒</span>
               </div>
             </div>
             <div id="effect-list"></div>
@@ -266,17 +252,19 @@
       accept="application/json,.json"
       hidden
     />
-    <dialog id="example-dialog">
-      <div class="dialog-heading"><h2>载入示例</h2><button class="icon-button dialog-close" aria-label="关闭">×</button></div>
-      <p>示例会替换当前作品。请先保存作品文件备份。</p>
-      <div class="footer-actions"><button class="button dialog-close">取消</button><button id="example-confirm" class="button primary">载入示例</button></div>
-    </dialog>
     <dialog id="export-dialog">
       <div class="dialog-heading">
-        <h2>保存你的作品</h2>
+        <h2>图片预览</h2>
         <button class="icon-button dialog-close" aria-label="关闭">×</button>
       </div>
-      <p class="muted">导出完整的物品卡图与效果描述。</p>
+      <div class="export-content">
+        <div class="export-preview-column">
+          <div class="export-preview-frame" tabindex="0" aria-label="导出图片预览区域">
+            <img id="export-preview" alt="导出图片预览" hidden />
+          </div>
+          <div class="export-preview-meta"><span id="export-preview-status" role="status" aria-live="polite"></span><a id="export-view-original" target="_blank" rel="noopener" hidden>查看原图 ↗</a></div>
+        </div>
+        <div class="export-options">
       <label class="export-choice"
         ><input type="radio" name="export-mode" value="all" checked /><span
           ><strong>保存全等级图片</strong
@@ -306,9 +294,11 @@
         >
       </div>
       <div class="dialog-actions">
-        <button id="export-download" class="button primary">
+        <button id="export-download" class="button primary" disabled>
           下载 PNG 图片
         </button>
+      </div>
+        </div>
       </div>
     </dialog>
     <dialog id="structure-dialog">

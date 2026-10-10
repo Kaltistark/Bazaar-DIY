@@ -1,0 +1,158 @@
+{
+  "portraits": {
+    "dooley": {
+      "spriteName": "UI_Profile_Hero_Dooley",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 241,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "vanessa": {
+      "spriteName": "UI_Profile_Hero_Vanessa",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 315,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "pygmalien": {
+      "spriteName": "UI_Profile_Hero_Pygmalien",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 331,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "mak": {
+      "spriteName": "UI_Profile_Hero_Mak",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 353,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "karnok": {
+      "spriteName": "UI_Profile_Hero_Karnok",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 409,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "stelle": {
+      "spriteName": "UI_Profile_Hero_Stelle",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 431,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "jules": {
+      "spriteName": "UI_Profile_Hero_Jules",
+      "sourceFile": "sharedassets0.assets",
+      "pathID": 456,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    },
+    "dragons": {
+      "spriteName": "UI_Profile_Hero_TheDragons",
+      "sourceFile": "scenes_heroselect_assets_all.bundle",
+      "pathID": -3311123230074225001,
+      "size": [
+        128,
+        128
+      ],
+      "configurationVerified": true
+    }
+  },
+  "heroConfigurationReferences": {
+    "stelle": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_STE",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+        "m_SubObjectName": "UI_Profile_Hero_Stelle",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "pygmalien": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_PYG",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+        "m_SubObjectName": "UI_Profile_Hero_Pygmalien",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "vanessa": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_VAN",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+        "m_SubObjectName": "UI_Profile_Hero_Vanessa",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "karnok": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_KAR",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "bf691966d9062e44cb27d0dd32067437",
+        "m_SubObjectName": "UI_Profile_Hero_Karnok",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "mak": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_MAK",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+        "m_SubObjectName": "UI_Profile_Hero_Mak",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "jules": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_JUL",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+        "m_SubObjectName": "UI_Profile_Hero_Jules",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "dooley": {
+      "sourceConfigFile": "heroobjects_assets_all.bundle",
+      "heroObjectName": "Hero_DOO",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+        "m_SubObjectName": "UI_Profile_Hero_Dooley",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    },
+    "dragons": {
+      "sourceConfigFile": "defaultlocalgroup_assets_hero_dra.bundle",
+      "heroObjectName": "Hero_DRA",
+      "DefaultHeroPortraitThumbnail": {
+        "m_AssetGUID": "b921e3c8839a4184d9b158bd81552dd8",
+        "m_SubObjectName": "UI_Profile_Hero_TheDragons",
+        "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      }
+    }
+  }
+}

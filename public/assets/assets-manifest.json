@@ -1586,83 +1586,179 @@
   "hero-portraits": {
     "stelle": {
       "path": "/assets/hero-portraits/stelle.png",
-      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
-      "spriteName": "Atlas_HeroPortrait_STE_TUI",
-      "width": 316,
-      "height": 438,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Stelle",
+      "sourcePathID": 431,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_STE",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+          "m_SubObjectName": "UI_Profile_Hero_Stelle",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "dooley": {
       "path": "/assets/hero-portraits/dooley.png",
-      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
-      "spriteName": "Atlas_HeroPortrait_DOO_TUI",
-      "width": 327,
-      "height": 407,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Dooley",
+      "sourcePathID": 241,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_DOO",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+          "m_SubObjectName": "UI_Profile_Hero_Dooley",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "jules": {
       "path": "/assets/hero-portraits/jules.png",
-      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
-      "spriteName": "Atlas_HeroPortrait_JUL_TUI",
-      "width": 331,
-      "height": 448,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Jules",
+      "sourcePathID": 456,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_JUL",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+          "m_SubObjectName": "UI_Profile_Hero_Jules",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "pygmalien": {
       "path": "/assets/hero-portraits/pygmalien.png",
-      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
-      "spriteName": "Atlas_HeroPortrait_PYG_TUI",
-      "width": 313,
-      "height": 422,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Pygmalien",
+      "sourcePathID": 331,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_PYG",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+          "m_SubObjectName": "UI_Profile_Hero_Pygmalien",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "vanessa": {
       "path": "/assets/hero-portraits/vanessa.png",
-      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
-      "spriteName": "Atlas_HeroPortrait_VAN_TUI",
-      "width": 330,
-      "height": 451,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Vanessa",
+      "sourcePathID": 315,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_VAN",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+          "m_SubObjectName": "UI_Profile_Hero_Vanessa",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "mak": {
       "path": "/assets/hero-portraits/mak.png",
-      "sourceBundle": "ui_sprite_atlas_assets_all.bundle",
-      "spriteName": "Atlas_HeroPortrait_MAK_TUI",
-      "width": 312,
-      "height": 439,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Mak",
+      "sourcePathID": 353,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_MAK",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "c5f014a0da3a9d44caeb1bd98dac1f51",
+          "m_SubObjectName": "UI_Profile_Hero_Mak",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "karnok": {
       "path": "/assets/hero-portraits/karnok.png",
-      "sourceBundle": "defaultlocalgroup_assets_karnok_icon.bundle",
-      "spriteName": "Karnok",
-      "width": 512,
-      "height": 512,
+      "sourceBundle": "sharedassets0.assets",
+      "spriteName": "UI_Profile_Hero_Karnok",
+      "sourcePathID": 409,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "heroobjects_assets_all.bundle",
+        "heroObjectName": "Hero_KAR",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "bf691966d9062e44cb27d0dd32067437",
+          "m_SubObjectName": "UI_Profile_Hero_Karnok",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "dragons": {
       "path": "/assets/hero-portraits/dragons.png",
-      "sourceBundle": "defaultlocalgroup_assets_thedragons_icon.bundle",
-      "spriteName": "TheDragons",
-      "width": 477,
-      "height": 504,
+      "sourceBundle": "scenes_heroselect_assets_all.bundle",
+      "spriteName": "UI_Profile_Hero_TheDragons",
+      "sourcePathID": -3311123230074225001,
+      "width": 128,
+      "height": 128,
       "source": "Installed The Bazaar game, Unity 6000.3.11f1",
       "fallback": false,
-      "processing": "Unmodified native transparent color portrait; no generated content or upscaling"
+      "portraitSeries": "UI_Profile_Hero",
+      "processing": "Unmodified native 128×128 color profile portrait; original alpha preserved; no generated content or upscaling",
+      "heroConfigurationVerified": true,
+      "heroConfiguration": {
+        "sourceConfigFile": "defaultlocalgroup_assets_hero_dra.bundle",
+        "heroObjectName": "Hero_DRA",
+        "DefaultHeroPortraitThumbnail": {
+          "m_AssetGUID": "b921e3c8839a4184d9b158bd81552dd8",
+          "m_SubObjectName": "UI_Profile_Hero_TheDragons",
+          "m_SubObjectType": "UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      }
     },
     "neutral": {
       "path": "/assets/hero-portraits/neutral.png",

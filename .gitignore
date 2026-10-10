@@ -10,6 +10,7 @@ __pycache__/
 .sites-checkout/
 .sites-checkout-*/
 output/imagegen/
+output/bazaar-diy-cloudflare.zip
 tmp/imagegen/
 docs/portrait-candidates/
 docs/portrait-candidates.png

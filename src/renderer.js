@@ -463,8 +463,8 @@ export class Renderer {
       if (tier.cd === "") tier.cd = values.find((t) => t.cd !== "")?.cd || "";
     }
     const quality = mode === "all" ? project.initial : current;
-    const size = 24,
-      lineHeight = 32,
+    const size = 26,
+      lineHeight = 34,
       descW = 440;
     const ammoValues = (
       mode === "all"
@@ -536,7 +536,7 @@ export class Renderer {
               ),
         ),
       );
-      const textW = descW - 90 - counterW;
+      const textW = descW - 96 - counterW;
       const condition = this.wrap(
         ctx,
         this.rich(
@@ -548,7 +548,7 @@ export class Renderer {
           ),
         ),
         textW,
-        24,
+        26,
       );
       const reward = this.wrap(
         ctx,
@@ -556,9 +556,9 @@ export class Renderer {
           displayText(project, current, (t) => t.quests[i]?.reward || "", mode),
         ),
         textW,
-        17,
+        19,
       );
-      const h = Math.max(106, condition.length * 32 + reward.length * 24 + 42);
+      const h = Math.max(110, condition.length * 34 + reward.length * 26 + 42);
       const kw = KEYWORDS.find(
         (k) => k.icon && k.aliases.some((a) => q.reward.includes(a)),
       );
@@ -604,9 +604,9 @@ export class Renderer {
         ? passiveLines.length * lineHeight + 44
         : 0;
     const title = project.name || "未命名物品";
-    let titleSize = 35;
+    let titleSize = 38;
     ctx.font = `600 ${titleSize}px "${TITLE_FONT}",serif`;
-    if (ctx.measureText(title).width > descW - 112) titleSize = 28;
+    if (ctx.measureText(title).width > descW - 112) titleSize = 30;
     const titleLines = this.wrap(
       ctx,
       [{ kind: "text", text: title, color: CREAM }],
@@ -627,8 +627,8 @@ export class Renderer {
     }
     const tooltipScale = 1.3;
     const artScale = stacked
-      ? Math.min(360 / SIZES[project.size].width, 240 / 520)
-      : 320 / 520;
+      ? Math.min(420 / SIZES[project.size].width, 300 / 520)
+      : 380 / 520;
     const cardW = SIZES[project.size].width * artScale,
       cardH = 520 * artScale,
       descH = (tagH + titleH + activeH + passiveH) * tooltipScale;
@@ -862,8 +862,8 @@ export class Renderer {
         this.paintLines(ctx, lines, d.x + (d.w - width) / 2, cy + 17, 24, 32);
       }
       if (tier.cd !== "") {
-        const clockW = 118,
-          clockH = 108,
+        const clockW = 122,
+          clockH = 112,
           cx = d.x - 50,
           cy = y + (l.activeH - clockH) / 2;
         this.image(ctx, `${quality}-Clock`, cx, cy, clockW, clockH);
@@ -878,17 +878,20 @@ export class Renderer {
         const same = values.every(
           (v) => Number(v.value) === Number(values[0].value),
         );
-        if (same)
+        if (same) {
+          const text = Number(values[0].value).toFixed(1);
+          ctx.font = `400 41px "${NUMBER_FONT}"`;
+          const size = Math.min(41, 41 * (clockW * 0.68) / ctx.measureText(text).width);
           this.outlineText(
             ctx,
-            Number(values[0].value).toFixed(1),
+            text,
             cx + clockW * 0.45,
-            cy + 61,
+            cy + 63 - (41 - size) * 0.36,
             "#ffffff",
-            38,
+            size,
             "center",
           );
-        else {
+        } else {
           this.sequence(
             ctx,
             values.map((v) => ({
@@ -905,9 +908,9 @@ export class Renderer {
           ctx,
           "秒",
           cx + clockW * 0.45,
-          cy + 82,
+          cy + 85,
           "#e8a35e",
-          18,
+          19,
           "center",
         );
       }
@@ -997,16 +1000,16 @@ export class Renderer {
           [31, 0, 34, 0],
           [10, 0, 11, 0],
         );
-        const textH = row.condition.length * 32 + row.reward.length * 24;
-        const textY = qy + 8 + (row.h - 8 - textH) / 2 + 23;
-        this.paintLines(ctx, row.condition, d.x + 23, textY, 24, 32);
+        const textH = row.condition.length * 34 + row.reward.length * 26;
+        const textY = qy + 8 + (row.h - 8 - textH) / 2 + 25;
+        this.paintLines(ctx, row.condition, d.x + 23, textY, 26, 34);
         this.paintLines(
           ctx,
           row.reward,
           d.x + 23,
-          textY + row.condition.length * 32 - 4,
-          17,
-          24,
+          textY + row.condition.length * 34 - 4,
+          19,
+          26,
         );
         const iconX = d.x + d.w - 43,
           midY = qy + row.h / 2 + 3;
