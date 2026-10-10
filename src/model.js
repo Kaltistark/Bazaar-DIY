@@ -1,5 +1,23 @@
 import { QUALITIES, KEYWORDS, BADGE_ORDER, TYPES, HEROES, ENCHANTMENTS } from "./data.js";
 export const NUM_RE = /-?\d+(?:\.\d+)?/g;
+const INTENSITY_WORD = "(?:伤害|治疗|护盾|灼烧|剧毒|生命再生|再生)(?:量)?";
+const INTENSITY_AFTER = new RegExp("^\\s*(?:点\\s*)?" + INTENSITY_WORD);
+const INTENSITY_BEFORE = new RegExp(INTENSITY_WORD + "\\s*(?:(?:提高|增加|减少|降低|获得|为|等于|[:：=+＋])\\s*)?$");
+export function scaleIntensityText(text, factor) {
+  if (factor === 1) return text;
+  return text.replace(NUM_RE, (value, offset) => {
+    const after = text.slice(offset + value.length), before = text.slice(0, offset);
+    if (/^\s*(?:[%％倍秒次件个张回合])/.test(after)) return value;
+    if (!INTENSITY_AFTER.test(after) && !INTENSITY_BEFORE.test(before)) return value;
+    return String(Number((Number(value) * factor).toFixed(2)));
+  });
+}
+export function completeEffectText(text, maxLength = Infinity) {
+  const trimmed = text.trimEnd();
+  if (!trimmed.trim() || /[。.!！?？][”’"』」）)]*$/.test(trimmed)) return trimmed;
+  // Preserve the author's text at the input limit rather than truncating it.
+  return trimmed.length < maxLength ? trimmed + "。" : trimmed;
+}
 export function defaultQuest() {
   return {
     condition: "",
@@ -83,6 +101,14 @@ export function resolveTier(project, id) {
     .reverse();
   const source = lower[0] || candidates[0];
   const resolved = clone(source ? project.tiers[source.id] : project.seed);
+  const sourceIndex = QUALITIES.findIndex(q => q.id === (source?.id || project.initial));
+  if (idx < 4 && sourceIndex < 4 && idx !== sourceIndex) {
+    const factor = (idx + 1) / (sourceIndex + 1);
+    resolved.effects = resolved.effects.map(text => scaleIntensityText(text, factor));
+    resolved.passive = scaleIntensityText(resolved.passive, factor);
+    for (const quest of resolved.quests || [])
+      quest.reward = scaleIntensityText(quest.reward, factor);
+  }
   return normalizeTier(resolved);
 }
 function normalizeTier(tier) {
@@ -128,9 +154,16 @@ export function synchronizeText(
   for (const [id, t, edited] of snapshots) {
     const old = textValue(resolveTier(numericSource, id), field, index);
     const values = numbers(old);
+    const sourceWeight = QUALITIES.findIndex(q => q.id === current) + 1;
+    const targetWeight = QUALITIES.findIndex(q => q.id === id) + 1;
+    const defaults = numbers(scaleIntensityText(text,
+      current === "legendary" || id === "legendary" ? 1 : targetWeight / sourceWeight));
     let n = 0;
     const value =
-      id === current ? text : text.replace(NUM_RE, (v) => values[n++] ?? v);
+      id === current ? text : text.replace(NUM_RE, (v) => {
+        const position = n++;
+        return values[position] ?? defaults[position] ?? v;
+      });
     setTextValue(t, field, index, value);
     t.edited = edited || id === current;
     project.tiers[id] = t;
@@ -141,7 +174,8 @@ export function numericSignature(text) {
   return String(text ?? "")
     .replace(NUM_RE, "#")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    .replace(/[。.!]+$/, "");
 }
 export function structuralSignature(tier) {
   return JSON.stringify([

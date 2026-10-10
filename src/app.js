@@ -15,6 +15,7 @@ import {
   questComplete,
   textValue,
   setTextValue,
+  completeEffectText,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
 import { CooldownPicker } from "./cooldown-picker.js";
@@ -318,6 +319,13 @@ function buildEnchantmentFields() {
       entry.manual = true;
       changed();
     });
+    input.addEventListener("blur", () => {
+      const text = completeEffectText(input.value, input.maxLength);
+      if (text === input.value) return;
+      entry.text = input.value = text;
+      entry.manual = true;
+      changed();
+    });
     reset.addEventListener("click", () => {
       entry.text = generateEnchantmentDraft(project)[enchantment.id];
       entry.manual = false;
@@ -355,6 +363,7 @@ function buildEffectFields(t) {
       changed();
     });
     ta.addEventListener("blur", () => {
+      finishEffectField(ta, "effects", i);
       checkStructure(focusSnapshot);
       focusSnapshot = null;
     });
@@ -438,6 +447,7 @@ function buildQuestFields(t) {
         changed();
       });
       ta.addEventListener("blur", () => {
+        if (key === "reward") finishEffectField(ta, "quest-reward", i);
         checkStructure(focusSnapshot);
         focusSnapshot = null;
       });
@@ -564,6 +574,15 @@ function editText(field, index, text) {
     editTier(project, current, (t) => {
       setTextValue(t, field, index, text);
     });
+}
+function finishEffectField(input, field, index) {
+  const text = completeEffectText(input.value, input.maxLength);
+  if (text === input.value) return;
+  input.value = text;
+  if (!project.independentStructure)
+    synchronizeText(project, current, field, index, text);
+  else editText(field, index, text);
+  changed();
 }
 function checkStructure(before) {
   if (
@@ -721,6 +740,7 @@ $("passive").addEventListener("input", () => {
   changed();
 });
 $("passive").addEventListener("blur", () => {
+  finishEffectField($("passive"), "passive", null);
   checkStructure(focusSnapshot);
   focusSnapshot = null;
 });

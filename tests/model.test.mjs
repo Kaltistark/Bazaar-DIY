@@ -16,7 +16,70 @@ import {
   questTarget,
   questComplete,
   clone,
+  scaleIntensityText,
+  completeEffectText,
 } from "../src/model.js";
+test("补齐效果末尾句号，保留已有标点、换行、空值与字数上限", () => {
+  assert.equal(completeEffectText("造成60伤害  "), "造成60伤害。");
+  assert.equal(completeEffectText("获得护盾\n等同于此物品伤害"), "获得护盾\n等同于此物品伤害。");
+  for (const text of ["造成60伤害。", "造成60伤害!", "造成60伤害？", "“造成60伤害。”"])
+    assert.equal(completeEffectText(text), text);
+  assert.equal(completeEffectText("   "), "");
+  assert.equal(completeEffectText("满额内容", 4), "满额内容");
+});
+test("六类强度按1:2:3:4生成，CD与目标、时长、百分比和倍率保持原值", () => {
+  const p = createProject();
+  editTier(p, "bronze", t => {
+    t.effects = ["造成60伤害，治疗20生命值，获得30护盾，造成3灼烧和5剧毒，生命再生量提高2。", "冻结2件物品1秒，造成灼烧，等同于伤害的10%，治疗量提高50%。"];
+    t.cd = "4.0"; t.ammoEnabled = true; t.ammo = 2; t.critEnabled = true; t.crit = 25;
+  });
+  const diamond = resolveTier(p, "diamond");
+  assert.equal(diamond.effects[0], "造成240伤害，治疗80生命值，获得120护盾，造成12灼烧和20剧毒，生命再生量提高8。");
+  assert.equal(diamond.effects[1], resolveTier(p, "bronze").effects[1]);
+  assert.equal(diamond.cd, "4.0");
+  assert.equal(diamond.ammo, 2);
+  assert.equal(diamond.crit, 25);
+  assert.equal(scaleIntensityText("伤害提高1.5，造成2次伤害，加速1件物品2秒，灼烧量等于此物品伤害的5倍。", 2), "伤害提高3，造成2次伤害，加速1件物品2秒，灼烧量等于此物品伤害的5倍。");
+  const parts = displayText(p, "bronze", t => t.effects[0], "all");
+  assert.deepEqual(parts[1].values.map(v => v.value), ["60", "120", "180", "240"]);
+});
+test("白银起步按2:3:4，传说保留原值，手动品质不被覆盖", () => {
+  const p = createProject(); p.initial = "silver";
+  editTier(p, "silver", t => { t.effects = ["造成60伤害。"]; });
+  assert.equal(resolveTier(p, "gold").effects[0], "造成90伤害。");
+  assert.equal(resolveTier(p, "diamond").effects[0], "造成120伤害。");
+  editTier(p, "gold", t => { t.effects = ["造成150伤害。"]; });
+  editTier(p, "silver", t => { t.effects = ["造成100伤害。"]; });
+  assert.equal(resolveTier(p, "gold").effects[0], "造成150伤害。");
+  assert.equal(resolveTier(p, "diamond").effects[0], "造成200伤害。");
+  p.initial = "legendary"; p.tiers.legendary = null; p.seed.effects = ["造成7剧毒。"]; p.tiers.gold = null; p.tiers.silver = null;
+  assert.equal(resolveTier(p, "legendary").effects[0], "造成7剧毒。");
+});
+test("自动缩放被动和任务奖励，任务目标保持固定，作品往返不重复缩放", () => {
+  const p = createProject();
+  editTier(p, "bronze", t => {
+    t.passiveEnabled = true; t.passive = "使用物品时，伤害提高10。";
+    t.quests = [{ ...defaultQuest(), condition: "触发剧毒30次", reward: "造成6剧毒。" }];
+  });
+  const q = validateProject(JSON.parse(JSON.stringify(p)));
+  assert.equal(resolveTier(q, "diamond").passive, "使用物品时，伤害提高40。");
+  assert.equal(resolveTier(q, "diamond").quests[0].reward, "造成24剧毒。");
+  assert.equal(resolveTier(q, "diamond").quests[0].condition, "触发剧毒30次");
+  assert.equal(resolveTier(q, "diamond").quests[0].target, 1);
+  assert.equal(compatible(q), true);
+});
+test("在其他品质新增强度值仍按比例填充，句号同步保留手写数值", () => {
+  const p = createProject();
+  editTier(p, "bronze", t => { t.effects = ["造成60伤害。"]; });
+  editTier(p, "silver", t => { t.cd = "3.5"; });
+  synchronizeText(p, "diamond", "passive", null, "生命再生量提高8");
+  assert.equal(resolveTier(p, "bronze").passive, "生命再生量提高2");
+  assert.equal(resolveTier(p, "silver").passive, "生命再生量提高4");
+  synchronizeText(p, "diamond", "passive", null, "生命再生量提高8。");
+  assert.equal(resolveTier(p, "bronze").passive, "生命再生量提高2。");
+  assert.equal(resolveTier(p, "silver").cd, "3.5");
+  assert.equal(resolveTier(p, "silver").effects[0], "造成120伤害。");
+});
 test("被动默认关闭，旧作品保留显示，开关同步且不丢失文字", () => {
   const p = createProject();
   assert.equal(resolveTier(p, "bronze").passiveEnabled, false);
@@ -46,16 +109,16 @@ test("起始品质限制及传说单品质", () => {
     ["legendary"],
   );
 });
-test("未编辑品质继承最近已编辑的较低等级，并持续反映修改", () => {
+test("未编辑品质从最近的手动品质按比例生成，并持续反映修改", () => {
   const p = createProject();
   editTier(p, "bronze", (t) => (t.effects = ["造成10伤害。"]));
-  assert.equal(resolveTier(p, "diamond").effects[0], "造成10伤害。");
-  editTier(p, "gold", (t) => (t.effects = ["造成40伤害。"]));
-  assert.equal(resolveTier(p, "silver").effects[0], "造成10伤害。");
   assert.equal(resolveTier(p, "diamond").effects[0], "造成40伤害。");
-  editTier(p, "bronze", (t) => (t.effects = ["造成20伤害。"]));
+  editTier(p, "gold", (t) => (t.effects = ["造成45伤害。"]));
   assert.equal(resolveTier(p, "silver").effects[0], "造成20伤害。");
-  assert.equal(resolveTier(p, "gold").effects[0], "造成40伤害。");
+  assert.equal(resolveTier(p, "diamond").effects[0], "造成60伤害。");
+  editTier(p, "bronze", (t) => (t.effects = ["造成20伤害。"]));
+  assert.equal(resolveTier(p, "silver").effects[0], "造成40伤害。");
+  assert.equal(resolveTier(p, "gold").effects[0], "造成45伤害。");
 });
 test("结构变化禁用合并，纯数值变化允许", () => {
   const p = createProject();
@@ -135,7 +198,7 @@ test("默认同步增删保持各品质数值和未编辑等级继承", () => {
   assert.equal(resolveTier(p, "diamond").effects.length, 2);
   assert.equal(compatible(p), true);
   editTier(p, "bronze", (t) => (t.effects[0] = "造成20伤害。"));
-  assert.equal(resolveTier(p, "silver").effects[0], "造成20伤害。");
+  assert.equal(resolveTier(p, "silver").effects[0], "造成40伤害。");
   synchronizeStructure(p, "gold", (t) => t.effects.splice(1, 1));
   assert.equal(resolveTier(p, "bronze").effects.length, 1);
   assert.equal(compatible(p), true);
@@ -147,7 +210,7 @@ test("同步句式保留已编辑品质数值，新数值继承输入", () => {
   synchronizeText(p, "bronze", "effects", 0, "造成20剧毒，持续2秒。");
   assert.equal(resolveTier(p, "bronze").effects[0], "造成20剧毒，持续2秒。");
   assert.equal(resolveTier(p, "gold").effects[0], "造成40剧毒，持续2秒。");
-  assert.equal(resolveTier(p, "diamond").effects[0], "造成40剧毒，持续2秒。");
+  assert.equal(resolveTier(p, "diamond").effects[0], "造成53.33剧毒，持续2秒。");
   assert.equal(compatible(p), true);
 });
 test("连续清空并重写句式仍保留其他品质的原始数值", () => {
