@@ -327,9 +327,11 @@ export class Renderer {
         used = 0;
         continue;
       }
-      const next = units[i + 1];
-      const keepSuffix = next && /^(?:秒|次|%|。|，|；|：|）)$/.test(next.text);
-      const required = unit.width + (keepSuffix ? next.width : 0);
+      // Reserve the entire suffix, e.g. "10%.", not just the first glyph.
+      // Otherwise the final punctuation can push '%' onto its own line.
+      let required = unit.width;
+      for (let j = i + 1; j < units.length && /^(?:秒|次|%|。|，|；|：|）)$/.test(units[j].text); j++)
+        required += units[j].width;
       if (used + required > width && lines.at(-1).length) {
         lines.push([]);
         used = 0;

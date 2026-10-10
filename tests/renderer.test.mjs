@@ -2,6 +2,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Renderer } from "../src/renderer.js";
 import { KEYWORDS } from "../src/data.js";
+test("数字、百分号与句末标点整体换行，不留下孤立百分号", () => {
+  const renderer = new Renderer();
+  const ctx = { measureText: text => ({ width: [...text].length * 10 }) };
+  const runs = renderer.rich([{ type: "text", text: "提高" }, { type: "number", text: "10" }, { type: "text", text: "%。" }]);
+  const lines = renderer.wrap(ctx, runs, 50, 20);
+  const numericLine = lines.find(line => line.some(unit => unit.text === "10"));
+  assert.ok(numericLine.some(unit => unit.text === "%"));
+  assert.ok(numericLine.some(unit => unit.text === "。"));
+});
 test("多品质数值作为整体换行，箭头与数字拥有独立间距", () => {
   const renderer = new Renderer();
   const ctx = { measureText: text => ({ width: [...text].length * 12 }) };
