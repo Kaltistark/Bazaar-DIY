@@ -1,3 +1,4 @@
+import { keywordText } from "./keywords.js";
 import { ENCHANTMENTS } from "./data.js";
 import { resolveTier, defaultEnchantments } from "./model.js";
 
@@ -12,7 +13,7 @@ export function simpleStats(tier) {
     regen: /^(?:获得\s*\d+(?:\.\d+)?\s*生命再生|生命再生(?:量)?(?:提高|增加)\s*\d+(?:\.\d+)?)[。.!！\s]*$/,
   };
   return Object.keys(patterns).filter(id => tier.active && tier.effects.some(
-    text => patterns[id].test(text.trim()),
+    text => patterns[id].test(keywordText(text.trim())),
   ));
 }
 
@@ -20,7 +21,7 @@ export function generateEnchantmentDraft(project) {
   const tier = resolveTier(project, project.initial);
   const draft = Object.fromEntries(ENCHANTMENTS.map(({ id }) => [id, ""]));
   draft.golden = "此物品的价值翻倍。";
-  const effects = tier.effects.filter(text => text.trim());
+  const effects = tier.effects.filter(text => text.trim()).map(keywordText);
   const complicated = !tier.active || !effects.length || tier.quests.length > 0 ||
     /(?:时[，,:：]|每当|每次|出售|成长|摧毁|转化|升级|战斗后)/.test(
       [...effects, tier.passiveEnabled ? tier.passive : ""].join("\n"),

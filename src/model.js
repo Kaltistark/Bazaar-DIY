@@ -1,4 +1,5 @@
 import { QUALITIES, KEYWORDS, BADGE_ORDER, TYPES, HEROES, ENCHANTMENTS } from "./data.js";
+import { keywordText } from "./keywords.js";
 export const NUM_RE = /-?\d+(?:\.\d+)?/g;
 const INTENSITY_WORD = "(?:伤害|治疗|护盾|灼烧|剧毒|生命再生|再生)(?:量)?";
 const INTENSITY_AFTER = new RegExp("^\\s*(?:点\\s*)?" + INTENSITY_WORD);
@@ -6,7 +7,7 @@ const INTENSITY_BEFORE = new RegExp(INTENSITY_WORD + "\\s*(?:(?:提高|增加|�
 export function scaleIntensityText(text, factor) {
   if (factor === 1) return text;
   return text.replace(NUM_RE, (value, offset) => {
-    const after = text.slice(offset + value.length), before = text.slice(0, offset);
+    const after = keywordText(text.slice(offset + value.length)), before = keywordText(text.slice(0, offset));
     if (/^\s*(?:[%％倍秒次件个张回合])/.test(after)) return value;
     if (!INTENSITY_AFTER.test(after) && !INTENSITY_BEFORE.test(before)) return value;
     return String(Number((Number(value) * factor).toFixed(2)));
@@ -26,6 +27,7 @@ export function defaultQuest() {
     progress: 0,
     icon: "auto",
     locked: false,
+    rewardRegion: "auto",
     targetManual: false,
   };
 }
@@ -33,6 +35,14 @@ export function questTarget(quest) {
   if (quest.targetManual) return quest.target;
   const n = Number(quest.condition.match(/\d+(?:\.\d+)?/)?.[0]);
   return Number.isFinite(n) && n > 0 ? Math.min(999999, Math.ceil(n)) : 1;
+}
+export function questRewardRegion(quest) {
+  if (["active", "passive"].includes(quest.rewardRegion)) return quest.rewardRegion;
+  const text = keywordText(quest.reward).trim();
+  if (/(?:时[，,:：]|每当|每次|每场|每天|每日|开始时|战斗开始|战斗后|出售|卖出|永久|冷却时间|(?:提高|降低).+冷却|额外|免疫|拥有)/.test(text)) return "passive";
+  return /^(?:造成|获得|治疗|恢复|回复|生命再生(?:量)?(?:提高|增加)|加速|充能|减速|冻结|摧毁|多重释放|装填|此物品.*多重释放)/.test(text) ||
+    /^(?:相邻|左侧|右侧|己方|我方|你的).*(?:获得|增加|提高|[+＋])/.test(text) ||
+    /开始飞行/.test(text) || /^为(?:此物品|相邻|左侧|右侧|己方|我方|你的).*(?:充能|加速|減速|减速|冻结|治疗|护盾)/.test(text) ? "active" : "passive";
 }
 export const questComplete = (quest) => quest.progress >= questTarget(quest);
 export function textValue(tier, field, index) {
@@ -61,6 +71,8 @@ export function defaultTier() {
     ammo: 1,
     critEnabled: false,
     crit: 0,
+    multicastEnabled: false,
+    multicast: 1,
   };
 }
 export function createProject() {
@@ -117,6 +129,10 @@ export function resolveTier(project, id) {
 }
 function normalizeTier(tier) {
   tier.quests ??= [];
+  if (Array.isArray(tier.quests))
+    for (const quest of tier.quests) if (quest && typeof quest === "object") quest.rewardRegion ??= "auto";
+  tier.multicastEnabled ??= false;
+  tier.multicast ??= 1;
   // Older saved works used nonempty text to enable the passive section.
   tier.passiveEnabled ??= !!tier.passive;
   return tier;
@@ -192,6 +208,7 @@ export function structuralSignature(tier) {
       numericSignature(q.reward),
       q.icon,
       q.locked,
+      q.rewardRegion ?? "auto",
     ]),
   ]);
 }
@@ -240,46 +257,66 @@ export function displayText(project, current, textGetter, mode = "current") {
     out.push({ text: base.slice(cursor), type: "text" });
   return out;
 }
+const DIRECT_OUTPUT = /^(?:(?:此物品|你|己方|我方)(?:会|将)?\s*)?(?:对(?:敌人|对手)造成|造成|施加|治疗|恢复|回复|获得|(?:生命再生|再生)(?:量)?(?:提高|增加))\s*/;
+const BARE_OUTPUT = /^(?:-?\d+(?:\.\d+)?\s*(?:伤害|治疗|护盾|灼烧|剧毒|生命再生|再生)|(?:伤害|治疗|护盾|灼烧|剧毒|生命再生|再生)(?:量)?\s*-?\d)/;
+const OTHER_RECIPIENT = /物品|武器|伙伴|工具|载具|食物|陷阱|玩具|药水|遗物|巨龙|核心|科技|恐龙|服饰|地产|战利品|乐器|无人机|射线/;
+const ATTRIBUTE_GAIN = /提高|提升|增加|增长|增幅|增益|翻倍|加成|[+＋]/;
+function outputClause(text) {
+  return text.trim().replace(/^(?:然后|并且|并|同时)\s*/, "");
+}
+function directOutput(clause) {
+  return DIRECT_OUTPUT.test(clause) || BARE_OUTPUT.test(clause);
+}
 export function extractStats(tier) {
   const result = {};
   if (!tier.active) return result;
-  for (const effect of tier.effects) {
-    for (const id of BADGE_ORDER) {
-      const kw = KEYWORDS.find((k) => k.id === id);
-      for (const alias of kw.aliases) {
-        const before = new RegExp("(-?\\d+(?:\\.\\d+)?)\\s*" + alias);
-        const after = new RegExp(
-          alias + "(?:量)?(?:提高|增加|获得|治疗|为)?\\s*(-?\\d+(?:\\.\\d+)?)",
-        );
-        let m = effect.match(before) || effect.match(after);
-        if (id === "heal") {
-          m = effect.match(/治疗\s*(-?\d+(?:\.\d+)?)/) || m;
+  const sentences = tier.effects.flatMap(effect => keywordText(effect).split(/[。；;！!\n]/));
+  for (const sentence of sentences) {
+    for (const text of sentence.split(/[，,]/)) {
+      const clause = outputClause(text);
+      if (!directOutput(clause)) continue;
+      const rootLength = clause.match(DIRECT_OUTPUT)?.[0].length || 0;
+      for (const id of BADGE_ORDER) {
+        if (result[id] !== undefined) continue;
+        const kw = KEYWORDS.find(k => k.id === id);
+        for (const alias of kw.aliases) {
+          const pattern = new RegExp("(-?\\d+(?:\\.\\d+)?)\\s*" + alias +
+            "|" + alias + "(?:量)?(?:提高|增加|获得|治疗|为)?\\s*(-?\\d+(?:\\.\\d+)?)", "g");
+          for (const match of clause.matchAll(pattern)) {
+            const value = match[1] ?? match[2];
+            const valueEnd = match.index + match[0].lastIndexOf(value) + value.length;
+            if (/^\s*[%％倍秒次件个张]/.test(clause.slice(valueEnd))) continue;
+            const prefix = clause.slice(rootLength, match.index);
+            if (OTHER_RECIPIENT.test(prefix) || ATTRIBUTE_GAIN.test(prefix)) continue;
+            // A self-regeneration action is valid; damage/burn/etc. growth is a modifier.
+            if (id !== "regen" && ATTRIBUTE_GAIN.test(match[0])) continue;
+            result[id] = Number(value);
+            break;
+          }
+          if (result[id] !== undefined) break;
         }
-        if (m && result[id] === undefined) result[id] = Number(m[1]);
       }
     }
   }
   for (const id of BADGE_ORDER) {
     if (result[id] !== undefined) continue;
-    const kw = KEYWORDS.find((k) => k.id === id);
-    for (const effect of tier.effects) {
-      if (
-        !kw.aliases.some((a) => effect.includes(a)) ||
-        !/(?:等同于|等于|等量于)此物品/.test(effect)
-      )
-        continue;
-      const right = effect.split(/(?:等同于|等于|等量于)此物品(?:的)?/)[1];
-      const source = KEYWORDS.find(
-        (k) =>
-          BADGE_ORDER.includes(k.id) &&
-          k.aliases.some((a) => right.startsWith(a)),
-      );
+    const kw = KEYWORDS.find(k => k.id === id);
+    for (const sentence of sentences) {
+      const reference = sentence.match(/(?:等同于|等于|等量于)此物品(?:的)?/);
+      if (!reference) continue;
+      const action = outputClause(sentence.slice(0, reference.index).split(/[，,]/).filter(t => t.trim() && t.trim() !== "增幅").at(-1) || "");
+      if (!directOutput(action) || !kw.aliases.some(alias => {
+        const index = action.indexOf(alias);
+        const rootLength = action.match(DIRECT_OUTPUT)?.[0].length || 0;
+        return index >= 0 && !OTHER_RECIPIENT.test(action.slice(rootLength, index)) && !ATTRIBUTE_GAIN.test(action.slice(rootLength, index));
+      })) continue;
+      const right = sentence.slice(reference.index + reference[0].length);
+      const source = KEYWORDS.find(k => BADGE_ORDER.includes(k.id) && k.aliases.some(alias => right.startsWith(alias)));
       if (source && result[source.id] !== undefined) {
         const ratio = right.match(/(\d+(?:\.\d+)?)\s*(%|倍)/);
-        const factor = ratio
-          ? Number(ratio[1]) / (ratio[2] === "%" ? 100 : 1)
-          : 1;
+        const factor = ratio ? Number(ratio[1]) / (ratio[2] === "%" ? 100 : 1) : 1;
         result[id] = Math.round(result[source.id] * factor * 1e6) / 1e6;
+        break;
       }
     }
   }
@@ -344,6 +381,8 @@ export function validateProject(value) {
     )
       throw new Error("效果内容或冷却时间无效");
     normalizeTier(t);
+    if (typeof t.multicastEnabled !== "boolean" || !Number.isInteger(t.multicast) || t.multicast < 1 || t.multicast > 999)
+      throw new Error("基础多重释放无效");
     if (
       !Array.isArray(t.quests) ||
       t.quests.length > 20 ||
@@ -362,6 +401,7 @@ export function validateProject(value) {
           q.progress > 999999 ||
           typeof q.targetManual !== "boolean" ||
           typeof q.locked !== "boolean" ||
+          !["auto", "active", "passive"].includes(q.rewardRegion) ||
           ![
             "auto",
             "quest-lock",

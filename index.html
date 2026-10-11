@@ -184,7 +184,7 @@
             </details>
             <details id="extras">
               <summary>
-                附加属性 <span class="muted">弹药 · 暴击率</span
+                附加属性 <span class="muted">弹药 · 暴击率 · 多重释放</span
                 ><span class="chevron">⌄</span>
               </summary>
               <div class="extra-grid">
@@ -221,6 +221,11 @@
                       disabled
                     /><span>%</span>
                   </div>
+                </div>
+                <div>
+                  <label class="check-label"><input id="multicast-enabled" type="checkbox" />基础多重释放</label>
+                  <label class="sr-only" for="multicast">基础多重释放次数</label>
+                  <input id="multicast" type="number" min="1" max="999" step="1" value="1" disabled />
                 </div>
               </div>
             </details>

@@ -13,8 +13,10 @@ import {
   extractStats,
   questTarget,
   questComplete,
+  questRewardRegion,
   defaultBackground,
 } from "./model.js";
+import { iconKeywordAtStart } from "./keywords.js";
 import { enchantmentRows } from "./enchantments.js";
 const CREAM = "#ffe4b3",
   TITLE_FONT = "BazaarTitle",
@@ -229,6 +231,13 @@ export class Renderer {
       }
       let rest = part.text;
       while (rest) {
+        const marker = iconKeywordAtStart(rest);
+        if (marker) {
+          const k = marker.keyword;
+          runs.push({ kind: "word", text: "", color: k.color, icon: k.icon, id: k.id, iconOnly: true });
+          rest = rest.slice(marker.length);
+          continue;
+        }
         let matched = aliases.find(
           ({ a, k }) =>
             rest.startsWith(a) &&
@@ -270,11 +279,13 @@ export class Renderer {
         prev = runs[i - 1];
       if (next?.kind === "word" && next.id) {
         r.color = next.color;
-        r.icon = next.icon;
-        next.icon = null;
+        if (!next.iconOnly) {
+          r.icon = next.icon;
+          next.icon = null;
+        }
       } else if (prev?.kind === "word" && prev.id) {
         r.color = prev.color;
-        if (prev.id === "heal" || prev.id === "regen") {
+        if (!prev.iconOnly && (prev.id === "heal" || prev.id === "regen")) {
           r.icon = prev.icon;
           prev.icon = null;
         }
@@ -297,7 +308,7 @@ export class Renderer {
     // Counts in quest conditions keep their icon beside the keyword.
     for (let i = 0; i < runs.length; i++) {
       const word = runs[i];
-      if (!word.icon || !["charge", "haste", "slow", "freeze", "regen", "heal"].includes(word.id)) continue;
+      if (word.iconOnly || !word.icon || !["charge", "haste", "slow", "freeze", "regen", "heal"].includes(word.id)) continue;
       for (let j = i + 1; j < runs.length; j++) {
         const run = runs[j];
         if (["。", "；", "\n", "，"].includes(run.text) || run.id) break;
@@ -333,6 +344,7 @@ export class Renderer {
         for (const [index, text] of pieces.entries())
           units.push({
             text,
+            iconOnly: !!r.iconOnly,
             icon: index === 0 ? r.icon : null,
             color: r.color,
             width: measure(text) + (index === 0 && r.icon ? size * 1.35 : 0),
@@ -348,7 +360,10 @@ export class Renderer {
     let used = 0;
     for (let i = 0; i < units.length; i++) {
       const unit = units[i];
-      if (unit.values && unit.width > width) unit.width = width;
+      let suffixWidth = 0;
+      for (let j = i + 1; j < units.length && (units[j].iconOnly || /^(?:秒|次|%|。|，|；|：|）)$/.test(units[j].text)); j++)
+        suffixWidth += units[j].width;
+      if (unit.values && unit.width > width - suffixWidth) unit.width = Math.max(size, width - suffixWidth);
       if (unit.newline) {
         lines.push([]);
         used = 0;
@@ -357,7 +372,7 @@ export class Renderer {
       // Reserve the entire suffix, e.g. "10%.", not just the first glyph.
       // Otherwise the final punctuation can push '%' onto its own line.
       let required = unit.width;
-      for (let j = i + 1; j < units.length && /^(?:秒|次|%|。|，|；|：|）)$/.test(units[j].text); j++)
+      for (let j = i + 1; j < units.length && (units[j].iconOnly || /^(?:秒|次|%|。|，|；|：|）)$/.test(units[j].text)); j++)
         required += units[j].width;
       if (used + required > width && lines.at(-1).length) {
         lines.push([]);
@@ -397,6 +412,15 @@ export class Renderer {
       size,
       "center",
     );
+  }
+  paintLockedReward(ctx, reward, x, y, width) {
+    this.nine(ctx, "questFrame", x, y, width, reward.h, [22, 24, 3, 24], [9, 10, 2, 10]);
+    ctx.save();
+    if (reward.locked) ctx.globalAlpha = 0.49;
+    this.image(ctx, reward.locked ? this.tinted("icon-quest-lock", "#ffcd92") : "arrow",
+      x + 10, y + (reward.h - (reward.locked ? 28 : 18)) / 2, 23, reward.locked ? 28 : 18);
+    this.paintLines(ctx, reward.lines, x + 44, y + 29, 20, 28);
+    ctx.restore();
   }
   paintLines(ctx, lines, x, y, size = 22, lineHeight = 32, role = "active") {
     for (const line of lines) {
@@ -510,7 +534,7 @@ export class Renderer {
     // The active box covers the main frame's lower decorations when there is
     // no passive section, while the upper ornaments remain beside the name.
     const height = l.titleH + l.activeH + l.passiveH + l.enchantmentH -
-      2 * (Number(l.tier.active) + Number(!!l.passiveH) + Number(!!l.enchantmentH));
+      2 * (Number(l.activeH > 0) + Number(!!l.passiveH) + Number(!!l.enchantmentH));
     const vertical = Math.min(0.43, height / (borders[1] + borders[3]));
     this.nine(ctx, `${quality}-Frame_Main`, d.x, y, d.w, height, borders,
       [34, borders[1] * vertical, 34, borders[3] * vertical]);
@@ -524,6 +548,7 @@ export class Renderer {
       const values = available(project).map((q) => resolveTier(project, q.id));
       tier.ammoEnabled = values.some((t) => t.ammoEnabled);
       tier.critEnabled = values.some((t) => t.critEnabled);
+      tier.multicastEnabled = values.some(t => t.multicastEnabled);
       if (tier.cd === "") tier.cd = values.find((t) => t.cd !== "")?.cd || "";
     }
     const quality = mode === "all" ? project.initial : current;
@@ -563,7 +588,14 @@ export class Renderer {
           ),
         )
       : [];
-    const activeH = tier.active
+    if (tier.multicastEnabled) {
+      const runs = [
+        { kind: "word", text: "多重释放：", color: CREAM },
+        ...this.rich(displayText(project, current, t => `（多重释放）${t.multicastEnabled ? t.multicast : 1}`, mode)),
+      ];
+      effectLines.push(this.wrap(ctx, runs, effectWidth, size));
+    }
+    let activeH = tier.active || tier.multicastEnabled
       ? Math.max(
           88,
           effectLines.reduce((sum, l) => sum + l.length * lineHeight + 15, 0) +
@@ -656,12 +688,19 @@ export class Renderer {
             if (r.values)
               r.values = r.values.map((v) => ({ ...v, color: "#ffcd92" }));
           }
-        const lines = this.wrap(ctx, runs, descW - 85, 20);
-        return { lines, locked, h: lines.length * 28 + 26 };
+        const region = questRewardRegion(row.q);
+        const lines = this.wrap(ctx, runs, descW - (region === "active" ? 165 : 85), 20);
+        return { lines, locked, region, h: lines.length * 28 + 26 };
       });
+    const activeLockedRewards = lockedRewards.filter(r => r.region === "active");
+    const passiveLockedRewards = lockedRewards.filter(r => r.region === "passive");
+    if (activeLockedRewards.length) {
+      if (!activeH) activeH = 24 + (tier.critEnabled ? 55 : 0);
+      activeH += activeLockedRewards.reduce((sum, r) => sum + r.h + 10, 0);
+    }
     const passiveH = quests.length
       ? (passiveLines.length ? passiveLines.length * lineHeight + 32 : 20) +
-        lockedRewards.reduce((sum, r) => sum + r.h + 10, 0) +
+        passiveLockedRewards.reduce((sum, r) => sum + r.h + 10, 0) +
         quests.reduce((sum, r) => sum + r.h, 0) +
         25
       : passiveLines.length
@@ -747,7 +786,8 @@ export class Renderer {
       enchantments,
       enchantmentH,
       quests,
-      lockedRewards,
+      lockedRewards: passiveLockedRewards,
+      activeLockedRewards,
       title,
       titleSize,
       titleLines,
@@ -897,7 +937,7 @@ export class Renderer {
       );
     }
     y += l.titleH - 2;
-    if (tier.active) {
+    if (l.activeH) {
       this.panel(ctx, quality, "active", d.x, y, d.w, l.activeH);
       const contentH =
         l.effectLines.reduce(
@@ -905,7 +945,8 @@ export class Renderer {
           0,
         ) +
         Math.max(0, l.effectLines.length - 1) * 15;
-      const bodyH = l.activeH - (tier.critEnabled ? 55 : 0);
+      const bodyH = l.activeH - (tier.critEnabled ? 55 : 0) -
+        l.activeLockedRewards.reduce((sum, reward) => sum + reward.h + 10, 0);
       const textWidth = Math.max(
         0,
         ...l.effectLines
@@ -920,6 +961,11 @@ export class Renderer {
         this.paintLines(ctx, lines, textX, ey, l.size, l.lineHeight);
         ey += lines.length * l.lineHeight + 15;
       });
+      let lockedY = y + bodyH;
+      for (const reward of l.activeLockedRewards) {
+        this.paintLockedReward(ctx, reward, d.x + 84, lockedY, d.w - 103);
+        lockedY += reward.h + 10;
+      }
       if (tier.critEnabled) {
         const cy = y + l.activeH - 40;
         this.image(ctx, "critDivider", d.x + 40, cy - 12, d.w - 65, 2);
@@ -942,7 +988,7 @@ export class Renderer {
         const width = Math.max(0, ...lines.map((line) => line.reduce((sum, u) => sum + u.width, 0)));
         this.paintLines(ctx, lines, d.x + (d.w - width) / 2, cy + 17, 24, 32);
       }
-      if (tier.cd !== "") {
+      if (tier.active && tier.cd !== "") {
         const clockW = 122,
           clockH = 112,
           cx = d.x - 50,
@@ -1047,28 +1093,7 @@ export class Renderer {
           ? l.passiveLines.length * l.lineHeight + 32
           : 20);
       for (const reward of l.lockedRewards) {
-        this.nine(
-          ctx,
-          "questFrame",
-          d.x + 19,
-          qy,
-          d.w - 38,
-          reward.h,
-          [22, 24, 3, 24],
-          [9, 10, 2, 10],
-        );
-        ctx.save();
-        if (reward.locked) ctx.globalAlpha = 0.49;
-        this.image(
-          ctx,
-          reward.locked ? this.tinted("icon-quest-lock", "#ffcd92") : "arrow",
-          d.x + 29,
-          qy + (reward.h - (reward.locked ? 28 : 18)) / 2,
-          23,
-          reward.locked ? 28 : 18,
-        );
-        this.paintLines(ctx, reward.lines, d.x + 63, qy + 29, 20, 28);
-        ctx.restore();
+        this.paintLockedReward(ctx, reward, d.x + 19, qy, d.w - 38);
         qy += reward.h + 10;
       }
       for (const row of l.quests) {
