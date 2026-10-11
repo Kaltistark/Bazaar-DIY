@@ -644,7 +644,7 @@ function schedulePaint() {
         includeEnchantments: editorPage === "enchantments",
         scale: Math.min(devicePixelRatio || 1, 2),
         stacked,
-        background: "preview",
+        background: project.background.useDefault ? "transparent" : "preview",
       });
       positionOverlay();
     } catch (e) {
