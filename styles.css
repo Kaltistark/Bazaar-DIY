@@ -846,6 +846,7 @@ dialog::backdrop {
 .export-preview-frame { min-height: 180px; max-height: 520px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background-color: #192327; background-image: linear-gradient(45deg, #293338 25%, transparent 25%), linear-gradient(-45deg, #293338 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #293338 75%), linear-gradient(-45deg, transparent 75%, #293338 75%); background-size: 24px 24px; background-position: 0 0, 0 12px, 12px -12px, -12px 0; }
 #export-preview { width: 100%; height: auto; display: block; }
 .export-preview-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); margin-top: 12px; }
+.export-save-hint { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; text-align: center; }
 #export-view-original { color: var(--gold); white-space: nowrap; }
 #export-preview-status.error { color: #f69e86; }
 .export-options .export-choice:first-child { margin-top: 0; }
