@@ -13,6 +13,7 @@ import {
   extractStats,
   questTarget,
   questComplete,
+  defaultBackground,
 } from "./model.js";
 import { enchantmentRows } from "./enchantments.js";
 const CREAM = "#ffe4b3",
@@ -41,7 +42,33 @@ export class Renderer {
     this.images = new Map();
     this.art = null;
     this.artSource = null;
+    this.backgroundImage = null;
     this.lastLayout = null;
+  }
+  paintBackground(ctx, background = defaultBackground(), width, height) {
+    ctx.fillStyle = background.color;
+    ctx.fillRect(0, 0, width, height);
+    if (background.useDefault) {
+      // Keep the existing preview's elliptical gradient when using/resetting the default.
+      ctx.save();
+      const rx = Math.SQRT2 * width * 0.6, ry = Math.SQRT2 * height * 0.55;
+      ctx.translate(width * 0.4, height * 0.45);
+      ctx.scale(rx, ry);
+      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+      gradient.addColorStop(0, "#242e31");
+      gradient.addColorStop(0.65, "#151d21");
+      gradient.addColorStop(1, "#151d21");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(-width * 0.4 / rx, -height * 0.45 / ry, width / rx, height / ry);
+      ctx.restore();
+      return;
+    }
+    const image = this.backgroundImage;
+    if (!background.image || !image) return;
+    // Cover the card composition without stretching the uploaded image.
+    const factor = Math.max(width / image.width, height / image.height);
+    const w = image.width * factor, h = image.height * factor;
+    ctx.drawImage(image, (width - w) / 2, (height - h) / 2, w, h);
   }
   async load() {
     const list = [
@@ -757,7 +784,9 @@ export class Renderer {
     ctx.scale(scale, scale);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    if (background === "dark") {
+    if (background === "preview") {
+      this.paintBackground(ctx, project.background, l.width, l.height);
+    } else if (background === "dark") {
       ctx.fillStyle = "#141b1e";
       ctx.fillRect(0, 0, l.width, l.height);
     }

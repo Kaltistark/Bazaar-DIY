@@ -16,6 +16,7 @@ import {
   textValue,
   setTextValue,
   completeEffectText,
+  defaultBackground,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
 import { CooldownPicker } from "./cooldown-picker.js";
@@ -235,6 +236,7 @@ function syncForms() {
   $("hero").value = project.hero;
   syncHeroPicker();
   $("item-name").value = project.name;
+  syncBackgroundControls();
   $("independent-structure").checked = !!project.independentStructure;
   $("active-enabled").checked = t.active;
   $("active-editor").hidden = !t.active;
@@ -642,6 +644,7 @@ function schedulePaint() {
         includeEnchantments: editorPage === "enchantments",
         scale: Math.min(devicePixelRatio || 1, 2),
         stacked,
+        background: "preview",
       });
       positionOverlay();
     } catch (e) {
@@ -649,6 +652,78 @@ function schedulePaint() {
     }
   });
 }
+function syncBackgroundControls() {
+  $("background-color").value = project.background.color;
+  $("remove-background").hidden = !project.background.image;
+  $("preview-stage").style.background = project.background.useDefault ? "" : project.background.color;
+  $("preview-stage").classList.toggle("has-background-image", !!project.background.image);
+}
+$("background-color").addEventListener("input", () => {
+  project.background.color = $("background-color").value;
+  project.background.useDefault = false;
+  syncBackgroundControls();
+  changed();
+});
+$("upload-background").addEventListener("click", () => $("background-file").click());
+let backgroundUploadEpoch = 0;
+async function decodeBackground(source) {
+  if (!source) return null;
+  const image = new Image();
+  image.src = source;
+  try {
+    await image.decode();
+    return image;
+  } catch {
+    throw new Error("背景图片无法读取，请尝试另一张图片");
+  }
+}
+$("background-file").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const target = project, request = ++backgroundUploadEpoch;
+  try {
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type))
+      throw new Error("请选择 PNG、JPG 或 WebP 图片");
+    if (file.size > 20 * 1024 * 1024) throw new Error("图片不能超过 20 MB");
+    let source = await readDataURL(file), image = await decodeBackground(source);
+    if (Math.max(image.width, image.height) > 4096) {
+      const factor = 4096 / Math.max(image.width, image.height);
+      const resized = document.createElement("canvas");
+      resized.width = Math.max(1, Math.round(image.width * factor));
+      resized.height = Math.max(1, Math.round(image.height * factor));
+      resized.getContext("2d").drawImage(image, 0, 0, resized.width, resized.height);
+      source = resized.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.94);
+      image = await decodeBackground(source);
+    }
+    if (source.length > 30_000_000) throw new Error("背景图片过大，请选择较小的图片");
+    if (request !== backgroundUploadEpoch || project !== target) return;
+    project.background.image = source;
+    project.background.useDefault = false;
+    renderer.backgroundImage = image;
+    syncBackgroundControls();
+    changed();
+    toast("背景已更新");
+  } catch (error) {
+    if (request === backgroundUploadEpoch && project === target) toast(error.message);
+  } finally {
+    e.target.value = "";
+  }
+});
+$("remove-background").addEventListener("click", () => {
+  backgroundUploadEpoch++;
+  project.background.image = null;
+  renderer.backgroundImage = null;
+  syncBackgroundControls();
+  changed();
+});
+$("reset-background").addEventListener("click", () => {
+  backgroundUploadEpoch++;
+  project.background = defaultBackground();
+  renderer.backgroundImage = null;
+  syncBackgroundControls();
+  changed();
+  toast("已恢复默认背景");
+});
 function positionOverlay() {
   const l = renderer.lastLayout;
   if (!l) return;
@@ -977,7 +1052,8 @@ async function updateExportPreview() {
     buildEnchantmentFields();
     changed();
   }
-  const snapshot = clone(project), tierId = current, art = renderer.art;
+  const snapshot = clone(project), tierId = current, art = renderer.art,
+    backgroundImage = renderer.backgroundImage;
   const filename = `${safeName()}_${mode === "all" ? "全等级" : QUALITIES.find((q) => q.id === tierId).name}${includeEnchantments ? "_附魔" : ""}.png`;
   $("export-download").disabled = true;
   $("export-preview").hidden = true;
@@ -990,6 +1066,7 @@ async function updateExportPreview() {
     await document.fonts.ready;
     if (request !== exportPreviewEpoch || !dialog.open) return;
     exportRenderer.art = art;
+    exportRenderer.backgroundImage = backgroundImage;
     const imageCanvas = document.createElement("canvas");
     exportRenderer.render(imageCanvas, snapshot, tierId, { mode, scale, background, includeEnchantments });
     const blob = await new Promise((resolve) => imageCanvas.toBlob(resolve, "image/png"));
@@ -1028,6 +1105,8 @@ $("new-project").addEventListener("click", async () => {
   )
     return;
   project = createProject();
+  backgroundUploadEpoch++;
+  renderer.backgroundImage = null;
   current = "bronze";
   setEditorPage("base");
   await renderer.setArt(null);
@@ -1049,11 +1128,14 @@ $("project-file").addEventListener("change", async (e) => {
   if (!f) return;
   const previous = project;
   try {
-    if (f.size > 35 * 1024 * 1024) throw new Error("作品文件过大");
+    if (f.size > 65 * 1024 * 1024) throw new Error("作品文件过大");
     const parsed = validateProject(JSON.parse(await f.text()));
+    const backgroundImage = await decodeBackground(parsed.background.image);
     await renderer.setArt(parsed.art);
     if (parsed.art && !renderer.art) throw new Error("作品中的图片无法读取");
     project = parsed;
+    backgroundUploadEpoch++;
+    renderer.backgroundImage = backgroundImage;
     current = project.initial;
     setEditorPage("base");
     syncForms();
@@ -1108,7 +1190,10 @@ $("save-status").textContent = "正在载入游戏素材…";
 try {
   const saved = await loadLocal();
   if (saved) {
-    project = validateProject(saved);
+    const restored = validateProject(saved);
+    const backgroundImage = await decodeBackground(restored.background.image);
+    project = restored;
+    renderer.backgroundImage = backgroundImage;
     current = project.initial;
     await renderer.setArt(project.art);
     syncForms();

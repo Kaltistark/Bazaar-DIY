@@ -54,6 +54,15 @@
           ><span>拖动卡图调整位置 · 滚轮缩放</span
           ><button id="upload-button" class="button text">上传卡图</button><button id="reset-crop" class="button text">重置位置</button>
         </div>
+        <div class="background-tools" aria-label="预览背景设置">
+          <label class="background-color-label" for="background-color">背景色
+            <input id="background-color" type="color" value="#151d21" />
+          </label>
+          <button id="upload-background" class="button small">上传背景图</button>
+          <button id="remove-background" class="button text" hidden>移除背景图</button>
+          <button id="reset-background" class="button text">重置背景</button>
+          <input id="background-file" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+        </div>
       </section>
       <section class="editor-panel" aria-label="物品编辑">
         <div class="editor-heading">
@@ -301,7 +310,7 @@
       <div class="field-row two export-settings">
         <label
           >图片背景<select id="export-background">
-            <option value="dark">深色底图</option>
+            <option value="preview">跟随预览背景</option>
             <option value="transparent">透明背景</option>
           </select></label
         ><label

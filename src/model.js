@@ -73,11 +73,15 @@ export function createProject() {
     types: [],
     art: null,
     crop: { x: 0, y: 0, zoom: 1 },
+    background: defaultBackground(),
     independentStructure: false,
     tiers: Object.fromEntries(QUALITIES.map((q) => [q.id, null])),
     seed: defaultTier(),
     enchantments: defaultEnchantments(),
   };
+}
+export function defaultBackground() {
+  return { color: "#151d21", image: null, useDefault: true };
 }
 export function defaultEnchantments() {
   return { initialized: false, entries: Object.fromEntries(
@@ -304,6 +308,19 @@ export function validateProject(value) {
       value.art.length > 30_000_000)
   )
     throw new Error("图片格式无效或过大");
+  value.background ??= defaultBackground();
+  if (!value.background ||
+    typeof value.background.color !== "string" ||
+    !/^#[\da-f]{6}$/i.test(value.background.color) ||
+    !(value.background.image === null ||
+      (typeof value.background.image === "string" &&
+       /^data:image\/(png|jpeg|webp);base64,/.test(value.background.image) &&
+       value.background.image.length <= 30_000_000)))
+    throw new Error("背景颜色或图片无效");
+  value.background.useDefault ??= false;
+  if (typeof value.background.useDefault !== "boolean" ||
+      (value.background.useDefault && value.background.image !== null))
+    throw new Error("背景模式无效");
   if (
     !value.crop ||
     ![value.crop.x, value.crop.y, value.crop.zoom].every(Number.isFinite) ||

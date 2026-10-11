@@ -349,6 +349,31 @@ canvas {
   color: var(--gold);
   font-size: 12px;
 }
+.background-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.background-color-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+.background-color-label > input {
+  width: 42px;
+  height: 32px;
+  margin: 0;
+  padding: 3px;
+  cursor: pointer;
+}
+.background-tools .button { min-height: 34px; }
+.preview-stage.has-background-image { padding: 0; min-height: 0; }
 .editor-panel {
   border: 1px solid var(--line);
   border-radius: 10px;
