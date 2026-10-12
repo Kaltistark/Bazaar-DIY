@@ -2,6 +2,35 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { Renderer } from "../src/renderer.js";
 import { KEYWORDS } from "../src/data.js";
+test("默认与重置背景保留原预览的椭圆渐变", () => {
+  const renderer = new Renderer(), stops = [];
+  const ctx = {
+    fillRect() {}, save() {}, restore() {}, translate() {}, scale() {},
+    createRadialGradient() { return { addColorStop: (offset, color) => stops.push([offset, color]) }; },
+  };
+  renderer.paintBackground(ctx, undefined, 1000, 600);
+  assert.deepEqual(stops, [[0, "#242e31"], [0.65, "#151d21"], [1, "#151d21"]]);
+});
+test("预览和导出的背景共用底色，宽图居中裁切且保留比例", () => {
+  const renderer = new Renderer(), calls = [];
+  const ctx = {
+    fillRect: (...rect) => calls.push(["fill", ctx.fillStyle, ...rect]),
+    drawImage: (...args) => calls.push(["image", ...args]),
+  };
+  renderer.paintBackground(ctx, { color: "#20362e", image: null }, 1000, 600);
+  assert.deepEqual(calls, [["fill", "#20362e", 0, 0, 1000, 600]]);
+  calls.length = 0;
+  const image = renderer.backgroundImage = { width: 2000, height: 500 };
+  renderer.paintBackground(ctx, { color: "#123456", image: "uploaded" }, 1000, 600);
+  assert.deepEqual(calls, [
+    ["fill", "#123456", 0, 0, 1000, 600],
+    ["image", image, -700, 0, 2400, 600],
+  ]);
+  calls.length = 0;
+  image.width = 500; image.height = 2000;
+  renderer.paintBackground(ctx, { color: "#123456", image: "uploaded" }, 1000, 600);
+  assert.deepEqual(calls[1], ["image", image, 0, -1700, 1000, 4000]);
+});
 test("数字、百分号与句末标点整体换行，不留下孤立百分号", () => {
   const renderer = new Renderer();
   const ctx = { measureText: text => ({ width: [...text].length * 10 }) };

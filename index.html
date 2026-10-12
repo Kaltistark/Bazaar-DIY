@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#11181b" />
     <title>大巴扎 · 物品工坊</title>
+    <link rel="shortcut icon" href="./assets/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="./assets/favicon.svg" />
     <meta
       name="description"
       content="制作你的大巴扎 DIY 物品，实时预览、编辑各品质效果并导出图片。"
@@ -53,6 +56,15 @@
           <span id="preview-label">青铜 · 中型</span
           ><span>拖动卡图调整位置 · 滚轮缩放</span
           ><button id="upload-button" class="button text">上传卡图</button><button id="reset-crop" class="button text">重置位置</button>
+        </div>
+        <div class="background-tools" aria-label="预览背景设置">
+          <label class="background-color-label" for="background-color">背景色
+            <input id="background-color" type="color" value="#151d21" />
+          </label>
+          <button id="upload-background" class="button small">上传背景图</button>
+          <button id="remove-background" class="button text" hidden>移除背景图</button>
+          <button id="reset-background" class="button text">重置背景</button>
+          <input id="background-file" type="file" accept="image/png,image/jpeg,image/webp" hidden />
         </div>
       </section>
       <section class="editor-panel" aria-label="物品编辑">
@@ -175,7 +187,7 @@
             </details>
             <details id="extras">
               <summary>
-                附加属性 <span class="muted">弹药 · 暴击率</span
+                附加属性 <span class="muted">弹药 · 暴击率 · 多重释放</span
                 ><span class="chevron">⌄</span>
               </summary>
               <div class="extra-grid">
@@ -212,6 +224,11 @@
                       disabled
                     /><span>%</span>
                   </div>
+                </div>
+                <div>
+                  <label class="check-label"><input id="multicast-enabled" type="checkbox" />基础多重释放</label>
+                  <label class="sr-only" for="multicast">基础多重释放次数</label>
+                  <input id="multicast" type="number" min="1" max="999" step="1" value="1" disabled />
                 </div>
               </div>
             </details>
@@ -301,7 +318,7 @@
       <div class="field-row two export-settings">
         <label
           >图片背景<select id="export-background">
-            <option value="dark">深色底图</option>
+            <option value="preview">跟随预览背景</option>
             <option value="transparent">透明背景</option>
           </select></label
         ><label

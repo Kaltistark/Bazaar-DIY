@@ -16,16 +16,31 @@ import {
   questTarget,
   questComplete,
   clone,
+  defaultBackground,
   scaleIntensityText,
-  completeEffectText,
 } from "../src/model.js";
-test("补齐效果末尾句号，保留已有标点、换行、空值与字数上限", () => {
-  assert.equal(completeEffectText("造成60伤害  "), "造成60伤害。");
-  assert.equal(completeEffectText("获得护盾\n等同于此物品伤害"), "获得护盾\n等同于此物品伤害。");
-  for (const text of ["造成60伤害。", "造成60伤害!", "造成60伤害？", "“造成60伤害。”"])
-    assert.equal(completeEffectText(text), text);
-  assert.equal(completeEffectText("   "), "");
-  assert.equal(completeEffectText("满额内容", 4), "满额内容");
+test("预览背景随作品保存，旧作品恢复线上默认背景并拒绝非法颜色或图片", () => {
+  const legacy = createProject();
+  delete legacy.background;
+  assert.deepEqual(validateProject(legacy).background, { color: "#151d21", image: null, useDefault: true });
+  const project = createProject();
+  project.background = { color: "#123456", image: "data:image/png;base64,dGVzdA==", useDefault: false };
+  assert.deepEqual(validateProject(clone(project)).background, project.background);
+  for (const background of [
+    { color: "red", image: null },
+    { color: "#20362e", image: "https://example.com/background.png" },
+    { color: "#20362e", image: "data:image/svg+xml;base64,PHN2Zz4=" },
+    { color: "#20362e", image: 123 },
+    { color: "#20362e", image: null, useDefault: "yes" },
+    { color: "#20362e", image: "data:image/png;base64,dGVzdA==", useDefault: true },
+  ]) assert.throws(() => validateProject({ ...clone(project), background }), /背景/);
+});
+test("重置背景清除图片并恢复原有背景，早期自选背景保留颜色", () => {
+  const project = createProject();
+  project.background = { color: "#382c25", image: null };
+  assert.deepEqual(validateProject(project).background, { color: "#382c25", image: null, useDefault: false });
+  project.background = defaultBackground();
+  assert.deepEqual(validateProject(project).background, { color: "#151d21", image: null, useDefault: true });
 });
 test("六类强度按1:2:3:4生成，CD与目标、时长、百分比和倍率保持原值", () => {
   const p = createProject();
@@ -175,8 +190,8 @@ test("六类顶部数值与等同于伤害", () => {
 });
 test("补全支持别名、等同于句式并要求已存在引用效果", () => {
   const t = { effects: ["造成60伤害。", "火=伤"] };
-  assert.equal(suggest("60火", t), "造成60灼烧。");
-  assert.equal(suggest("火=伤", t), "造成灼烧，等同于此物品伤害。");
+  assert.equal(suggest("60火", t), "造成60灼烧");
+  assert.equal(suggest("火=伤", t), "造成灼烧，等同于此物品伤害");
   assert.equal(suggest("火=伤", { effects: ["火=伤"] }), "");
   assert.equal(suggest("任意自由句子", t), "");
 });

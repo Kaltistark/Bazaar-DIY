@@ -210,17 +210,17 @@ function target(raw, fallback = "一件物品") {
 }
 function direct(id, n) {
   if (["damage", "burn", "poison"].includes(id))
-    return `造成${n}${names[id]}。`;
-  if (id === "heal") return `治疗${n}生命值。`;
-  if (id === "shield") return `获得${n}护盾。`;
-  if (id === "regen") return `生命再生量提高${n}。`;
-  if (id === "health") return `获得${n}最大生命值。`;
-  if (id === "multicast") return `多重释放：${n}。`;
-  if (id === "crit") return `此物品+${n}%暴击率。`;
-  if (id === "ammo") return `装填${n}弹药。`;
-  if (id === "value") return `此物品价值提高${n}。`;
-  if (id === "income") return `收入提高${n}。`;
-  return `获得${n}${names[id]}。`;
+    return `造成${n}${names[id]}`;
+  if (id === "heal") return `治疗${n}生命值`;
+  if (id === "shield") return `获得${n}护盾`;
+  if (id === "regen") return `生命再生量提高${n}`;
+  if (id === "health") return `获得${n}最大生命值`;
+  if (id === "multicast") return `多重释放：${n}`;
+  if (id === "crit") return `此物品+${n}%暴击率`;
+  if (id === "ammo") return `装填${n}弹药`;
+  if (id === "value") return `此物品价值提高${n}`;
+  if (id === "income") return `收入提高${n}`;
+  return `获得${n}${names[id]}`;
 }
 function equality(raw, tier) {
   const sides = raw.split("=");
@@ -278,14 +278,14 @@ function equality(raw, tier) {
   const reference =
     source === "health" ? "最大生命值" : `此物品${names[source]}`;
   const ref = reference + (scale ? `的${scale}` : "");
-  if (left === "regen") return `生命再生量提高，增幅等于${ref}。`;
+  if (left === "regen") return `生命再生量提高，增幅等于${ref}`;
   const verb =
     left === "heal"
       ? "治疗生命值"
       : left === "shield"
         ? "获得护盾"
         : `造成${names[left]}`;
-  return `${verb}，等同于${ref}。`;
+  return `${verb}，等同于${ref}`;
 }
 function simple(raw, tier) {
   if (raw.includes("=")) return equality(raw, tier);
@@ -296,7 +296,7 @@ function simple(raw, tier) {
     const to = target(cooldown[1], "此物品"),
       n = amount(cooldown[2]);
     return to && n !== null
-      ? `${to}冷却时间缩短${n}${cooldown[3] === "%" ? "%" : "秒"}。`
+      ? `${to}冷却时间缩短${n}${cooldown[3] === "%" ? "%" : "秒"}`
       : "";
   }
   const gain = raw.match(
@@ -307,13 +307,13 @@ function simple(raw, tier) {
       to = target(gain[1], "此物品"),
       n = amount(gain[4]);
     if (id && to && n !== null)
-      return `${to}${gain[2] || ""}+${n}${id === "crit" || gain[5] ? "%" : ""}${names[id]}。`;
+      return `${to}${gain[2] || ""}+${n}${id === "crit" || gain[5] ? "%" : ""}${names[id]}`;
     // Separate a target prefix from the keyword when the first capture is empty.
     for (let i = 0; i < gain[3].length; i++) {
       const to = target(gain[3].slice(0, i), "此物品"),
         id = kind(gain[3].slice(i));
       if (to && id && n !== null)
-        return `${to}${gain[2] || ""}+${n}${id === "crit" || gain[5] ? "%" : ""}${names[id]}。`;
+        return `${to}${gain[2] || ""}+${n}${id === "crit" || gain[5] ? "%" : ""}${names[id]}`;
     }
     return "";
   }
@@ -323,17 +323,17 @@ function simple(raw, tier) {
   if (refill) {
     const to = target(refill[1], "此物品"),
       n = amount(refill[2]);
-    return to && n !== null ? `为${to}装填${n}弹药。` : "";
+    return to && n !== null ? `为${to}装填${n}弹药` : "";
   }
   const status = raw.match(/^(吸血|飞行|飞)(.*)$/);
   if (status) {
     const to = target(status[2], "此物品");
-    return to ? `${to}获得${status[1] === "吸血" ? "吸血" : "飞行"}。` : "";
+    return to ? `${to}获得${status[1] === "吸血" ? "吸血" : "飞行"}` : "";
   }
   const upgrade = raw.match(/^(?:升级|升)(.*)$/);
   if (upgrade) {
     const to = target(upgrade[1]);
-    return to ? `升级${to}。` : "";
+    return to ? `升级${to}` : "";
   }
   const transform = raw.match(/^(?:转化|转)(.*)$/);
   if (transform) {
@@ -341,12 +341,12 @@ function simple(raw, tier) {
     if (explicit) {
       const from = target(explicit[1]),
         to = target(explicit[2]);
-      return from && to ? `将${from}转化为${to}。` : "";
+      return from && to ? `将${from}转化为${to}` : "";
     }
     for (let i = transform[1].length; i >= 0; i--) {
       const from = target(transform[1].slice(0, i)),
         to = target(transform[1].slice(i), "");
-      if (from && to) return `将${from}转化为${to}。`;
+      if (from && to) return `将${from}转化为${to}`;
     }
     const from = target(transform[1]);
     return from ? `将${from}转化为` : "";
@@ -361,7 +361,7 @@ function simple(raw, tier) {
       n = amount(m[1]);
     if (!id || n === null) return "";
     if (["haste", "charge", "slow", "freeze"].includes(id))
-      return `${names[id]}一件物品${n}秒。`;
+      return `${names[id]}一件物品${n}秒`;
     return direct(id, n);
   }
   if (["haste", "charge", "slow", "freeze"].includes(verb.id)) {
@@ -370,8 +370,8 @@ function simple(raw, tier) {
       to = target(m ? m[1] : rest);
     if (!to || n === null) return "";
     return verb.id === "charge"
-      ? `为${to}充能${n}秒。`
-      : `${names[verb.id]}${to}${n}秒。`;
+      ? `为${to}充能${n}秒`
+      : `${names[verb.id]}${to}${n}秒`;
   }
   const n = amount(rest.replace(verb.id === "crit" ? /%$/ : /生命值$/, ""));
   return n === null ? "" : direct(verb.id, n);
@@ -480,20 +480,20 @@ export function fieldCompletion(
     : null;
 }
 export const COMPLETION_EXAMPLES = [
-  ["奶60", "治疗60生命值。"],
-  ["60火 / 火60", "造成60灼烧。"],
-  ["充左 / 充左2.5", "为左侧物品充能1秒 / 2.5秒。"],
-  ["加速右2", "加速右侧物品2秒。"],
-  ["冻敌2件1.5", "冻结敌方2件物品1.5秒。"],
-  ["充邻科技2", "为相邻科技物品充能2秒。"],
-  ["开战：盾100", "每场战斗开始时，获得100护盾。"],
-  ["用邻：充自1", "使用相邻物品时，为此物品充能1秒。"],
-  ["冻结时：奶60", "触发冻结时，治疗60生命值。"],
-  ["左伤+10", "左侧物品+10伤害。"],
-  ["永久伤+10", "此物品永久+10伤害。"],
-  ["火=伤10%", "造成灼烧，等同于此物品伤害的10%。"],
-  ["高温：火60", "高温时：造成60灼烧。"],
-  ["霜冻：奶60", "霜冻时：治疗60生命值。"],
-  ["转左伙伴", "将左侧物品转化为一件伙伴。"],
-  ["升级右", "升级右侧物品。"],
+  ["奶60", "治疗60生命值"],
+  ["60火 / 火60", "造成60灼烧"],
+  ["充左 / 充左2.5", "为左侧物品充能1秒 / 2.5秒"],
+  ["加速右2", "加速右侧物品2秒"],
+  ["冻敌2件1.5", "冻结敌方2件物品1.5秒"],
+  ["充邻科技2", "为相邻科技物品充能2秒"],
+  ["开战：盾100", "每场战斗开始时，获得100护盾"],
+  ["用邻：充自1", "使用相邻物品时，为此物品充能1秒"],
+  ["冻结时：奶60", "触发冻结时，治疗60生命值"],
+  ["左伤+10", "左侧物品+10伤害"],
+  ["永久伤+10", "此物品永久+10伤害"],
+  ["火=伤10%", "造成灼烧，等同于此物品伤害的10%"],
+  ["高温：火60", "高温时：造成60灼烧"],
+  ["霜冻：奶60", "霜冻时：治疗60生命值"],
+  ["转左伙伴", "将左侧物品转化为一件伙伴"],
+  ["升级右", "升级右侧物品"],
 ];

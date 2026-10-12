@@ -1,3 +1,4 @@
+import { keywordText } from "./keywords.js";
 import { ENCHANTMENTS } from "./data.js";
 import { resolveTier, defaultEnchantments } from "./model.js";
 
@@ -12,15 +13,15 @@ export function simpleStats(tier) {
     regen: /^(?:获得\s*\d+(?:\.\d+)?\s*生命再生|生命再生(?:量)?(?:提高|增加)\s*\d+(?:\.\d+)?)[。.!！\s]*$/,
   };
   return Object.keys(patterns).filter(id => tier.active && tier.effects.some(
-    text => patterns[id].test(text.trim()),
+    text => patterns[id].test(keywordText(text.trim())),
   ));
 }
 
 export function generateEnchantmentDraft(project) {
   const tier = resolveTier(project, project.initial);
   const draft = Object.fromEntries(ENCHANTMENTS.map(({ id }) => [id, ""]));
-  draft.golden = "此物品的价值翻倍。";
-  const effects = tier.effects.filter(text => text.trim());
+  draft.golden = "此物品的价值翻倍";
+  const effects = tier.effects.filter(text => text.trim()).map(keywordText);
   const complicated = !tier.active || !effects.length || tier.quests.length > 0 ||
     /(?:时[，,:：]|每当|每次|出售|成长|摧毁|转化|升级|战斗后)/.test(
       [...effects, tier.passiveEnabled ? tier.passive : ""].join("\n"),
@@ -29,13 +30,13 @@ export function generateEnchantmentDraft(project) {
 
   // These are editable draft defaults, not a universal game balance rule.
   draft.heavy = effects.some(t => /减速.+\d+(?:\.\d+)?秒/.test(t))
-    ? "此物品的减速时长翻倍。" : "减速一件物品2秒。";
+    ? "此物品的减速时长翻倍" : "减速一件物品2秒";
   draft.icy = effects.some(t => /冻结.+\d+(?:\.\d+)?秒/.test(t))
-    ? "此物品的冻结时长翻倍。" : "冻结一件物品0.5秒。";
+    ? "此物品的冻结时长翻倍" : "冻结一件物品0.5秒";
   draft.turbo = effects.some(t => /加速.+\d+(?:\.\d+)?秒/.test(t))
-    ? "此物品的加速时长翻倍。" : "加速一件物品2秒。";
-  draft.shiny = "此物品+1多重释放。";
-  draft.radiant = "此物品免疫冻结、减速和摧毁。";
+    ? "此物品的加速时长翻倍" : "加速一件物品2秒";
+  draft.shiny = "此物品+1多重释放";
+  draft.radiant = "此物品免疫冻结、减速和摧毁";
 
   const stats = simpleStats(tier), primary = stats.length === 1 ? stats[0] : null;
   const labels = { damage: "伤害", heal: "治疗量", shield: "护盾量",
@@ -53,7 +54,7 @@ export function generateEnchantmentDraft(project) {
   const persistent = id => ["burn", "poison", "regen"].includes(id);
   for (const [enchantment, target] of Object.entries(targets)) {
     if (stats.includes(target) || effects.some(text => referenced[target].test(text.trim()))) {
-      draft[enchantment] = `此物品的${labels[target]}翻倍。`;
+      draft[enchantment] = `此物品的${labels[target]}翻倍`;
       continue;
     }
     if (!primary) continue;
@@ -62,11 +63,11 @@ export function generateEnchantmentDraft(project) {
     const reference = `等同于此物品${labels[primary]}${factor === 1 ? "" : factor === 5 ? "的5倍" : "的10%"}`;
     const start = { damage: "造成伤害", heal: "治疗", shield: "获得护盾",
       burn: "造成灼烧", poison: "造成剧毒", regen: "生命再生量提高" }[target];
-    draft[enchantment] = `${start}，${target === "regen" ? "增幅" : ""}${reference}。`;
+    draft[enchantment] = `${start}，${target === "regen" ? "增幅" : ""}${reference}`;
     if (target === "damage" && !project.types.includes("武器"))
-      draft[enchantment] = `此物品获得武器类型。${draft[enchantment]}`;
+      draft[enchantment] = `此物品获得武器类型，${draft[enchantment]}`;
   }
-  if (stats.length) draft.deadly = "此物品+50%暴击率。";
+  if (stats.length) draft.deadly = "此物品+50%暴击率";
   return draft;
 }
 

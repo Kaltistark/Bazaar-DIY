@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <title>大巴扎物品工坊</title>
+  <rect x="3" y="8" width="20" height="21" rx="3" fill="#11181b" stroke="#b68a4c" stroke-width="2.5"/>
+  <rect x="9" y="3" width="20" height="24" rx="3" fill="#11181b" stroke="#e7bd73" stroke-width="2.5"/>
+  <path d="m19 9 6 6-6 6-6-6Z" fill="#66d3bb"/>
+</svg>

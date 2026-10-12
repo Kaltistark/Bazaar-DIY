@@ -12,7 +12,7 @@ export const SIZES = {
 };
 export const HEROES = [
   ["neutral", "中立"],
-  ["vanessa", "瓦妮莎"],
+  ["vanessa", "瓦内莎"],
   ["pygmalien", "皮格马利翁"],
   ["dooley", "杜利"],
   ["mak", "马克"],

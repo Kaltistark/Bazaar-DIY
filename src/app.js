@@ -11,11 +11,12 @@ import {
   synchronizeStructure,
   synchronizeText,
   defaultQuest,
+  questRewardRegion,
   questTarget,
   questComplete,
   textValue,
   setTextValue,
-  completeEffectText,
+  defaultBackground,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
 import { CooldownPicker } from "./cooldown-picker.js";
@@ -235,6 +236,7 @@ function syncForms() {
   $("hero").value = project.hero;
   syncHeroPicker();
   $("item-name").value = project.name;
+  syncBackgroundControls();
   $("independent-structure").checked = !!project.independentStructure;
   $("active-enabled").checked = t.active;
   $("active-editor").hidden = !t.active;
@@ -249,6 +251,9 @@ function syncForms() {
   $("crit-enabled").checked = t.critEnabled;
   $("crit").value = t.crit;
   $("crit").disabled = !t.critEnabled;
+  $("multicast-enabled").checked = t.multicastEnabled;
+  $("multicast").value = t.multicast;
+  $("multicast").disabled = !t.multicastEnabled;
   $("preview-label").textContent =
     `${QUALITIES.find((q) => q.id === current).name} · ${SIZES[project.size].name}`;
   $("editing-tier").textContent =
@@ -319,13 +324,6 @@ function buildEnchantmentFields() {
       entry.manual = true;
       changed();
     });
-    input.addEventListener("blur", () => {
-      const text = completeEffectText(input.value, input.maxLength);
-      if (text === input.value) return;
-      entry.text = input.value = text;
-      entry.manual = true;
-      changed();
-    });
     reset.addEventListener("click", () => {
       entry.text = generateEnchantmentDraft(project)[enchantment.id];
       entry.manual = false;
@@ -363,7 +361,6 @@ function buildEffectFields(t) {
       changed();
     });
     ta.addEventListener("blur", () => {
-      finishEffectField(ta, "effects", i);
       checkStructure(focusSnapshot);
       focusSnapshot = null;
     });
@@ -397,7 +394,111 @@ function syncCompatibility() {
     ).checked = true;
   $("export-incompatible").hidden = ok;
 }
+let activeQuestIconPicker = null;
+function questIconPicker(value, reward, index, onChange) {
+  const root = document.createElement("div");
+  root.className = "quest-icon-picker";
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "quest-icon-toggle";
+  toggle.setAttribute("role", "combobox");
+  toggle.setAttribute("aria-label", `任务 ${index + 1} 奖励图标`);
+  toggle.setAttribute("aria-haspopup", "listbox");
+  toggle.setAttribute("aria-expanded", "false");
+  const label = document.createElement("span"), portrait = new Image();
+  portrait.alt = "";
+  const arrow = document.createElement("span");
+  arrow.textContent = "⌄"; arrow.setAttribute("aria-hidden", "true");
+  toggle.append(label, portrait, arrow);
+  const menu = document.createElement("div");
+  menu.className = "quest-icon-list";
+  menu.id = `quest-icons-${index}`;
+  menu.setAttribute("role", "listbox");
+  menu.setAttribute("aria-label", `任务 ${index + 1} 奖励图标选项`);
+  menu.hidden = true;
+  toggle.setAttribute("aria-controls", menu.id);
+  const choices = [
+    { id: "auto", name: "自动匹配奖励关键词", icon: null },
+    { id: "quest-lock", name: "解锁效果 · 锁", icon: "quest-lock" },
+    ...KEYWORDS.filter(k => k.icon).map(k => ({ id: k.icon, name: k.name, icon: k.icon })),
+  ];
+  const imageSource = icon => icon === "quest-lock" ? "./assets/ui/Tooltip_Quest_Lock.png" : `./assets/icons/${icon}.png`;
+  let automaticIcon;
+  const buttons = [];
+  function sync() {
+    automaticIcon = KEYWORDS.find(k => k.icon && k.aliases.some(a => reward.includes(a)))?.icon || "value";
+    const choice = choices.find(c => c.id === value) || choices[0];
+    label.textContent = choice.name;
+    portrait.src = imageSource(choice.icon || automaticIcon);
+    buttons.forEach((button, i) => {
+      button.setAttribute("aria-selected", String(choices[i].id === value));
+      if (choices[i].id === "auto") button.querySelector("img").src = imageSource(automaticIcon);
+    });
+  }
+  function close(focus = false) {
+    menu.hidden = true;
+    menu.remove();
+    toggle.setAttribute("aria-expanded", "false");
+    if (activeQuestIconPicker?.root === root) activeQuestIconPicker = null;
+    if (focus) toggle.focus();
+  }
+  function open() {
+    activeQuestIconPicker?.close();
+    document.body.append(menu);
+    menu.hidden = false;
+    const box = toggle.getBoundingClientRect();
+    const below = innerHeight - box.bottom - 12, above = box.top - 12;
+    const upward = below < 220 && above > below;
+    const height = Math.min(330, Math.max(100, upward ? above : below));
+    menu.style.width = `${Math.min(box.width, innerWidth - 24)}px`;
+    menu.style.left = `${Math.max(12, Math.min(box.left, innerWidth - box.width - 12))}px`;
+    menu.style.maxHeight = `${height}px`;
+    menu.style.top = upward ? "auto" : `${box.bottom + 5}px`;
+    menu.style.bottom = upward ? `${innerHeight - box.top + 5}px` : "auto";
+    activeQuestIconPicker = { root, menu, close };
+    toggle.setAttribute("aria-expanded", "true");
+    buttons[choices.findIndex(c => c.id === value)]?.focus();
+  }
+  choices.forEach(choice => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "quest-icon-option";
+    button.setAttribute("role", "option");
+    const title = document.createElement("span"); title.textContent = choice.name;
+    const icon = new Image(); icon.alt = ""; icon.src = imageSource(choice.icon || "value");
+    button.append(title, icon);
+    button.addEventListener("click", () => { value = choice.id; sync(); close(true); onChange(value); });
+    buttons.push(button); menu.append(button);
+  });
+  toggle.addEventListener("click", () => menu.hidden ? open() : close());
+  toggle.addEventListener("keydown", event => {
+    if (["ArrowDown", "ArrowUp"].includes(event.key)) { event.preventDefault(); open(); }
+  });
+  menu.addEventListener("keydown", event => {
+    if (event.key === "Escape") { event.preventDefault(); close(true); }
+    else if (event.key === "Tab") close();
+    else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+      const i = buttons.indexOf(document.activeElement);
+      const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 :
+        (i + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[next].focus();
+    }
+  });
+  root.append(toggle); sync();
+  return { element: root, updateReward(text) { reward = text; sync(); } };
+}
+document.addEventListener("pointerdown", event => {
+  const picker = activeQuestIconPicker;
+  if (picker && !picker.root.contains(event.target) && !picker.menu.contains(event.target)) picker.close();
+});
+window.addEventListener("resize", () => activeQuestIconPicker?.close());
+window.addEventListener("scroll", event => {
+  const picker = activeQuestIconPicker;
+  if (picker && event.target !== picker.menu && !picker.menu.contains(event.target)) picker.close();
+}, true);
 function buildQuestFields(t) {
+  activeQuestIconPicker?.close();
   $("quest-count").textContent = t.quests.length
     ? `${t.quests.length} 条任务`
     : "可选";
@@ -447,7 +548,6 @@ function buildQuestFields(t) {
         changed();
       });
       ta.addEventListener("blur", () => {
-        if (key === "reward") finishEffectField(ta, "quest-reward", i);
         checkStructure(focusSnapshot);
         focusSnapshot = null;
       });
@@ -504,24 +604,10 @@ function buildQuestFields(t) {
       });
       updateState();
     });
-    const icons = document.createElement("select");
-    icons.setAttribute("aria-label", `任务 ${i + 1} 奖励图标`);
-    icons.append(
-      option("auto", "自动匹配奖励关键词"),
-      option("quest-lock", "解锁效果 · 锁"),
-    );
-    for (const k of KEYWORDS.filter((k) => k.icon))
-      icons.append(option(k.icon, k.name));
-    icons.value = q.icon;
-    icons.addEventListener("change", () =>
-      mutate(
-        (t) => {
-          t.quests[i].icon = icons.value;
-        },
-        { structure: true, warn: true },
-      ),
-    );
-    labelFor("奖励图标", icons);
+    const icons = questIconPicker(q.icon, q.reward, i, value => mutate(
+      t => { t.quests[i].icon = value; }, { structure: true, warn: true },
+    ));
+    labelFor("奖励图标", icons.element);
     const locked = check("在任务上方显示锁定奖励", "显示锁定奖励");
     locked.checked = q.locked;
     locked.addEventListener("change", () =>
@@ -532,8 +618,25 @@ function buildQuestFields(t) {
         { structure: true, warn: true },
       ),
     );
+    const region = document.createElement("select");
+    region.setAttribute("aria-label", `任务 ${i + 1} 锁定奖励显示区域`);
+    region.append(option("auto", "自动 · 按奖励描述"), option("active", "主动效果区"), option("passive", "被动效果区"));
+    region.value = q.rewardRegion;
+    const regionLabel = labelFor("锁定奖励显示区域", region);
+    const regionHint = document.createElement("span");
+    regionHint.className = "field-help";
+    regionLabel.append(regionHint);
+    region.addEventListener("change", () => {
+      mutate(t => { t.quests[i].rewardRegion = region.value; }, { structure: true, warn: true });
+      updateState();
+    });
+    locked.addEventListener("change", updateState);
     function updateState() {
       const value = resolveTier(project, current).quests[i];
+      icons.updateReward(value.reward);
+      region.disabled = !value.locked;
+      regionHint.textContent = value.locked && value.rewardRegion === "auto"
+        ? `自动显示在${questRewardRegion(value) === "active" ? "主动" : "被动"}效果区` : "";
       target.value = questTarget(value);
       progress.value = value.progress;
       automatic.checked = !value.targetManual;
@@ -574,15 +677,6 @@ function editText(field, index, text) {
     editTier(project, current, (t) => {
       setTextValue(t, field, index, text);
     });
-}
-function finishEffectField(input, field, index) {
-  const text = completeEffectText(input.value, input.maxLength);
-  if (text === input.value) return;
-  input.value = text;
-  if (!project.independentStructure)
-    synchronizeText(project, current, field, index, text);
-  else editText(field, index, text);
-  changed();
 }
 function checkStructure(before) {
   if (
@@ -642,6 +736,7 @@ function schedulePaint() {
         includeEnchantments: editorPage === "enchantments",
         scale: Math.min(devicePixelRatio || 1, 2),
         stacked,
+        background: project.background.useDefault ? "transparent" : "preview",
       });
       positionOverlay();
     } catch (e) {
@@ -649,6 +744,78 @@ function schedulePaint() {
     }
   });
 }
+function syncBackgroundControls() {
+  $("background-color").value = project.background.color;
+  $("remove-background").hidden = !project.background.image;
+  $("preview-stage").style.background = project.background.useDefault ? "" : project.background.color;
+  $("preview-stage").classList.toggle("has-background-image", !!project.background.image);
+}
+$("background-color").addEventListener("input", () => {
+  project.background.color = $("background-color").value;
+  project.background.useDefault = false;
+  syncBackgroundControls();
+  changed();
+});
+$("upload-background").addEventListener("click", () => $("background-file").click());
+let backgroundUploadEpoch = 0;
+async function decodeBackground(source) {
+  if (!source) return null;
+  const image = new Image();
+  image.src = source;
+  try {
+    await image.decode();
+    return image;
+  } catch {
+    throw new Error("背景图片无法读取，请尝试另一张图片");
+  }
+}
+$("background-file").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const target = project, request = ++backgroundUploadEpoch;
+  try {
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type))
+      throw new Error("请选择 PNG、JPG 或 WebP 图片");
+    if (file.size > 20 * 1024 * 1024) throw new Error("图片不能超过 20 MB");
+    let source = await readDataURL(file), image = await decodeBackground(source);
+    if (Math.max(image.width, image.height) > 4096) {
+      const factor = 4096 / Math.max(image.width, image.height);
+      const resized = document.createElement("canvas");
+      resized.width = Math.max(1, Math.round(image.width * factor));
+      resized.height = Math.max(1, Math.round(image.height * factor));
+      resized.getContext("2d").drawImage(image, 0, 0, resized.width, resized.height);
+      source = resized.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.94);
+      image = await decodeBackground(source);
+    }
+    if (source.length > 30_000_000) throw new Error("背景图片过大，请选择较小的图片");
+    if (request !== backgroundUploadEpoch || project !== target) return;
+    project.background.image = source;
+    project.background.useDefault = false;
+    renderer.backgroundImage = image;
+    syncBackgroundControls();
+    changed();
+    toast("背景已更新");
+  } catch (error) {
+    if (request === backgroundUploadEpoch && project === target) toast(error.message);
+  } finally {
+    e.target.value = "";
+  }
+});
+$("remove-background").addEventListener("click", () => {
+  backgroundUploadEpoch++;
+  project.background.image = null;
+  renderer.backgroundImage = null;
+  syncBackgroundControls();
+  changed();
+});
+$("reset-background").addEventListener("click", () => {
+  backgroundUploadEpoch++;
+  project.background = defaultBackground();
+  renderer.backgroundImage = null;
+  syncBackgroundControls();
+  changed();
+  toast("已恢复默认背景");
+});
 function positionOverlay() {
   const l = renderer.lastLayout;
   if (!l) return;
@@ -740,7 +907,6 @@ $("passive").addEventListener("input", () => {
   changed();
 });
 $("passive").addEventListener("blur", () => {
-  finishEffectField($("passive"), "passive", null);
   checkStructure(focusSnapshot);
   focusSnapshot = null;
 });
@@ -748,6 +914,7 @@ attachCompletion($("passive"), $("passive-wrap"));
 for (const [toggle, field, key] of [
   ["ammo-enabled", "ammo", "ammo"],
   ["crit-enabled", "crit", "crit"],
+  ["multicast-enabled", "multicast", "multicast"],
 ]) {
   $(toggle).addEventListener("change", () => {
     mutate((t) => (t[key + "Enabled"] = $(toggle).checked));
@@ -755,15 +922,15 @@ for (const [toggle, field, key] of [
   });
   $(field).addEventListener("input", () => {
     const v = Number($(field).value);
-    const max = key === "ammo" ? 999 : 100;
+    const max = key === "crit" ? 100 : 999;
     mutate(
       (t) =>
         (t[key] = Math.min(
           max,
           Math.max(
-            0,
+            key === "multicast" ? 1 : 0,
             Number.isFinite(v)
-              ? key === "ammo"
+              ? key !== "crit"
                 ? Math.floor(v)
                 : Math.round(v * 10) / 10
               : 0,
@@ -977,7 +1144,8 @@ async function updateExportPreview() {
     buildEnchantmentFields();
     changed();
   }
-  const snapshot = clone(project), tierId = current, art = renderer.art;
+  const snapshot = clone(project), tierId = current, art = renderer.art,
+    backgroundImage = renderer.backgroundImage;
   const filename = `${safeName()}_${mode === "all" ? "全等级" : QUALITIES.find((q) => q.id === tierId).name}${includeEnchantments ? "_附魔" : ""}.png`;
   $("export-download").disabled = true;
   $("export-preview").hidden = true;
@@ -990,6 +1158,7 @@ async function updateExportPreview() {
     await document.fonts.ready;
     if (request !== exportPreviewEpoch || !dialog.open) return;
     exportRenderer.art = art;
+    exportRenderer.backgroundImage = backgroundImage;
     const imageCanvas = document.createElement("canvas");
     exportRenderer.render(imageCanvas, snapshot, tierId, { mode, scale, background, includeEnchantments });
     const blob = await new Promise((resolve) => imageCanvas.toBlob(resolve, "image/png"));
@@ -1028,6 +1197,8 @@ $("new-project").addEventListener("click", async () => {
   )
     return;
   project = createProject();
+  backgroundUploadEpoch++;
+  renderer.backgroundImage = null;
   current = "bronze";
   setEditorPage("base");
   await renderer.setArt(null);
@@ -1049,11 +1220,14 @@ $("project-file").addEventListener("change", async (e) => {
   if (!f) return;
   const previous = project;
   try {
-    if (f.size > 35 * 1024 * 1024) throw new Error("作品文件过大");
+    if (f.size > 65 * 1024 * 1024) throw new Error("作品文件过大");
     const parsed = validateProject(JSON.parse(await f.text()));
+    const backgroundImage = await decodeBackground(parsed.background.image);
     await renderer.setArt(parsed.art);
     if (parsed.art && !renderer.art) throw new Error("作品中的图片无法读取");
     project = parsed;
+    backgroundUploadEpoch++;
+    renderer.backgroundImage = backgroundImage;
     current = project.initial;
     setEditorPage("base");
     syncForms();
@@ -1108,7 +1282,10 @@ $("save-status").textContent = "正在载入游戏素材…";
 try {
   const saved = await loadLocal();
   if (saved) {
-    project = validateProject(saved);
+    const restored = validateProject(saved);
+    const backgroundImage = await decodeBackground(restored.background.image);
+    project = restored;
+    renderer.backgroundImage = backgroundImage;
     current = project.initial;
     await renderer.setArt(project.art);
     syncForms();
