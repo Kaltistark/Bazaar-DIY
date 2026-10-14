@@ -124,12 +124,21 @@
               </div>
             </div>
           </div>
+          <div id="custom-hero-controls" class="custom-hero-controls" hidden>
+            <label>职业名称<input id="custom-hero-name" maxlength="20" placeholder="自定义职业" /></label>
+            <button id="upload-hero-icon" class="button small" type="button">上传／更换职业图标</button>
+          </div>
+          <input id="hero-icon-file" type="file" accept="image/png,image/jpeg,image/webp" hidden />
           <details class="tag-picker" id="tag-picker">
             <summary>
               <span>物品类型 <span id="selected-types"></span></span
               ><span class="chevron">⌄</span>
             </summary>
             <div class="tag-grid" id="tag-grid"></div>
+            <form id="custom-type-form" class="custom-type-form">
+              <input id="custom-type-name" aria-label="新增物品类型" maxlength="12" placeholder="新增类型，例如文具" />
+              <button class="button small" type="submit">添加类型</button>
+            </form>
           </details>
           <label class="name-field"
             >物品名称<input

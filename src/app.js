@@ -17,6 +17,7 @@ import {
   textValue,
   setTextValue,
   defaultBackground,
+  validTypeName,
 } from "./model.js";
 import { Renderer } from "./renderer.js";
 import { CooldownPicker } from "./cooldown-picker.js";
@@ -67,12 +68,23 @@ QUALITIES.forEach((q) => {
   tierButtons.set(q.id, b);
   $("tier-switch").append(b);
 });
-HEROES.forEach(([id, label]) => $("hero").append(option(id, label)));
+const heroChoices = [...HEROES, ["custom", "自定义职业"]];
+heroChoices.forEach(([id, label]) => $("hero").append(option(id, label)));
 let heroOpen = false;
 function syncHeroPicker() {
-  const [id, name] = HEROES.find(([id]) => id === project.hero) || HEROES[0];
-  $("hero-name").textContent = name;
-  $("hero-portrait").src = `./assets/hero-portraits/${id}.png`;
+  const [id, name] = heroChoices.find(([id]) => id === project.hero) || HEROES[0];
+  const custom = id === "custom", icon = project.customHero?.icon;
+  $("hero-name").textContent = custom ? project.customHero.name : name;
+  $("hero-portrait").hidden = custom && !icon;
+  if (!custom || icon) $("hero-portrait").src = custom ? icon : `./assets/hero-portraits/${id}.png`;
+  else $("hero-portrait").removeAttribute("src");
+  $("custom-hero-controls").hidden = !custom;
+  $("custom-hero-name").value = project.customHero?.name || "自定义职业";
+  const customOption = $("hero-list").querySelector('[data-hero="custom"] img');
+  customOption.hidden = !icon;
+  if (icon) customOption.src = icon;
+  const source = custom ? icon : null;
+  if (renderer.customHeroSource !== source) renderer.setHeroIcon(source).then(schedulePaint);
   for (const button of $("hero-list").children)
     button.setAttribute("aria-selected", String(button.dataset.hero === id));
 }
@@ -96,7 +108,7 @@ function openHeroPicker() {
   $("hero-toggle").setAttribute("aria-expanded", "true");
   $("hero-list").querySelector('[aria-selected="true"]')?.focus();
 }
-for (const [id, name] of HEROES) {
+for (const [id, name] of heroChoices) {
   const b = document.createElement("button");
   b.type = "button";
   b.className = "hero-option";
@@ -106,7 +118,8 @@ for (const [id, name] of HEROES) {
   const label = document.createElement("span");
   label.textContent = name;
   const image = new Image();
-  image.src = `./assets/hero-portraits/${id}.png`;
+  if (id !== "custom") image.src = `./assets/hero-portraits/${id}.png`;
+  else image.hidden = true;
   image.alt = "";
   b.append(label, image);
   b.addEventListener("click", () => {
@@ -200,7 +213,7 @@ function attachCompletion(ta, wrap) {
     ta.dispatchEvent(new Event("input", { bubbles: true }));
   });
 }
-for (const type of TYPES) {
+function addTypeButton(type) {
   const b = document.createElement("button");
   b.className = "tag";
   b.textContent = type;
@@ -215,6 +228,8 @@ for (const type of TYPES) {
   $("tag-grid").append(b);
 }
 function syncTags() {
+  $("tag-grid").replaceChildren();
+  for (const type of [...new Set([...TYPES, ...(project.customTypes || []), ...project.types])]) addTypeButton(type);
   const chosen = [SIZES[project.size].name, ...project.types];
   $("selected-types").textContent = chosen.join(" · ");
   for (const b of $("tag-grid").children) {
@@ -850,6 +865,43 @@ $("item-size").addEventListener("change", () => {
     `${QUALITIES.find((q) => q.id === current).name} · ${SIZES[project.size].name}`;
   changed();
 });
+$("custom-type-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const type = $("custom-type-name").value.trim();
+  if (!validTypeName(type)) return toast("类型名称需为1至12个字，不能包含换行");
+  if (project.types.length >= 32 || project.customTypes.length >= 32) return toast("最多添加32种类型");
+  if (!TYPES.includes(type) && !project.customTypes.includes(type)) project.customTypes.push(type);
+  if (!project.types.includes(type)) project.types.push(type);
+  $("custom-type-name").value = "";
+  syncTags(); changed();
+});
+$("custom-hero-name").addEventListener("input", () => {
+  project.customHero.name = $("custom-hero-name").value.trim() || "自定义职业";
+  $("hero-name").textContent = project.customHero.name;
+  changed();
+});
+$("upload-hero-icon").addEventListener("click", () => $("hero-icon-file").click());
+let heroUploadEpoch = 0;
+$("hero-icon-file").addEventListener("change", async e => {
+  const file = e.target.files[0], target = project, request = ++heroUploadEpoch;
+  if (!file) return;
+  try {
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 20 * 1024 * 1024)
+      throw new Error("请选择不超过20 MB的PNG、JPG或WebP图标");
+    const image = await decodeBackground(await readDataURL(file));
+    const factor = Math.min(1, 512 / Math.max(image.width, image.height));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(image.width * factor));
+    c.height = Math.max(1, Math.round(image.height * factor));
+    c.getContext("2d").drawImage(image, 0, 0, c.width, c.height);
+    const icon = c.toDataURL("image/png");
+    if (project !== target || request !== heroUploadEpoch) return;
+    project.customHero.icon = icon; project.hero = "custom";
+    await renderer.setHeroIcon(icon);
+    syncForms(); changed(); toast("自定义职业图标已更新");
+  } catch (error) { toast(error.message); }
+  finally { e.target.value = ""; }
+});
 $("hero").addEventListener("change", () => {
   project.hero = $("hero").value;
   syncHeroPicker();
@@ -1156,6 +1208,8 @@ async function updateExportPreview() {
     if (mode === "all" && !compatible(snapshot))
       throw new Error("各品质效果结构不同，请选择当前品质");
     await document.fonts.ready;
+    if (request !== exportPreviewEpoch || !dialog.open) return;
+    await exportRenderer.setHeroIcon(snapshot.hero === "custom" ? snapshot.customHero.icon : null);
     if (request !== exportPreviewEpoch || !dialog.open) return;
     exportRenderer.art = art;
     exportRenderer.backgroundImage = backgroundImage;

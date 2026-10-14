@@ -140,6 +140,14 @@ export class Renderer {
     this.artSource = source;
     this.art = source ? await imageFor(source) : null;
   }
+  async setHeroIcon(source) {
+    if (source === this.customHeroSource) return this.customHeroLoading;
+    this.customHeroSource = source;
+    this.customHero = null;
+    this.customHeroLoading = source ? imageFor(source) : Promise.resolve(null);
+    const image = await this.customHeroLoading;
+    if (source === this.customHeroSource) this.customHero = image;
+  }
   image(ctx, key, x, y, w, h) {
     const im = this.images.get(key);
     if (im) ctx.drawImage(im, x, y, w, h);
@@ -219,7 +227,7 @@ export class Renderer {
     ctx.font = `${font === TITLE_FONT ? 600 : font === NUMBER_FONT ? 400 : 700} ${size}px "${font}", "Microsoft YaHei", sans-serif`;
     ctx.letterSpacing = `${size * style.tracking}px`;
   }
-  rich(parts) {
+  rich(parts, types = this.types || TYPES) {
     const runs = [];
     const aliases = KEYWORDS.flatMap((k) =>
       k.aliases.map((a) => ({ a, k })),
@@ -255,7 +263,7 @@ export class Renderer {
           rest = rest.slice(a.length);
           continue;
         }
-        const type = TYPES.find((t) => rest.startsWith(t));
+        const type = [...types].sort((a,b) => b.length-a.length).find((t) => rest.startsWith(t));
         if (type) {
           runs.push({ kind: "word", text: type, color: "#b3baff" });
           rest = rest.slice(type.length);
@@ -554,6 +562,7 @@ export class Renderer {
       [34, borders[1] * vertical, 34, borders[3] * vertical]);
   }
   layout(ctx, project, current, mode, stacked = false, includeEnchantments = false) {
+    this.types = [...new Set([...TYPES, ...(project.customTypes || []), ...project.types])];
     const tier = resolveTier(
       project,
       mode === "all" ? project.initial : current,
@@ -938,7 +947,9 @@ export class Renderer {
         TITLE_FONT,
       ),
     );
-    const hero = this.images.get(`hero-${project.hero}`);
+    const hero = project.hero === "custom"
+      ? (this.customHeroSource === project.customHero?.icon ? this.customHero : null)
+      : this.images.get(`hero-${project.hero}`);
     if (hero) {
       const side = 55,
         ratio = Math.min(side / hero.width, side / hero.height);

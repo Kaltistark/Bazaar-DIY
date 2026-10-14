@@ -1133,3 +1133,11 @@ dialog::backdrop {
 .quest-icon-option { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 4px; background: transparent; text-align: left; }
 .quest-icon-option:hover, .quest-icon-option:focus-visible { background: var(--panel); }
 .quest-icon-option[aria-selected="true"] { color: var(--gold); background: var(--panel); }
+
+.custom-type-form { display: flex; gap: 8px; margin-top: 14px; }
+.custom-type-form input { min-width: 0; flex: 1; }
+.custom-hero-controls { display: flex; gap: 10px; align-items: end; margin-top: 12px; }
+.custom-hero-controls label { flex: 1; min-width: 0; }
+.custom-hero-controls input { margin-top: 7px; }
+.custom-hero-controls[hidden] { display: none; }
+@media(max-width: 480px) { .custom-hero-controls { flex-wrap: wrap; } }

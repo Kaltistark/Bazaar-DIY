@@ -76,6 +76,8 @@ export function createProject() {
     initial: "bronze",
     size: "medium",
     hero: "neutral",
+    customHero: { name: "自定义职业", icon: null },
+    customTypes: [],
     types: [],
     art: null,
     crop: { x: 0, y: 0, zoom: 1 },
@@ -95,6 +97,10 @@ export function defaultEnchantments() {
   ) };
 }
 export const clone = (value) => structuredClone(value);
+export function validTypeName(text) {
+  return typeof text === "string" && text.length > 0 && text.length <= 12 &&
+    text === text.trim() && !/[\r\n\t\x00-\x1f]/.test(text);
+}
 export function available(project) {
   const start = QUALITIES.findIndex((q) => q.id === project.initial);
   return start === 4 ? [QUALITIES[4]] : QUALITIES.slice(Math.max(0, start), 4);
@@ -329,10 +335,22 @@ export function validateProject(value) {
     typeof value.name !== "string" ||
     value.name.length > 60 ||
     !Array.isArray(value.types) ||
-    value.types.some((t) => !TYPES.includes(t))
+    value.types.length > 32 ||
+    value.types.some((t) => !validTypeName(t))
   )
     throw new Error("作品字段无效");
-  if (!HEROES.some(([id]) => id === value.hero)) throw new Error("职业无效");
+  value.customTypes ??= [];
+  if (!Array.isArray(value.customTypes) || value.customTypes.length > 32 ||
+      value.customTypes.some(t => !validTypeName(t))) throw new Error("自定义类型无效");
+  value.customTypes = [...new Set([...value.customTypes, ...value.types.filter(t => !TYPES.includes(t))])];
+  if (value.customTypes.length > 32) throw new Error("自定义类型过多");
+  value.customHero ??= { name: "自定义职业", icon: null };
+  if (!value.customHero || typeof value.customHero.name !== "string" ||
+      !value.customHero.name.trim() || value.customHero.name.length > 20 ||
+      !(value.customHero.icon === null || (typeof value.customHero.icon === "string" &&
+       /^data:image\/(png|jpeg|webp);base64,/.test(value.customHero.icon) && value.customHero.icon.length <= 3_000_000)))
+    throw new Error("自定义职业图标或名称无效");
+  if (!HEROES.some(([id]) => id === value.hero) && value.hero !== "custom") throw new Error("职业无效");
   if (
     value.art &&
     (!/^data:image\/(png|jpeg|webp);base64,/.test(value.art) ||
